@@ -1,0 +1,16 @@
+"campaignid","sample","family","genus","species","length","min.length","max.length","fb.length_max","reason","difference","percent.of.fb.max"
+"2021-05_PtCloates_BOSS",21,"Chaetodontidae","Heniochus","acuminatus",229.21425,37.5,212.5,250,"too big",16.71425,91.6857
+"2022-05_PtCloates_Naked-BOSS",264,"Chaetodontidae","Heniochus","acuminatus",240.89108,37.5,212.5,250,"too big",28.39108,96.356432
+"2022-05_PtCloates_Naked-BOSS",262,"Chaetodontidae","Heniochus","diphreutes",201.47593,31.5,178.5,210,"too big",22.97593,95.9409190476191
+"2022-05_PtCloates_Naked-BOSS",270,"Balistidae","Xanthichthys","lineopunctatus",298.26806,45,255,300,"too big",43.26806,99.4226866666667
+"2022-05_PtCloates_Naked-BOSS",270,"Chaetodontidae","Heniochus","diphreutes",211.63403,31.5,178.5,210,"too big",33.13403,100.77810952381
+"2022-05_PtCloates_Naked-BOSS",270,"Chaetodontidae","Heniochus","diphreutes",193.2813,31.5,178.5,210,"too big",14.7813,92.0387142857143
+"2022-05_PtCloates_Naked-BOSS",270,"Labridae","Bodianus","solatus",304.75001,52.5,297.5,350,"too big",7.25000999999997,87.0714314285714
+"2022-05_PtCloates_Naked-BOSS",270,"Labridae","Bodianus","solatus",381.78108,52.5,297.5,350,"too big",84.28108,109.080308571429
+"2022-05_PtCloates_Naked-BOSS",274,"Labridae","Bodianus","solatus",360.99675,52.5,297.5,350,"too big",63.49675,103.141928571429
+"2022-05_PtCloates_Naked-BOSS",242,"Chaetodontidae","Heniochus","acuminatus",228.04706,37.5,212.5,250,"too big",15.54706,91.218824
+"2022-05_PtCloates_Naked-BOSS",273,"Balistidae","Xanthichthys","lineopunctatus",326.25764,45,255,300,"too big",71.25764,108.752546666667
+"2022-05_PtCloates_Naked-BOSS",273,"Lethrinidae","Lethrinus","ravus",315.15791,45,255,300,"too big",60.15791,105.052636666667
+"2022-05_PtCloates_Naked-BOSS",273,"Pomacanthidae","Pomacanthus","semicirculatus",363.56508,60,340,400,"too big",23.56508,90.89127
+"2022-05_PtCloates_Naked-BOSS",273,"Chaetodontidae","Heniochus","acuminatus",233.76074,37.5,212.5,250,"too big",21.26074,93.504296
+"2022-05_PtCloates_Naked-BOSS",273,"Chaetodontidae","Heniochus","acuminatus",220.00891,37.5,212.5,250,"too big",7.50890999999999,88.003564
