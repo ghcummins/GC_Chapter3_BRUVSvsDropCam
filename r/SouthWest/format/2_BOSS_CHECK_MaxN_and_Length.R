@@ -1,3 +1,9 @@
+# Project: G Cummins FISH Paper
+# Script: Cleaning SwC BOSS campaigns
+# Task:    Merging BOSS campaigns and exporting .csv for PRIMER
+# author:  G Cummins 
+# date:    Oct 2023
+
 # Clear memory ----
 rm(list=ls())
 
@@ -19,17 +25,17 @@ library(stringr)
 
 ## Set Study Name ----
 # Change this to suit your study name. This will also be the prefix on your final saved files.
-study<-"PtCloates_BOSS" 
+study<-"SwC_BOSS" 
 
 ## Set your working directory ----
 working.dir<-getwd()
 
 ## Save these directory names to use later----
-staging.dir<-paste(working.dir,"data/raw/Staging",sep="/") 
-download.dir<-paste(working.dir,"data/raw/EM Export",sep="/")
-tidy.dir<-paste(working.dir,"data/Tidy",sep="/")
-plots.dir=paste(working.dir,"plots/format",sep="/")
-error.dir=paste(working.dir,"data/raw/errors to check",sep="/")
+staging.dir<-paste(working.dir,"data/staging",sep="/") 
+download.dir<-paste(working.dir,"data/raw/em export/SwC",sep="/")
+tidy.dir<-paste(working.dir,"data/tidy/Southwest",sep="/")
+plots.dir=paste(working.dir,"plots/",sep="/")
+error.dir=paste(working.dir,"data/errors to check",sep="/")
 
 # Import unchecked data from staging folder----
 setwd(staging.dir)

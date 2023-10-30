@@ -1,7 +1,7 @@
 ###
-# Project: Ch3 PhD Abrolhos
+# Project: Ch3 PhD Southwest
 # Data:    BOSS & BRUV fish, habitat
-# Task:    Join Abrolhos BOSS and BRUV, format data for fssGAM
+# Task:    Join SwC BOSS and BRUV, format data for fssGAM
 # author:  Gabby, Claude, Brooke, Kingsley
 # date:    October 2023
 ##
@@ -32,15 +32,15 @@ library(ggplot2)
 # use the 'files' tab to set wd in '~/parks-abrolhos' manually (your relative path) then run this line (if we need it?)
 working.dir <- getwd()
 setwd(working.dir)
-name <- "PtCloates"   # set study name ##
+name <- "Southwest"   # set study name ##
 
 # load and join datasets
 #MaxN
-boss.maxn   <- read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.maxn.csv")%>%
+boss.maxn   <- read.csv("data/staging/SwC_BOSS_maxn.csv")%>%
   dplyr::mutate(method = "BOSS",
                 sample=as.character(sample))%>%
     glimpse()
-bruv.maxn <- read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.maxn.csv")%>%
+bruv.maxn <- read.csv("data/staging/Southwest/2020_south-west_stereo-BRUVs.complete.maxn.csv")%>%
   dplyr::mutate(method = "BRUV",
                 sample=as.character(sample))%>%
   glimpse()

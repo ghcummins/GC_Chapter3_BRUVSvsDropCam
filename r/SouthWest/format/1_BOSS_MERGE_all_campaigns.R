@@ -92,16 +92,21 @@ unique(maxn$sample)
 
 
 # ## Combine Length, Lengths and 3D point files into length3dpoints----
-# length3dpoints<-ga.create.em.length3dpoints()%>%
-#   dplyr::select(-c(time,comment))%>% # take time out as there is also a time column in the metadata
-#   dplyr::select(-c(sample)) %>%
-#   dplyr::rename(sample=period)%>%
-#   dplyr::inner_join(metadata1)%>%
-#   dplyr::filter(successful.length=="Yes")%>%
-#   glimpse()
+length3dpoints<-ga.create.em.length3dpoints()%>%
+  dplyr::select(-c(time,comment))%>% # take time out as there is also a time column in the metadata
+  dplyr::select(-c(sample)) %>%
+  dplyr::rename(sample=period)%>%
+  dplyr::inner_join(metadata1)%>%
+  dplyr::filter(successful.length=="Yes")%>%
+  glimpse()
 # 
 # ## Save length files ----
-# setwd(staging.dir)
-# write.csv(length3dpoints,paste(study,"length3dpoints.csv",sep="_"),row.names = FALSE)
+ setwd(staging.dir)
+ write.csv(length3dpoints,paste(study,"length3dpoints.csv",sep="_"),row.names = FALSE)
 # 
 # setwd(working.dir)
+
+ 
+ 
+
+ 
