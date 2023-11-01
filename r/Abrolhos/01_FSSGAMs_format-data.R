@@ -138,6 +138,15 @@ saveRDS(primernpz6, "data/staging/Abrolhos/Abrolhosprimer.rds")
 write.csv(primernpz6, "data/staging/Abrolhos/Abrolhosprimer.csv")
 
 
+#working out zeros for PCO plots
+primernpz6$fish.total <- rowSums(primernpz6[40:133])
+zerosites <- primernpz6 %>% 
+  select(sample, method, fish.total) %>%
+glimpse()
+zerosites <- zerosites %>%
+  mutate(zerofish = ifelse(fish.total == 0, "yes", ""))
+
+
 # Create total abundance and species richness ----
 ta.sr <- npz6maxn %>%
   dplyr::ungroup() %>%
