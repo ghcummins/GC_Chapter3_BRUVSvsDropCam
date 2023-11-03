@@ -29,6 +29,7 @@ library(googlesheets4)
 library(png)
 library(cowplot)
 library(gridExtra)
+library(ggplot2)
 
 
 ## Set Study Name ----
@@ -48,10 +49,21 @@ setwd(working.dir)
 
 #04.3.1 : Import data for PCO of method (using presence/absence data) ----
 dat <- read.csv("data/raw/AbrolhosPCOdata.csv")  %>%  
-  ga.clean.names()#import PCO.csv data sheet (manually exported from primer)
+  ga.clean.names()  #import PCO.csv data sheet (manually exported from primer) 
 vectors <- read.csv("data/raw/AbrolhosPCOvectors.csv")  %>% #import PCO.csv vectors sheet (manually exported from primer)
   ga.clean.names() %>%
   mutate(name = paste(genus, species, sep = " "))
+
+dat <- dat %>%
+  filter(!(sample == "npz6.12" & method == "BRUV"))
+
+dat <- dat %>%
+  mutate(zerofish = ifelse(
+    sample %in% c("npz6.10", "npz6.12", "npz6.16", "npz6.23", "npz6.35", "npz6.4", "npz6.7") & method == "BOSS",
+    "yes",
+    "no"
+  )) 
+dat$zerofish <- factor(dat$zerofish, levels = c("yes", "no"))
 
 # #load my fish pics
 # #1Carangoides chrysophrys
@@ -101,7 +113,8 @@ theme_get()
 
 
 gg.dat<-ggplot(dat, aes(x=pco1, y=pco2))+
-  geom_point(shape = 21, alpha=1, size=3, aes(x=pco1, y=pco2,fill=method,))+
+  geom_point(shape = 21, alpha=1, size=3, aes(x=pco1, y=pco2,fill=method))+
+  #geom_point(data = filter(dat, zerofish == "yes"), shape = 22, size = 5, color = "blue") +
   #stat_ellipse(type = "norm", linetype = 2) +  #this makes the circle around the points ... I dont like it. 
   theme_bw() +  # Removes grey background
   Theme1+ 
@@ -115,17 +128,17 @@ gg.dat<-ggplot(dat, aes(x=pco1, y=pco2))+
                    xend=(pco1/1),yend=(pco2/1)), #this changes the length of your vecotrs relative to eachother and the entire plot
                size = 0.5,colour="black",arrow = arrow(angle=25,length=unit(0.25,"cm")))+
   
-  #geom_text(data= filter(vectors, vectors=="Yes"), aes(x=pco1, y = pco2, label = name))+
+    #geom_text(data= filter(vectors, vectors=="Yes"), aes(x=pco1, y = pco2, label = name))+
    annotate("text", x = 0.17, y = 0.52, size = 3, label = "Chrysophrys auratus", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
   # # annotation_raster(p.s, xmin=-0.3, xmax=-0.1, ymin=0.33, ymax=0.2) + # this chucks in the fish or species pics. you need to play around with the numbers to get it in the right spot. 
   # 
    annotate("text", x = 0.53, y = 0.16, size = 3, label = "Chromis spp", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
   # #annotation_custom(Pristipomoides typus, xmin=-0.9, xmax=-0.6, ymin=-0.6, ymax=-0.4)  # this chucks in the fish or species pics. you need to play around with the numbers to get it in the right spot. 
   # 
-   annotate("text", x = 0.77, y = 0.12, size = 3, label = "Choerodon rubescens", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
+   annotate("text", x = 0.78, y = 0.12, size = 3, label = "Choerodon rubescens", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
   # #annotation_custom(Pristipomoides typus, xmin=-0.9, xmax=-0.6, ymin=-0.6, ymax=-0.4)  # this chucks in the fish or species pics. you need to play around with the numbers to get it in the right spot. 
   # 
-  annotate("text", x = 0.76, y = 0.06, size = 3, label = "Suezichthys cyanolaemus", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
+  annotate("text", x = 0.78, y = 0.065, size = 3, label = "Suezichthys cyanolaemus", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
   # #annotation_custom(Pristipomoides typus, xmin=-0.9, xmax=-0.6, ymin=-0.6, ymax=-0.4)  # this chucks in the fish or species pics. you need to play around with the numbers to get it in the right spot. 
   # 
   # annotate("text", x = -0.76, y = 0.06, size = 3, label = "Lethrinus miniatus", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
@@ -145,9 +158,13 @@ gg.dat<-ggplot(dat, aes(x=pco1, y=pco2))+
   # where you put you legend so it is out of the way
   # annotate("text", x = 0, y = 1.5, size = 6,  parse=F,family="TN")
 
+
+
 gg.dat
 
-#ggsave("PtCloates.PCO.jpeg", gg.dat, width = 20, height = 14, units = "cm")
+
+
+ggsave("Abrolhos.PCO.jpeg", gg.dat, width = 23, height = 14, units = "cm")
 # plots PCO data
 
 ggplot()+
