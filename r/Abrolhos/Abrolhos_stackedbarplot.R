@@ -106,7 +106,8 @@ combined_top_10 <- rbind(top_10_boss_maxn, top_10_bruv_maxn)
 # Create a complete data frame with all combinations of "scientific" and "method"
 all_combinations <- expand.grid(scientific = unique(combined_top_10$scientific), method = c("BOSS", "BRUV"))
 all_combinations <- all_combinations %>%
-  
+  left_join(combined_top_10, by = c("scientific", "method")) %>%
+  mutate(maxn = coalesce(maxn, 0))  # Replace missing maxn values with 0
 
 
 
