@@ -58,9 +58,10 @@ fish.sp.maxn <- maxn %>%
   dplyr::summarise(maxn = sum(maxn))
  # arrange(scientific)
 
-#filter os sus sus and unknowns
+#filter os sus sus and unknowns and boss #11
 fish.sp.maxn_filtered <- fish.sp.maxn%>%
   filter(scientific != "SUS sus") %>%
+  filter(scientific != "Cyprinocirrhites polyactis") %>%
   filter(!grepl("Unknown", scientific))    
 
 
@@ -136,8 +137,8 @@ PtCloates.barchart <- ggplot(all_combinations, aes(x = reorder(scientific, maxn)
   scale_fill_manual(values = c("BOSS" = "white", "BRUV" = "dark grey"), name = "Method") +
    #scale_y_discrete(labels = expression(italic(scientific))) +  # Italicize the y-axis labels
   theme_minimal() +
-  theme(axis.text.y = element_text(face = "italic")) 
-  #scale_y_continuous(limits = c(0, 650))
+  theme(axis.text.y = element_text(face = "italic")) +
+  scale_y_continuous(limits = c(0, 850))
 
   PtCloates.barchart
 
