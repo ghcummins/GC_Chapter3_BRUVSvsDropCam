@@ -216,8 +216,8 @@ for (i in pred.vars) {
 
 #all looks fine
 #write data to load in to next script
-saveRDS(c.auricularis, "data/staging/Abrolhos/C.auricularis.rds")
-write.csv(c.auricularis, "data/staging/Abrolhos/C.auricularis.csv")
+saveRDS(c.auricularis, "data/tidy/Abrolhos/C.auricularis.rds")
+write.csv(c.auricularis, "data/tidy/Abrolhos/C.auricularis.csv")
 
 # #lengths
 # # Create abundance of all recreational fished species ----
