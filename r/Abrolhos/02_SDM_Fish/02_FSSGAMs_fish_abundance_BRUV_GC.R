@@ -1,9 +1,9 @@
 ###
-# Project: Parks - Abrolhos
+# Project: Gabby 3rd chapter of PhD
 # Data:    BOSS & BRUV fish, habitat
 # Task:    Modelling fish abundance w/ FSSGAM
-# author:  Claude, Brooke, Kingsley
-# date:    Nov-Dec 2021
+# author:  Claude, Brooke, Kingsley & Gabby
+# date:    Nov 2023
 ##
 
 rm(list=ls())
@@ -38,6 +38,9 @@ dat <- readRDS("data/tidy/Abrolhos/C.auricularis.rds")%>%
   #dplyr::filter(location%in%"NPZ6")%>%
   glimpse()
 
+BRUVdat <- dat %>%
+  filter(method == "BRUV")
+  
 # # Re-set the predictors for modeling----
 pred.vars <- c("z", 
                "reef",
@@ -49,22 +52,22 @@ pred.vars <- c("z",
 
 
 # Check to make sure Response vector has not more than 80% zeros----
-unique.vars <- unique(as.character(dat$scientific))
+unique.vars <- unique(as.character(BRUVdat$scientific))
 
 resp.vars <- character()
 for(i in 1:length(unique.vars)){
-  temp.dat <- dat[which(dat$scientific == unique.vars[i]), ]
+  temp.dat <- BRUVdat[which(BRUVdat$scientific == unique.vars[i]), ]
   if(length(which(temp.dat$maxn == 0)) / nrow(temp.dat) < 0.9){
     resp.vars <- c(resp.vars, unique.vars[i])}
 }
 resp.vars   
 
 # Run the full subset model selection----
-savedir <- "model out/fssgam fish"
-use.dat <- as.data.frame(dat) 
+savedir <-"outputs/ffsgam_fish/"
+use.dat <- as.data.frame(BRUVdat) 
 str(use.dat)
 
-is.na(dat$status) 
+is.na(BRUVdat$status) 
 
 #factor.vars <- c("status")# Status as a factors with 2 levels
 out.all     <- list()
@@ -74,10 +77,10 @@ str(use.dat)
 
 # Loop through the FSS function for each Taxa----
 for(i in 1:length(resp.vars)){
-  use.dat <- as.data.frame(dat[which(dat$scientific == resp.vars[i]), ])
-  use.dat$method <- as.factor(use.dat$method)
+  use.dat <- as.data.frame(BRUVdat[which(BRUVdat$scientific == resp.vars[i]), ])
+ # use.dat$method <- as.factor(use.dat$method)
   #use.dat$location <- as.factor(use.dat$location)
-  Model1  <- gam(maxn ~ s(depth, k = 3, bs='cr'),
+  Model1  <- gam(maxn ~ s(z, k = 3, bs='cr'),
                  family = tw(),  data = use.dat)
   
   model.set <- generate.model.set(use.dat = use.dat,
@@ -86,8 +89,8 @@ for(i in 1:length(resp.vars)){
                                   # pred.vars.fact = factor.vars,
                                   linear.vars = "z",
                                   k = 3,
-                                  factor.smooth.interactions = F,
-                                  null.terms="method"
+                                  factor.smooth.interactions = F
+                                 # null.terms="method"
   )
   out.list <- fit.model.set(model.set,
                             max.models = 600,
@@ -121,8 +124,8 @@ names(out.all) <- resp.vars
 names(var.imp) <- resp.vars
 all.mod.fits   <- do.call("rbind",out.all)
 all.var.imp    <- do.call("rbind",var.imp)
-write.csv(all.mod.fits[ , -2], file = paste(savedir, paste(name, "all.mod.fits.csv", sep = "_"), sep = "/"))
-write.csv(all.var.imp, file = paste(savedir, paste(name, "all.var.imp.csv", sep = "_"), sep = "/"))
+write.csv(all.mod.fits[ , -2], file = paste(savedir, paste(name, "BRUV.all.mod.fits.csv", sep = "_"), sep = "/"))
+write.csv(all.var.imp, file = paste(savedir, paste(name, "BRUV.all.var.imp.csv", sep = "_"), sep = "/"))
 
-saveRDS(all.mod.fits, file = "data/Tidy/all.mod.fits.RDS")
+saveRDS(all.mod.fits, file = "data/tidy/Abrolhos/BRUV.all.mod.fits.RDS")
 

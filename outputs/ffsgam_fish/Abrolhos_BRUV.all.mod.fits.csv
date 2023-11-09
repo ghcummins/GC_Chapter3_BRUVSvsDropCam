@@ -1,0 +1,4 @@
+"","modname","AICc","BIC","r2.vals","r2.vals.unique","edf","edf.less.1","delta.AICc","delta.BIC","wi.AICc","wi.BIC","z","reef","sd.relief","mean.relief","tpi","roughness","detrended","cumsum.wi"
+"Labridae Coris auricularis.reef","reef",143.460372514656,146.027009570352,0.21741,NA,2.79,0,0,0,0.413,0.371,0,1,0,0,0,0,0,0.413
+"Labridae Coris auricularis.reef+tpi","reef+tpi",145.068883490484,147.225067688421,0.2308,NA,3.79,0,1.609,1.198,0.185,0.204,0,1,0,0,1,0,0,0.598
+"Labridae Coris auricularis.z","z",145.246893147205,147.853845310702,0.27022,NA,2,0,1.787,1.827,0.169,0.149,1,0,0,0,0,0,0,0.767
