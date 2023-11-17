@@ -34,9 +34,9 @@ study<-"PtCloates_BRUVs"
 working.dir<-getwd()
 
 ## Save these directory names to use later----
-staging.dir<-paste(working.dir,"data/raw/staging",sep="/") 
-download.dir<-paste(working.dir,"data/raw/EM Export",sep="/")
-tidy.dir<-paste(working.dir,"data/Tidy",sep="/")
+staging.dir<-paste(working.dir,"data/staging",sep="/") 
+download.dir<-paste(working.dir,"data/raw/em export",sep="/")
+tidy.dir<-paste(working.dir,"data/tidy",sep="/")
 
 setwd(working.dir)
 
@@ -77,8 +77,9 @@ maxn<-points%>%
   dplyr::mutate(maxn=as.numeric(maxn))%>%
   dplyr::filter(maxn>0)%>%
   dplyr::inner_join(metadata)%>%
-  dplyr::filter(successful.count=="Yes")%>%
+  dplyr::filter(successful.count %in% c("Yes", "Y"))%>%
   dplyr::filter(maxn>0)%>%
+  mutate(unique_id = paste0(campaignid, sep="_", sample)) %>% 
   glimpse()
 
 test <- metadata %>%

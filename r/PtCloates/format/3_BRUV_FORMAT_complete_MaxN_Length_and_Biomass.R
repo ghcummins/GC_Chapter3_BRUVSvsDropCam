@@ -45,7 +45,7 @@ dir()
 
 # Read in metadata----
 metadata<-read_csv(file=paste(study,"checked.metadata.csv",sep = "."),na = c("", " "))%>%
-  dplyr::mutate(id=paste(campaignid,sample,sep="."))%>%
+  dplyr::mutate(unique_id=paste0(campaignid,sep="_",sample))%>%
   glimpse()
 
 # Make complete.maxn: fill in 0s and join in factors----
@@ -55,11 +55,12 @@ dat<-read_csv(file=paste(study,"checked.maxn.csv",sep = "."),na = c("", " "))%>%
   dplyr::select(c(id,campaignid,sample,family,genus,species,maxn))%>%
   tidyr::complete(nesting(id,campaignid,sample),nesting(family,genus,species)) %>%
   replace_na(list(maxn = 0))%>%
-  group_by(sample,family,genus,species)%>%
+  mutate(unique_id = paste0(campaignid, sep="_", sample)) %>% 
+  group_by(unique_id,family,genus,species)%>%
   dplyr::summarise(maxn=sum(maxn))%>%
   ungroup()%>% #always a good idea to ungroup() after you have finished using the group_by()!
   mutate(scientific=paste(family,genus,species,sep=" "))%>%
-  dplyr::select(sample,scientific,maxn)%>%
+  dplyr::select(unique_id,scientific,maxn)%>%
   spread(scientific,maxn, fill = 0)%>% #why do we need this?
   glimpse()
 
@@ -73,9 +74,9 @@ maxn.families<-read_csv(file=paste(study,"checked.maxn.csv",sep = "."),na = c(""
 
 # Make complete data and join with metadata
 complete.maxn<-dat%>%
-  gather(key=scientific, value = maxn,-sample)%>%
+  gather(key=scientific, value = maxn,-unique_id)%>%
   inner_join(maxn.families,by=c("scientific"))%>%
-  full_join(metadata)%>% # Joining metadata will use a lot of memory - # out if you need too
+  full_join(metadata, by=c("unique_id"))%>% # Joining metadata will use a lot of memory - # out if you need too
   glimpse()
 
 unique(dat$sample)
@@ -136,7 +137,7 @@ master<-googlesheets4::read_sheet(url)%>%ga.clean.names()%>%
   dplyr::mutate(bll=as.numeric(bll))%>%
   dplyr::mutate(a=as.numeric(a))%>%
   dplyr::mutate(b=as.numeric(b))%>%
-  select(family,genus,species,marine.region,length.measure,a,b,all,bll,fb.length_max,fb.ltypemaxm)%>% 
+  dplyr::select(family,genus,species,marine.region,length.measure,a,b,all,bll,fb.length_max,fb.ltypemaxm)%>% 
   distinct()%>%
   glimpse()
 

@@ -38,12 +38,15 @@ name <- "PtCloates"   # set study name ##
 #MaxN
 boss.maxn   <- read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.maxn.csv")%>%
   dplyr::mutate(method = "BOSS",
-                sample=as.character(sample))%>%
+                sample=as.character(sample)) %>% 
+  mutate(unique_id = paste0(campaignid, sep="_", sample)) %>% 
     glimpse()
 bruv.maxn <- read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.maxn.csv")%>%
   dplyr::mutate(method = "BRUV",
                 sample=as.character(sample))%>%
   glimpse()
+
+####SOMETHING NOT RIGHT WITH BRUV MAXN DATA-GO BACK AND CHECK
 #join
 maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
     glimpse()
@@ -72,6 +75,7 @@ allhab <- readRDS("data/staging/habitat/PtCloates_habitat-bathy-derivatives.rds"
                              ifelse(substr(date, 1, 4) == "2021", "2021-05_PtCloates_BOSS",
                             ifelse(substr(date, 1, 4) == "2022", "2022-05_PtCloates_Naked-BOSS", NA)), campaignid))%>%
   mutate(campaignid = ifelse(campaignid == "2021-05_PtCloates_stereo-BRUVS", "2021-05_PtCloates_BRUVS", campaignid))%>%
+  mutate(unique_id = paste0(campaignid, sep="_", sample)) %>% 
     glimpse()
 
 # npz6hab <- readRDS("data/staging/Abrolhos/Abrolhos_habitat-bathy-derivatives.rds")%>%
@@ -90,8 +94,9 @@ allhab <- allhab %>%
 names(allhab)
 
 metadata <- maxn %>%
+  mutate(unique_id = paste0(campaignid, sep="_", sample)) %>% 
   distinct(sample, method, campaignid, latitude, longitude, date, location, status, site, 
-           depth, successful.count, successful.length)
+           depth, successful.count, successful.length, unique_id)
 
 # look at top species ----
 maxn.sum <- maxn %>%
@@ -131,34 +136,42 @@ ggplot(maxn.sum, aes(x = reorder(scientific, maxn), y = maxn)) +
 # Create total abundance and species richness ----
 ta.sr <- maxn %>%
   dplyr::ungroup() %>%
-  dplyr::group_by(scientific,sample,method) %>%
+  dplyr::group_by(unique_id, scientific,sample,method) %>%
   dplyr::summarise(maxn = sum(maxn)) %>%
   tidyr::spread(scientific, maxn, fill = 0) %>% 
   dplyr::ungroup() %>%
-  dplyr::mutate(total.abundance = rowSums(.[, 3:125], na.rm = TRUE )) %>% #Add in Totals
-  dplyr::mutate(species.richness = rowSums(.[, 3:(ncol(.))] > 0)) %>% # double check these
-  dplyr::select(sample, total.abundance, species.richness,method) %>%
-  tidyr::gather(., "scientific", "maxn", 2:3) %>%
+  dplyr::mutate(total.abundance = rowSums(.[, 4:(ncol(.))], na.rm = TRUE )) %>% #Add in Totals
+  dplyr::mutate(species.richness = rowSums(.[, 4:(ncol(.))] > 0)) %>% # double check these
+  dplyr::select(unique_id, sample, total.abundance, species.richness,method) %>%
+  tidyr::gather(., "scientific", "maxn", 3:4) %>%
   dplyr::glimpse()
 
+metadata1 <- metadata %>%
+   distinct(unique_id, status)
+
 PtC.maxn <- ta.sr %>%
-  left_join(allhab) %>%
-  left_join(metadata) %>%
-  glimpse()
-  ##SOMETHING IS NOT RIGHT HERE check allhab and metadata numbers in Abrolhos.
+  left_join(.,allhab) %>%
+  left_join(metadata1) %>%
+    glimpse()
+ 
+# PtC.maxn <- ta.sr %>%
+#   left_join(.,allhab, by=c("unique_id")) %>%
+#   left_join(metadata1, by=c("unique_id")) %>%
+#   glimpse()
+
 
 testboss <- PtC.maxn %>%
   dplyr::filter(method%in%"BOSS")
 
 testbruv <- PtC.maxn %>%
   dplyr::filter(method%in%"BRUV")
-####SOMETHING NOT RIGHT - but from above.
 
-length(unique(testboss$sample))
+
+length(unique(testboss$unique_id))
 113*2                  #was (75 x 2)
-length(unique(testbruv$sample))
+length(unique(testbruv$unique_id))
 89*2                  #was (50 x 2)
-
+##somwthing not right - its because there is multiple samples with the same number. Use Unique id instead
 
 unique(PtC.maxn$scientific)
 

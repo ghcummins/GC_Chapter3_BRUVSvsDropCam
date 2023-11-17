@@ -1,0 +1,13 @@
+"","modname","AICc","BIC","r2.vals","r2.vals.unique","edf","edf.less.1","delta.AICc","delta.BIC","wi.AICc","wi.BIC","z","reef","mean.relief","roughness","detrended","cumsum.wi"
+"BOSS.total.abundance.mean.relief","mean.relief",1438.25357885154,1446.21555882207,0.0919,NA,2,0,0,0,0.206,0.451,0,0,1,0,0,0.206
+"BOSS.total.abundance.detrended+mean.relief","detrended+mean.relief",1438.96184526718,1450.70739334895,0.1117,NA,3.47,0,0.708,4.492,0.144,0.048,0,0,1,0,1,0.35
+"BOSS.total.abundance.reef","reef",1439.27904171692,1447.24102168733,0.08362,NA,2,0,1.025,1.025,0.123,0.27,0,1,0,0,0,0.473
+"BOSS.total.abundance.mean.relief+roughness","mean.relief+roughness",1439.6535562446,1450.65377924166,0.10105,NA,3.18,0,1.4,4.438,0.102,0.049,0,0,1,1,0,0.575
+"BRUV.total.abundance.reef+z","reef+z",1053.79411471895,1066.75403529963,0.1388,NA,4.56,0,0,4.595,0.29,0.042,1,1,0,0,0,0.29
+"BRUV.total.abundance.z","z",1054.07587469421,1062.15932220866,0.08626,NA,2.39,0,0.282,0,0.252,0.413,1,0,0,0,0,0.542
+"BOSS.species.richness.mean.relief+roughness","mean.relief+roughness",529.123995231189,540.46325040239,0.2554,NA,3.31,0,0,0,0.574,0.842,0,0,1,1,0,0.574
+"BOSS.species.richness.detrended+mean.relief+roughness","detrended+mean.relief+roughness",530.465641198274,545.71838190929,0.26929,NA,4.87,0,1.342,5.255,0.294,0.061,0,0,1,1,1,0.868
+"BRUV.species.richness.detrended","detrended",567.910043588524,575.093599756741,0.04028,NA,2,0,0,0.829,0.216,0.246,0,0,0,0,1,0.216
+"BRUV.species.richness.detrended+mean.relief","detrended+mean.relief",568.872975406743,578.351330409656,0.05346,NA,3,0,0.963,4.087,0.134,0.048,0,0,1,0,1,0.35
+"BRUV.species.richness.detrended+reef","detrended+reef",569.226226958733,578.704581961687,0.0497,NA,3,0,1.316,4.44,0.112,0.041,0,1,0,0,1,0.462
+"BRUV.species.richness.null","null",569.426601591048,574.264339446791,0,NA,1,0,1.517,0,0.101,0.373,0,0,0,0,0,0.563

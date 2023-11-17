@@ -80,8 +80,9 @@ maxn <- points%>%
   dplyr::mutate(maxn=as.numeric(maxn))%>%
   dplyr::filter(maxn>0)%>%
   dplyr::inner_join(metadata1)%>%
-  dplyr::filter(successful.count=="Yes")%>%
+  dplyr::filter(successful.count %in% c("Yes", "Y"))%>%
   dplyr::filter(maxn>0)%>%
+  mutate(unique_id = paste0(campaignid, sep="_", sample)) %>% 
   glimpse()
 
 # Save MaxN file ----

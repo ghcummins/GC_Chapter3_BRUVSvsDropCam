@@ -164,16 +164,16 @@ abrbruvs <- read.csv("data/tidy/habitat/2021-05_Abrolhos_BRUVs_random-points_bro
 
 
 
-swc <- read.csv("data/tidy/habitat/2020-2021_south-west_BOSS-BRUV.Habitat.csv") %>%
-  dplyr::select(sample, longitude, latitude, method) %>%
-  glimpse()
-swcbruvsboss <- split(swc, swc$method)
-swcboss <- swcbruvsboss$BOSS %>%
-  dplyr::select(sample, longitude, latitude) %>%
-  glimpse()
-swcbruvs <- swcbruvsboss$BRUV %>%
-  dplyr::select(sample, longitude, latitude) %>%
-  glimpse()
+# swc <- read.csv("data/tidy/habitat/2020-2021_south-west_BOSS-BRUV.Habitat.csv") %>%
+#   dplyr::select(sample, longitude, latitude, method) %>%
+#   glimpse()
+# swcbruvsboss <- split(swc, swc$method)
+# swcboss <- swcbruvsboss$BOSS %>%
+#   dplyr::select(sample, longitude, latitude) %>%
+#   glimpse()
+# swcbruvs <- swcbruvsboss$BRUV %>%
+#   dplyr::select(sample, longitude, latitude) %>%
+#   glimpse()
 
 # Make plots
 # Inset 1 - Ningaloo
@@ -249,42 +249,42 @@ i2 <- ggplot() +
         legend.text = element_text(size = 4)) 
 i2
 
-# Inset 3 - SwC
-i3 <- ggplot() +
-  # geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z,
-  #                                       fill = after_stat(level)),
-  #                     breaks = c(0, -30, -70, -200, -700, -2000, -4000, -10000), alpha = 4/5) +
-  # scale_fill_grey(start = 1, end = 0.5 , guide = "none") +
-  # geom_contour(data = bathdf, aes(x = x, y = y, z = Z),
-  #              breaks = c(0, -30, -70, -200, -700, -2000, -4000, -10000), colour = "white", alpha = 1, size = 0.2) +
-  geom_sf(data = ausc, fill = "seashell2", colour = "grey80", size = 0.1) +
-  new_scale_fill() +
-  geom_sf(data = terrnp, aes(fill = leg_catego), alpha = 4/5, colour = NA, show.legend = F) +
-  labs(fill = "State Managed Areas") +
-  terr_fills +
-  new_scale_fill() +
-  geom_sf(data = mpa, aes(fill = ZoneName), alpha = 3/5, colour = NA) +
-  nmpa_fills +
-  labs(x = NULL, y = NULL, fill = "Australian Marine Parks") +
-  guides(fill = guide_legend(override.aes = list(size = 0.25), ncol = 2)) +
-  new_scale_fill() +
-  geom_sf(data = wampa, aes(fill = waname), alpha = 2/5, colour = NA) +
-  wampa_fills +
-  labs(fill = "State Marine Parks") +
-  guides(fill = guide_legend(override.aes = list(size = 0.25), ncol = 2)) +
-  new_scale_fill() +
-  geom_sf(data = cwatr, colour = "firebrick", alpha = 4/5, size = 0.2) +
-  geom_point(data = swcboss, colour = "#56B4E9", aes(longitude, latitude),
-             alpha = 0.6, shape = 10, size = 0.1) +
-  geom_point(data = swcbruvs, colour = "#D55E00", aes(longitude, latitude),
-             alpha = 0.6, shape = 10, size = 0.1) +
-  coord_sf(xlim = c(min(swc$longitude), 115.1), 
-           ylim = c(min(swc$latitude), max(swc$latitude))) +                           
-  theme_minimal() +
-  theme(axis.text = element_text(size = 3),
-        legend.title = element_text(size = 4),
-        legend.text = element_text(size = 4))
-i3
+# # Inset 3 - SwC
+# i3 <- ggplot() +
+#   # geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z,
+#   #                                       fill = after_stat(level)),
+#   #                     breaks = c(0, -30, -70, -200, -700, -2000, -4000, -10000), alpha = 4/5) +
+#   # scale_fill_grey(start = 1, end = 0.5 , guide = "none") +
+#   # geom_contour(data = bathdf, aes(x = x, y = y, z = Z),
+#   #              breaks = c(0, -30, -70, -200, -700, -2000, -4000, -10000), colour = "white", alpha = 1, size = 0.2) +
+#   geom_sf(data = ausc, fill = "seashell2", colour = "grey80", size = 0.1) +
+#   new_scale_fill() +
+#   geom_sf(data = terrnp, aes(fill = leg_catego), alpha = 4/5, colour = NA, show.legend = F) +
+#   labs(fill = "State Managed Areas") +
+#   terr_fills +
+#   new_scale_fill() +
+#   geom_sf(data = mpa, aes(fill = ZoneName), alpha = 3/5, colour = NA) +
+#   nmpa_fills +
+#   labs(x = NULL, y = NULL, fill = "Australian Marine Parks") +
+#   guides(fill = guide_legend(override.aes = list(size = 0.25), ncol = 2)) +
+#   new_scale_fill() +
+#   geom_sf(data = wampa, aes(fill = waname), alpha = 2/5, colour = NA) +
+#   wampa_fills +
+#   labs(fill = "State Marine Parks") +
+#   guides(fill = guide_legend(override.aes = list(size = 0.25), ncol = 2)) +
+#   new_scale_fill() +
+#   geom_sf(data = cwatr, colour = "firebrick", alpha = 4/5, size = 0.2) +
+#   geom_point(data = swcboss, colour = "#56B4E9", aes(longitude, latitude),
+#              alpha = 0.6, shape = 10, size = 0.1) +
+#   geom_point(data = swcbruvs, colour = "#D55E00", aes(longitude, latitude),
+#              alpha = 0.6, shape = 10, size = 0.1) +
+#   coord_sf(xlim = c(min(swc$longitude), 115.1), 
+#            ylim = c(min(swc$latitude), max(swc$latitude))) +                           
+#   theme_minimal() +
+#   theme(axis.text = element_text(size = 3),
+#         legend.title = element_text(size = 4),
+#         legend.text = element_text(size = 4))
+# i3
 
 
 
@@ -311,8 +311,8 @@ i5 <- ggplot(data = aus) +
            colour = "grey25", fill = "white", alpha = 1/5, size = 0.2) +
   annotate("rect", xmin = 113, xmax = 114.3, ymin = -28.1213, ymax = -27.0953,   # Abrolhos
            colour = "grey25", fill = "white", alpha = 1/5, size = 0.2) +
-  annotate("rect", xmin = 114.4664, xmax = 115.1, ymin = -34.1487, ymax = -33.66369,   # SwC
-           colour = "grey25", fill = "white", alpha = 1/5, size = 0.2) +
+  # annotate("rect", xmin = 114.4664, xmax = 115.1, ymin = -34.1487, ymax = -33.66369,   # SwC
+  #          colour = "grey25", fill = "white", alpha = 1/5, size = 0.2) +
   theme_bw() +
   theme(axis.text = element_blank(), 
         axis.ticks = element_blank(),
@@ -329,9 +329,9 @@ design <- "
 inset1 <- i5 + inset_element(i4, left = 0.01, bottom = 0.75, right = 0.4, top = 1)
 inset1
 
-layout <- i1 + i2 + i3 + inset1 + guide_area() + plot_layout(design = design, guides = "collect")
+layout <- i1 + i2  + inset1 + guide_area() + plot_layout(design = design, guides = "collect")
 layout
 
-ggsave("plots/overall-sampling-locations.png", dpi = 300, width = 4, height = 6)
+ggsave("plots/Overall-sampling-locations.png", dpi = 300, width = 4, height = 6)
 
 
