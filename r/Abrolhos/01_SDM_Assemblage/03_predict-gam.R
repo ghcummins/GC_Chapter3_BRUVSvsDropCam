@@ -103,7 +103,7 @@ m_BOSS_richness <- gam(maxn ~ s(mean.relief, k = 3, bs = "cr"),
                   family = gaussian(link="identity"))
 summary(m_BOSS_richness)
 
-m_BRUV_richness <- gam(maxn ~s(mean.relief, k = 3, bs = "cr"),
+m_BRUV_richness <- gam(maxn ~s(z, k = 3, bs = "cr"),
                        data = dat1 %>% dplyr::filter(scientific %in% "BRUV.species.richness"),
                        family = gaussian(link="identity"))
 summary(m_BRUV_richness)

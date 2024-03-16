@@ -51,6 +51,30 @@ maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
   glimpse()
 
 
+#BOSS fish numbers seen on how many samples
+samplefishBOSS <- boss.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific) %>%
+  summarise(n = n())
+
+#to get each MAXN sample on BOSS
+samplemaxnBOSS <- boss.maxn %>%
+  filter(maxn>0)
+
+write.csv(samplemaxnBOSS, file = "data/samplemaxnBOSS.csv", row.names = FALSE)
+
+#BRUVS fish numbers seen on how many samples
+samplefishBRUV <- bruv.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific) %>%
+  summarise(n = n())
+
+#to get each MAXN sample on BRUVS
+samplemaxnBRUV <- bruv.maxn %>%
+  filter(maxn>0)
+
+write.csv(samplemaxnBRUV, file = "data/samplemaxnBRUV.csv", row.names = FALSE)
+
 # look at all species ----
 fish.sp.maxn <- maxn %>%
   mutate(scientific = paste(genus, species, sep = " ")) %>%

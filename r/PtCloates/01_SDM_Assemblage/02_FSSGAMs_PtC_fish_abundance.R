@@ -38,12 +38,13 @@ name <- "PtCloates"  # set study name
 dat <- readRDS("data/staging/PtCloates/PtCloates.maxn.rds")%>%
   dplyr::mutate(reef =rock+inverts)%>%
   mutate(z = abs(z), scientific = paste(method,scientific,sep=".")) %>%
+  mutate(status = ifelse(is.na(status), "No-take", status)) %>%
     glimpse()
     unique(dat$scientific)
 
 # # Re-set the predictors for modeling----
 pred.vars <- c("z", "reef",
-               "mean.relief","roughness","detrended") 
+               "roughness","detrended") 
 
 # Check to make sure Response vector has not more than 80% zeros----
 unique.vars <- unique(as.character(dat$scientific))
