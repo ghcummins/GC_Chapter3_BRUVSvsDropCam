@@ -32,7 +32,7 @@ plots.dir=paste(working.dir,"plots/format",sep="/")
 error.dir=paste(working.dir,"data/raw/errors to check",sep="/")
 
 # Import unchecked data from staging folder----
-setwd(staging.dir)
+# setwd(staging.dir)
 
 # Import metadata ---
 metadata<-read.csv("data/staging/PtCloates/PtCloates_BOSS_metadata.csv")

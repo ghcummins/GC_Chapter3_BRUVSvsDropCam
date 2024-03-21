@@ -54,7 +54,7 @@ maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
 samplefishBOSS <- boss.maxn %>%
   filter(maxn>0) %>%
   group_by(scientific) %>%
-  summarise(n = n()) 
+  dplyr::summarise(n = n()) 
 
 #to get each MAXN sample on BOSS
 samplemaxnBOSS <- boss.maxn %>%
@@ -66,8 +66,28 @@ samplemaxnBOSS <- boss.maxn %>%
 samplefishBRUV <- bruv.maxn %>%
   filter(maxn>0) %>%
   group_by(scientific) %>%
-  summarise(n = n())
+  dplyr::summarise(n = n())
 
 #to get each MAXN sample on BRUVS
 samplemaxnBRUV <- bruv.maxn %>%
   filter(maxn>0)
+
+# write.csv(samplemaxnBRUV, file = "data/samplemaxnBRUV.csv", row.names = FALSE)
+
+
+bruvcompletelengths <-  read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.length.csv") 
+
+bruvlengths <- bruvcompletelengths %>%
+  dplyr::mutate(method = "BOSS")%>%
+  dplyr::mutate(scientific = paste(family,genus,species, sep = " "))%>%
+  dplyr::mutate(unique_id = paste(campaignid,sample, sep ="_"))
+
+bruvl <- bruvlengths %>%
+  select(unique_id, scientific, length, number)
+
+
+###combine attempt
+BRUVFISHES <- left_join(samplemaxnBRUV, bruvl, by = c("unique_id","scientific"))
+View(BRUVFISHES)
+
+ write.csv(BRUVFISHES, file = "data/BRUVFISHES.csv", row.names = FALSE)
