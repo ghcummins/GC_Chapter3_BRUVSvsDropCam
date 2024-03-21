@@ -40,12 +40,15 @@ name <- "PtCloates"   # set study name
 #MaxN
 boss.maxn   <- read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.maxn.csv")%>%
   dplyr::mutate(method = "BOSS")%>%
+# unique(boss.maxn$sample)
   glimpse()
 bruv.maxn <- read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.maxn.csv")%>%
   #dplyr::mutate(method = "BRUV")%>%
   dplyr::mutate(method = "BRUV",
                 sample=as.character(sample))%>%
   glimpse()
+
+unique(bruv.maxn$unique_id)
 #join
 maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
   glimpse()
@@ -54,8 +57,9 @@ maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
 #BOSS fish numbers seen on how many samples
 samplefishBOSS <- boss.maxn %>%
   filter(maxn>0) %>%
-  group_by(scientific) %>%
-  summarise(n = n())
+  group_by(scientific) %>% 
+  dplyr::summarise(n =n())
+  
 
 #to get each MAXN sample on BOSS
 samplemaxnBOSS <- boss.maxn %>%
@@ -67,7 +71,7 @@ write.csv(samplemaxnBOSS, file = "data/samplemaxnBOSS.csv", row.names = FALSE)
 samplefishBRUV <- bruv.maxn %>%
   filter(maxn>0) %>%
   group_by(scientific) %>%
-  summarise(n = n())
+  dplyr::summarise(n = n())
 
 #to get each MAXN sample on BRUVS
 samplemaxnBRUV <- bruv.maxn %>%
