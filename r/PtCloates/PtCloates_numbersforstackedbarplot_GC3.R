@@ -93,25 +93,104 @@ View(BRUVFISHES)
  write.csv(BRUVFISHES, file = "data/BRUVFISHES.csv", row.names = FALSE)
 
  str(L.miniatus)
- ##BUBBLE PLOTS
+ ##BUBBLE PLOTS BY SPECIES
  L.miniatus <- samplemaxnBRUV %>%
    filter(scientific=="Lethrinidae Lethrinus miniatus")
- ## With the zeros left in
- L.miniatus.zero <- bruv.maxn %>%
+ 
+ 
+ ## Species With the zeros left in
+ L.miniatus.bruv <- bruv.maxn %>%
    filter(scientific=="Lethrinidae Lethrinus miniatus") %>% 
    mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
  
+ Gymnocranius.bruv <- bruv.maxn %>%
+   filter(scientific=="Lethrinidae Gymnocranius sp1") %>% 
+   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
  
- ggplot(L.miniatus, aes(x=longitude, y=latitude))+
-   geom_point(aes(size=maxn))
+ Rubrioperculatus.bruv <- bruv.maxn %>%
+   filter(scientific=="Lethrinidae Lethrinus rubrioperculatus") %>% 
+   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
  
- # Plot with zeros
+ C.chrysophrys.bruv <- bruv.maxn %>%
+   filter(scientific=="Carangidae Carangoides chrysophrys") %>% 
+   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
+ 
+ Pristipomoides.sp1.bruv <- bruv.maxn %>%
+   filter(scientific=="Lutjanidae Pristipomoides sp1") %>% 
+   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
+ 
+ P.nebulosa.boss <- boss.maxn %>%
+   filter(scientific=="Pinguipedidae Parapercis nebulosa") %>% 
+   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
+ 
+ L.miniatus.boss <- boss.maxn %>%
+   filter(scientific=="Lethrinidae Lethrinus miniatus") %>% 
+   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
+ 
+ Gymnocranius.boss <- boss.maxn %>%
+   filter(scientific=="Lethrinidae Gymnocranius sp1") %>% 
+   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
+ 
+ Pentapodus.boss <- boss.maxn %>%
+   filter(scientific=="Nemipteridae Pentapodus nagasakiensis") %>% 
+   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
+ 
+ L.sebae.boss <- boss.maxn %>%
+   filter(scientific=="Lutjanidae Lutjanus sebae") %>% 
+   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
+ 
+ # ggplot(L.miniatus, aes(x=longitude, y=latitude))+
+ #   geom_point(aes(size=maxn))
+ 
+ # Bubble Plot with zeros
  ggplot()+
-   geom_point(data=filter(L.miniatus.zero, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
-   geom_point(data=filter(L.miniatus.zero, maxn==0), aes(x=longitude, y=latitude), shape=4)+
+   geom_point(data=filter(L.miniatus.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn), colour = "dodgerblue", alpha =0.8)+
+   geom_point(data=filter(L.miniatus.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4)+
    theme_classic()
 
+ ggplot()+
+   geom_point(data=filter(Gymnocranius.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
+   geom_point(data=filter(Gymnocranius.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4)+
+   theme_classic()
    
-   
- ggplot2::geom_point(L.miniatus, aes(x=longitude, y=latitude, size = maxn))
+ ggplot()+
+   geom_point(data=filter(Rubrioperculatus.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
+   geom_point(data=filter(Rubrioperculatus.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4)+
+   theme_classic()
+ 
+ ggplot()+
+   geom_point(data=filter(C.chrysophrys.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
+   geom_point(data=filter(C.chrysophrys.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4)+
+   theme_classic()
+ 
+ ggplot()+
+   geom_point(data=filter(Pristipomoides.sp1.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
+   geom_point(data=filter(Pristipomoides.sp1.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4)+
+   theme_classic()
+ 
+ ggplot()+
+   geom_point(data=filter(P.nebulosa.boss, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
+   geom_point(data=filter(P.nebulosa.boss, maxn==0), aes(x=longitude, y=latitude), shape=4)+
+   theme_classic()
+ 
+ ggplot()+
+   geom_point(data=filter(L.miniatus.boss, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
+   geom_point(data=filter(L.miniatus.boss, maxn==0), aes(x=longitude, y=latitude), shape=4)+
+   theme_classic()
+ 
+ ggplot()+
+   geom_point(data=filter(Gymnocranius.boss, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
+   geom_point(data=filter(Gymnocranius.boss, maxn==0), aes(x=longitude, y=latitude), shape=4)+
+   theme_classic()
+ 
+ ggplot()+
+   geom_point(data=filter(Pentapodus.boss, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
+   geom_point(data=filter(Pentapodus.boss, maxn==0), aes(x=longitude, y=latitude), shape=4)+
+   theme_classic()
+ 
+ ggplot()+
+   geom_point(data=filter(L.sebae.boss, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
+   geom_point(data=filter(L.sebae.boss, maxn==0), aes(x=longitude, y=latitude), shape=4)+
+   theme_classic()
+ 
  
