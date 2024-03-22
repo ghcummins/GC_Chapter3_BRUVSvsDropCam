@@ -91,3 +91,27 @@ BRUVFISHES <- left_join(samplemaxnBRUV, bruvl, by = c("unique_id","scientific"))
 View(BRUVFISHES)
 
  write.csv(BRUVFISHES, file = "data/BRUVFISHES.csv", row.names = FALSE)
+
+ str(L.miniatus)
+ ##BUBBLE PLOTS
+ L.miniatus <- samplemaxnBRUV %>%
+   filter(scientific=="Lethrinidae Lethrinus miniatus")
+ ## With the zeros left in
+ L.miniatus.zero <- bruv.maxn %>%
+   filter(scientific=="Lethrinidae Lethrinus miniatus") %>% 
+   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
+ 
+ 
+ ggplot(L.miniatus, aes(x=longitude, y=latitude))+
+   geom_point(aes(size=maxn))
+ 
+ # Plot with zeros
+ ggplot()+
+   geom_point(data=filter(L.miniatus.zero, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
+   geom_point(data=filter(L.miniatus.zero, maxn==0), aes(x=longitude, y=latitude), shape=4)+
+   theme_classic()
+
+   
+   
+ ggplot2::geom_point(L.miniatus, aes(x=longitude, y=latitude, size = maxn))
+ 
