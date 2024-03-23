@@ -27,6 +27,20 @@ library(FSSgam)
 library(GlobalArchive)
 library(ggplot2)
 library(ggtext)
+library(stringr)
+library(reshape2)
+library(viridis)
+library(terra)
+library(patchwork)
+library(sf)
+library(sfheaders)
+library(rgdal)
+library(stars)
+library(smoothr)
+library(ggnewscale)
+library(gridExtra)
+library(patchwork)
+library(metR)
 
 ## Setup ----
 # set your working directory (manually, once for the whole R project)
@@ -86,13 +100,13 @@ bruvl <- bruvlengths %>%
   select(unique_id, scientific, length, number)
 
 
-###combine attempt
+###combine maxn and lengths for BRUVS
 BRUVFISHES <- left_join(samplemaxnBRUV, bruvl, by = c("unique_id","scientific"))
 View(BRUVFISHES)
 
- write.csv(BRUVFISHES, file = "data/BRUVFISHES.csv", row.names = FALSE)
+ # write.csv(BRUVFISHES, file = "data/BRUVFISHES.csv", row.names = FALSE)
 
- str(L.miniatus)
+  str(L.miniatus)
  ##BUBBLE PLOTS BY SPECIES
  L.miniatus <- samplemaxnBRUV %>%
    filter(scientific=="Lethrinidae Lethrinus miniatus")
@@ -143,15 +157,51 @@ View(BRUVFISHES)
  #   geom_point(aes(size=maxn))
  
  # Bubble Plot with zeros
- ggplot()+
-   geom_point(data=filter(L.miniatus.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn), colour = "dodgerblue", alpha =0.8)+
-   geom_point(data=filter(L.miniatus.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4)+
-   theme_classic()
+ p2 <- ggplot()+
+         # geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z), breaks = c(-30, -40, -50, -60, -70, -80, -90, -100, -110, -120, -130, -140, -150, -160, -170, -180, -200, -220, -240))+
+   geom_point(data=filter(L.miniatus.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn), shape= 21, colour = "blue4", fill = "dodgerblue")+
+   geom_point(data=filter(L.miniatus.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4, size=0.5)+
+   # coord_sf(xlim = c(113.473, 113.567),                              # Set plot limits
+   #          ylim = c(-22.801, -22.660)) +
+   theme_classic()+
+   labs( x = "Longitude", y = "Latitude")+
+   scale_size(range = c(1,13), name = "Relative abundance")
 
- ggplot()+
-   geom_point(data=filter(Gymnocranius.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
-   geom_point(data=filter(Gymnocranius.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4)+
+print(p2)
+
+###ATTEMPT2 L.miniatus BRUV with depth plot
+longitude_range <- range(L.miniatus.bruv$longitude, na.rm = TRUE)
+latitude_range <- range(L.miniatus.bruv$latitude, na.rm = TRUE)
+
+L.miniatus.bruv.Z =ggplot() +
+  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+  geom_point(data = filter(L.miniatus.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue") +
+  geom_point(data = filter(L.miniatus.bruv, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
+  coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
+  theme_classic() +
+  labs(x = "Longitude", y = "Latitude") +
+  scale_size(range = c(1, 13), name = "Relative abundance")+
+  # scale_fill_gradient(name = "Depth")+
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))
+
+print(L.miniatus.bruv.Z)
+
+
+##GYMNOCRANIUS PLOTS
+ Gymnocranius.bruv.bubble <- ggplot()+
+   geom_point(data=filter(Gymnocranius.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn) , shape = 21, colour = "blue4", fill = "dodgerblue") +
+   geom_point(data=filter(Gymnocranius.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4, size=0.5)+
    theme_classic()
+ 
+ print(Gymnocranius.bruv.bubble)
+ 
+ #Gymnocranius BRUV by dominant habitat
+ Gymnocranius.bruv.bubble.dom <- dominant_hab +
+   geom_point(data=filter(Gymnocranius.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn) , shape = 21, colour = "blue4", fill = "dodgerblue") +
+   geom_point(data=filter(Gymnocranius.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4, size=0.5)+
+   theme_classic()
+ 
+ print(Gymnocranius.bruv.bubble.dom)
    
  ggplot()+
    geom_point(data=filter(Rubrioperculatus.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
@@ -193,4 +243,100 @@ View(BRUVFISHES)
    geom_point(data=filter(L.sebae.boss, maxn==0), aes(x=longitude, y=latitude), shape=4)+
    theme_classic()
  
+ ###LOADING HABITAT BACKGROUND
+ # Set CRS for shapefiles
+ wgscrs <- "+proj=longlat +datum=WGS84"                                    # Lat long projection
+ 
+ # Bring in spatial layers
+ # Load aus outline, state and commonwealth marine parks
+ aus     <- st_read("data/spatial/shapefiles/cstauscd_r.mif")                    # Geodata 100k coastline available: https://data.gov.au/dataset/ds-ga-a05f7892-eae3-7506-e044-00144fdd4fa6/
+ aus     <- aus[aus$FEAT_CODE == "mainland", ]                                   # Add islands here if needed
+ aumpa   <- st_read("data/spatial/shapefiles/AustraliaNetworkMarineParks.shp")   # All aus mpas
+ st_crs(aus) <- st_crs(aumpa)                                                    # Set CRS to match - WGS84 and GDA94 effectively the same
+ e <- ext(113, 114.5, -23, -21)                                                 # Change your extent here
+ mpa <- st_crop(aumpa, e)                                                        # All commonwealth zones in the study area
+ npz <- mpa[mpa$ZoneName %in% "National Park Zone", ]  
+ aus2 <- st_crop(aus, e)# Only National Park Zones in the study area
+ 
+ # Load tidy habitat data from CHAPTER2: COPIED TO CH3 TIDY
+ habi    <- readRDS('data/tidy/PtCloates/PtCloates_habitat-bathy-derivatives.rds') %>%
+   dplyr::mutate(Z = abs(Z)) %>%  
+   dplyr::filter(!is.na(TPI)) %>%
+   glimpse()
+ 
+ # Load the coastal waters boundary
+ cwatr  <- st_read('data/spatial/shapefiles/amb_coastal_waters_limit.shp')  
+ 
+ # Load bathymetry data 
+ bathdf <- readRDS(paste(paste0('data/spatial/rasters/',                         
+                                name), 'ga_bathy.rds', sep = "_"))
+ 
+ # Load spatial predictions from  CHAPTER 2'R/05_habitat_model.R' COPIED TO DATA/TIDY CH3
+ spreddf <- readRDS('data/tidy/PtCloates/PtCloates_spatial_habitat_predictions.rds') %>%
+   dplyr::mutate(Z = abs(Z)) %>%  
+   dplyr::filter(!is.na(TPI)) %>%
+   dplyr::mutate(dom_tag = as.factor(dom_tag)) %>%                               # Factorise
+   dplyr::mutate(dom_tag = dplyr::recode(dom_tag,                                # Tidy names for plot legend
+                                         sand.fit = "Sand",
+                                         inverts.fit = "Sessile invertebrates")) %>%
+    glimpse()
+ 
+ 
+ # Figure 1: Categorical habitat maps ----
+ # Assign habitat class colours
+ hab_cols <- scale_fill_manual(values = c(#"Macroalgae" = "#009E73",
+   #"Rock" = "#D55E00",
+   "Sand" = "lemonchiffon",
+   "Sessile invertebrates" = "lightcyan1"
+ ))
+ 
+ npz_cols <- scale_colour_manual(values = c("National Park Zone" = "#7bbc63"),
+                                 name = "Australian Marine Parks")
+ 
+ 
+ 
+ 
+ 
+ #Build dom plot adapted for bubble plots
+ dominant_hab <- ggplot() +
+   geom_tile(data = spreddf, aes(x, y, fill = dom_tag)) +
+   hab_cols +   # Class colours
+   labs(fill = "Habitat") +
+   new_scale_fill() +
+   # new_scale_colour()+
+   geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
+                breaks = c( -30, -70, -130, - 200),                                 # Contour breaks - change to binwidth for regular contours
+                colour = "grey80",
+                alpha = 1, size = 0.5) +                                         # Transparency and linewidth
+   geom_sf(data = npz, fill = NA, aes(colour = ZoneName), linewidth = 0.5) +  # Add national park zones
+   npz_cols +
+   new_scale_colour() +
+   geom_sf(data = aus, fill = "seashell2", colour = "grey80", size = 0.5) +       #trying to add in AUSMAP
+   coord_sf(xlim = c(113.47, 113.57),                              # Set plot limits
+            ylim = c(-22.80, -22.66)) +
+     labs(x = NULL, y = NULL,                                     # Labels  
+        colour = NULL) +
+   annotate("text", x = c(113.562, 113.52, 113.475),         # Add contour labels manually
+            y = c(-22.75, -22.75, -22.75), 
+            label = c("70m", "130m", "200m"),
+            size = 2, colour = "#000000") +
+   theme_minimal() +
+   
+   theme(panel.grid = element_blank())+
+   theme(axis.ticks = element_line(size = 0.5, linetype = "dashed"))+
+   theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))+
+   theme(plot.margin = margin(0.5, 0.5, 0.5, 2, "cm"))
+   
+ 
+ print(dominant_hab)
+ 
+ 
+ 
+ p3 <- dominant_hab +
+   geom_point(data = filter(L.miniatus.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue") +
+   geom_point(data = filter(L.miniatus.bruv, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
+   scale_size(range = c(1, 13), name = "Relative abundance") +
+   labs(x = "Longitude", y = "Latitude")
+
+ print(p3) 
  

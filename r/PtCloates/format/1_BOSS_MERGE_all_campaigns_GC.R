@@ -50,8 +50,8 @@ metadata1 <-ga.list.files("_Metadata.csv")%>% # list all files ending in "_Metad
 
 unique(metadata1$campaignid) # check the number of campaigns in metadata, and the campaign name
 
-setwd(staging.dir)
-write.csv(metadata1,paste(study,"metadata.csv",sep="_"),row.names = FALSE)
+# setwd(staging.dir)
+write.csv(metadata1,file = "data/staging/PtCloates/PtCloates_BOSS_metadata.csv",row.names = FALSE)
 
 ## Combine Points and Count files into maxn ----
 points.files <-ga.list.files("_Points.txt") # list all files ending in "Lengths.txt"
@@ -86,8 +86,8 @@ maxn <- points%>%
   glimpse()
 
 # Save MaxN file ----
-setwd(staging.dir)
-write.csv(maxn,paste(study,"maxn.csv",sep="_"),row.names = FALSE)
+# setwd(staging.dir)
+write.csv(maxn,file = "data/staging/PtCloates/PtCloates_BOSS_maxn.csv",row.names = FALSE)
 
 unique(maxn$sample)
 
