@@ -228,10 +228,19 @@ print(L.miniatus.bruv.Z)
    geom_point(data=filter(L.miniatus.boss, maxn==0), aes(x=longitude, y=latitude), shape=4)+
    theme_classic()
  
- ggplot()+
+ Gymnocranius.boss.bubble <- ggplot()+
    geom_point(data=filter(Gymnocranius.boss, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
    geom_point(data=filter(Gymnocranius.boss, maxn==0), aes(x=longitude, y=latitude), shape=4)+
    theme_classic()
+ 
+ print(Gymnocranius.boss.bubble)
+ 
+ Gymnocranius.boss.bubble.domhab <- dominant_hab +
+   geom_point(data=filter(Gymnocranius.boss, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
+   geom_point(data=filter(Gymnocranius.boss, maxn==0), aes(x=longitude, y=latitude), shape=4)+
+   theme_classic()
+ 
+ print(Gymnocranius.boss.bubble.domhab)
  
  ggplot()+
    geom_point(data=filter(Pentapodus.boss, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
