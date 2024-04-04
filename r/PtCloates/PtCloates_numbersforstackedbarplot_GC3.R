@@ -41,6 +41,7 @@ library(ggnewscale)
 library(gridExtra)
 library(patchwork)
 library(metR)
+library(vegan)
 
 ## Setup ----
 # set your working directory (manually, once for the whole R project)
@@ -76,6 +77,12 @@ samplemaxnBOSS <- boss.maxn %>%
 
 # write.csv(samplemaxnBOSS, file = "data/samplemaxnBOSS.csv", row.names = FALSE)
 
+##overallmaxn on BOSS per fish species
+overallmaxnBOSS <- boss.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific) %>%
+  dplyr::summarise(summaxn = sum(maxn))
+
 #BRUVS fish numbers seen on how many samples
 samplefishBRUV <- bruv.maxn %>%
   filter(maxn>0) %>%
@@ -84,7 +91,28 @@ samplefishBRUV <- bruv.maxn %>%
 
 #to get each MAXN sample on BRUVS
 samplemaxnBRUV <- bruv.maxn %>%
-  filter(maxn>0)
+  filter(maxn>0) 
+
+#Total number of individual fish seen on BRUVS
+totalfishBRUV <- bruv.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific) %>%
+  dplyr::summarise(totalfish = sum(maxn))
+#sum of all individuals to see total fish seen on BRUVs
+total_sumindifishbruv <- sum(totalfishBRUV$totalfish)
+print(total_sumindifish)
+#calculate number of families on BRUVS
+fishfamiliesbruv <- bruv.maxn %>%
+  group_by(family) %>%
+  dplyr::summarise(totalfish = sum(maxn))
+
+
+##overallmaxn on BRUVS per fish species
+overallmaxnBRUV <- bruv.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific) %>%
+  dplyr::summarise(summaxn = sum(maxn))
+
 
 # write.csv(samplemaxnBRUV, file = "data/samplemaxnBRUV.csv", row.names = FALSE)
 
@@ -92,27 +120,79 @@ samplemaxnBRUV <- bruv.maxn %>%
 bruvcompletelengths <-  read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.length.csv") 
 
 bruvlengths <- bruvcompletelengths %>%
-  dplyr::mutate(method = "BOSS")%>%
+  #dplyr::mutate(method = "BOSS")%>%
   dplyr::mutate(scientific = paste(family,genus,species, sep = " "))%>%
   dplyr::mutate(unique_id = paste(campaignid,sample, sep ="_"))
 
 bruvl <- bruvlengths %>%
-  select(unique_id, scientific, length, number)
+  select(unique_id, scientific, length, number) 
+
+#count number of lengths measured on BRUVs
+
+bruvfishnolengths <- bruvl %>%
+filter(!is.na(length)) 
+  
 
 
 ###combine maxn and lengths for BRUVS
 BRUVFISHES <- left_join(samplemaxnBRUV, bruvl, by = c("unique_id","scientific"))
-View(BRUVFISHES)
+#View(BRUVFISHES)
+
+# meanlengthBRUV <- BRUVFISHES %>%
+#   filter(!is.na(length)) %>%
+#   group_by(scientific) %>%
+#   dplyr::summarise(meanlength = mean(length))
+  
+medianlengthBRUV <- BRUVFISHES %>%
+  filter(!is.na(length)) %>%
+  group_by(scientific) %>%
+  dplyr::summarise(medianlength = round(median(length), 0))
 
  # write.csv(BRUVFISHES, file = "data/BRUVFISHES.csv", row.names = FALSE)
 
-  str(L.miniatus)
+bosscompletelengths <-  read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.length.csv") 
+
+bosslengths <- bosscompletelengths %>%
+  # dplyr::mutate(method = "BOSS")%>%
+  dplyr::mutate(scientific = paste(family,genus,species, sep = " "))%>%
+  dplyr::mutate(unique_id = paste(campaignid,sample, sep ="_"))
+
+bossl <- bosslengths %>%
+  select(id, scientific, length, number)
+
+
+###combine maxn and lengths for BRUVS
+BOSSFISHES <- left_join(samplemaxnBOSS, bossl, by = c("id","scientific"))
+View(BOSSFISHES)
+
+# meanlengthBOSS <- BOSSFISHES %>%
+#   filter(!is.na(length)) %>%
+#   group_by(scientific) %>%
+#   dplyr::summarise(meanlength = mean(length))
+
+medianlengthBOSS <- BOSSFISHES %>%
+  filter(!is.na(length)) %>%
+  group_by(scientific) %>%
+  dplyr::summarise(medianlength = round(median(length), 0))
+
+
+#attempt at species accumulation curves
+#step1 create the df Presence/Absence matrix 
+bruvsacdf <- bruv.maxn %>%
+ 
+
+
+
+
+
+  # str(L.miniatus)
+
  ##BUBBLE PLOTS BY SPECIES
  L.miniatus <- samplemaxnBRUV %>%
    filter(scientific=="Lethrinidae Lethrinus miniatus")
  
  
- ## Species With the zeros left in and a new column to look at year if needed (year became irrelevant)
+ ## Species for bubble plots With the zeros left in and a new column to look at year if needed (year became irrelevant)
  L.miniatus.bruv <- bruv.maxn %>%
    filter(scientific=="Lethrinidae Lethrinus miniatus") %>% 
    mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
@@ -163,6 +243,18 @@ View(BRUVFISHES)
  
  Pristipomoides.sp1.boss <- boss.maxn %>%
    filter(scientific=="Lutjanidae Pristipomoides sp1") %>% 
+   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
+ 
+ P.nebulosa.bruv <- bruv.maxn %>%
+   filter(scientific=="Pinguipedidae Parapercis nebulosa") %>% 
+   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
+ 
+ Pentapodus.bruv <- bruv.maxn %>%
+   filter(scientific=="Nemipteridae Pentapodus nagasakiensis") %>% 
+   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
+ 
+ L.sebae.bruv <- bruv.maxn %>%
+   filter(scientific=="Lutjanidae Lutjanus sebae") %>% 
    mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
  
  # ggplot(L.miniatus, aes(x=longitude, y=latitude))+
@@ -255,22 +347,22 @@ ggsave("L.miniatus.bruv.Z.png", plot = L.miniatus.bruv.Z, path = "plots/BubblePl
  #save
  ggsave("L.rubrioperculatus.bruv.png", plot = Rubrioperculatus.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
  
- ##Rubrio + old coastline .shp
- ocf <-st_read("data/spatial/shapefiles/line_recab_merge.shp")
- plot(ocf)
- 
- Rubrioperculatus.bruv.bubble.ocf <-ggplot()+
-   geom_point(data=filter(Rubrioperculatus.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8)+
-   geom_point(data=filter(Rubrioperculatus.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4, size = 0.5)+
-   geom_sf(data = ocf) + 
-   theme_classic()+
-   labs(x = "Longitude", y = "Latitude")+
-   scale_size_area(max_size=10, name = "Relative abundance", breaks = c(1, 3, 5, 7), labels = c(1, 3, 5, 7))+
-   scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
-   scale_y_continuous(labels = scales::number_format(accuracy = 0.01))
- 
- #view
- print(Rubrioperculatus.bruv.bubble.ocf)
+ # ##Rubrio + old coastline .shp (FOR 4th CHAPTER)
+ # ocf <-st_read("data/spatial/shapefiles/line_recab_merge.shp")
+ # plot(ocf)
+ # 
+ # Rubrioperculatus.bruv.bubble.ocf <-ggplot()+
+ #   geom_point(data=filter(Rubrioperculatus.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8)+
+ #   geom_point(data=filter(Rubrioperculatus.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4, size = 0.5)+
+ #   geom_sf(data = ocf) + 
+ #   theme_classic()+
+ #   labs(x = "Longitude", y = "Latitude")+
+ #   scale_size_area(max_size=10, name = "Relative abundance", breaks = c(1, 3, 5, 7), labels = c(1, 3, 5, 7))+
+ #   scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+ #   scale_y_continuous(labels = scales::number_format(accuracy = 0.01))
+ # 
+ # #view
+ # print(Rubrioperculatus.bruv.bubble.ocf)
  
  #Carangoides chrysophrys plain bruv plot
  C.chrysophrys.bruv.bubble <- ggplot()+
@@ -322,6 +414,53 @@ ggsave("L.miniatus.bruv.Z.png", plot = L.miniatus.bruv.Z, path = "plots/BubblePl
  
  #save plain bubble plot
  ggsave("Pristipomoides.sp1.bruv.png", plot = Pristipomoides.sp1.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
+ 
+ ##BRUV PLain drop for BOSS dominant species
+ #Parapercis nebulosa BRUV PLAIN plot
+ P.nebulosa.bruv.bubble <- ggplot()+
+   geom_point(data=filter(P.nebulosa.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8)+
+   geom_point(data=filter(P.nebulosa.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4, size = 0.5)+
+   theme_classic()+
+   labs(x = "Longitude", y = "Latitude")+
+   scale_size_area(max_size=10, name = "Relative abundance", breaks = c(1,2, 3, 4, 5), labels = c(1, 2, 3, 4, 5))+
+   scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+   scale_y_continuous(labels = scales::number_format(accuracy = 0.01))
+ 
+print(P.nebulosa.bruv.bubble)
+
+#save plain bubble plot
+ggsave("P.nebulosa.bruv.png", plot = P.nebulosa.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
+
+ #Pentapodus nagasakiensis BRUV PLAIN plot   
+ Pentapodus.bruv.bubble <- ggplot()+
+   geom_point(data=filter(Pentapodus.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8)+
+   geom_point(data=filter(Pentapodus.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4, size = 0.5)+
+   theme_classic()+
+   labs(x = "Longitude", y = "Latitude")+
+   scale_size_area(max_size=16, name = "Relative abundance", breaks = c(3,6, 9, 12, 15), labels = c(3, 6, 9, 12, 15))+
+   scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+   scale_y_continuous(labels = scales::number_format(accuracy = 0.01))
+ 
+ print(Pentapodus.bruv.bubble)
+ 
+ #save plain bubble plot
+ ggsave("Pentapodus.bruv.png", plot = Pentapodus.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
+ 
+#Lutjanus sebae BRUV PLAIN plot   
+ L.sebae.bruv.bubble <- ggplot()+
+   geom_point(data=filter(Pentapodus.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8)+
+   geom_point(data=filter(Pentapodus.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4, size = 0.5)+
+   theme_classic()+
+   labs(x = "Longitude", y = "Latitude")+
+   scale_size_area(max_size=12, name = "Relative abundance", breaks = c(1, 5, 10, 15), labels = c(1, 5, 10, 15))+
+   scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+   scale_y_continuous(labels = scales::number_format(accuracy = 0.01))
+ 
+ print(L.sebae.bruv.bubble)
+ 
+ #save plain bubble plot
+ ggsave("L.sebae.bruv.png", plot = L.sebae.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
+ 
  
  #BOSS PLOTS
  #BOSS plain P. nebulosa

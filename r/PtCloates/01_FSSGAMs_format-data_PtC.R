@@ -39,6 +39,7 @@ name <- "PtCloates"   # set study name ##
 boss.maxn   <- read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.maxn.csv")%>%
   dplyr::mutate(method = "BOSS",
                 sample=as.character(sample))%>%
+  dplyr::mutate(unique_id = paste(campaignid, sample, sep = "_" )) %>%
     glimpse()
 bruv.maxn <- read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.maxn.csv")%>%
   dplyr::mutate(method = "BRUV",
@@ -51,10 +52,12 @@ maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
 #length
 boss.length <- read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.length.csv")%>%
   dplyr::mutate(method = "BOSS")%>%
+  dplyr::mutate(unique_id = paste(campaignid, sample, sep = "_" )) %>%
   glimpse()
 bruv.length <- read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.length.csv")%>%
   dplyr::mutate(method = "BRUV",
                 sample=as.character(sample))%>%
+  dplyr::mutate(unique_id = paste(campaignid, sample, sep = "_" )) %>%
   glimpse()
 #join
 length <- bind_rows(boss.length,bruv.length)%>%
@@ -72,6 +75,7 @@ allhab <- readRDS("data/staging/habitat/PtCloates_habitat-bathy-derivatives.rds"
                              ifelse(substr(date, 1, 4) == "2021", "2021-05_PtCloates_BOSS",
                             ifelse(substr(date, 1, 4) == "2022", "2022-05_PtCloates_Naked-BOSS", NA)), campaignid))%>%
   mutate(campaignid = ifelse(campaignid == "2021-05_PtCloates_stereo-BRUVS", "2021-05_PtCloates_BRUVS", campaignid))%>%
+  mutate(unique_id = paste(campaignid, sample, sep = "_" )) %>%
     glimpse()
 
 # npz6hab <- readRDS("data/staging/Abrolhos/Abrolhos_habitat-bathy-derivatives.rds")%>%
@@ -90,7 +94,7 @@ allhab <- allhab %>%
 names(allhab)
 
 metadata <- maxn %>%
-  distinct(sample, method, campaignid, latitude, longitude, date, location, status, site, 
+  distinct(unique_id, sample, method, campaignid, latitude, longitude, date, location, status, site, 
            depth, successful.count, successful.length)
 
 # look at top species ----
@@ -114,7 +118,7 @@ ggplot(maxn.sum, aes(x = reorder(scientific, maxn), y = maxn)) +
 
 #DF for PRIMER
 primerPtC <- maxn %>%
-  dplyr::select(sample, scientific, maxn, 
+  dplyr::select(unique_id, sample, scientific, maxn, 
                 campaignid, latitude, longitude, status, depth, method) %>%
   left_join(allhab) %>%
   pivot_wider(
