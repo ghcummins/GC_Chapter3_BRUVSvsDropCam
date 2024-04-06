@@ -132,6 +132,16 @@ primerPtC <- maxn %>%
 saveRDS(primerPtC, "data/staging/PtCloates/PointCloatesprimer.rds")
 write.csv(primerPtC, "data/staging/PtCloates/PointCloatesprimer.csv")
 
+# Create PtCloatessacdf with selected columns
+PtCloatessacdf <- primerPtC %>%
+  select(unique_id, method, everything()) %>%
+  select("unique_id","method", 33:ncol(.))
+
+View(PtCloatessacdf)
+#savedata for Pt Cloates General Assemblage Script
+saveRDS(PtCloatessacdf, "data/staging/PtCloates/PtCloatesspeciesaccum.rds")
+write.csv(PtCloatessacdf, "data/staging/PtCloates/PtCloatesspeciesaccum.csv", row.names = FALSE)
+
 # Create total abundance and species richness ----
 ta.sr <- maxn %>%
   dplyr::ungroup() %>%

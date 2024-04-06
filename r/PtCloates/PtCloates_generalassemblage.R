@@ -113,6 +113,145 @@ overallmaxnBRUV <- bruv.maxn %>%
   group_by(scientific) %>%
   dplyr::summarise(summaxn = sum(maxn))
 
+#determine caudal aspect ratio for each species on bruvs
+bruv_species <-bruv.maxn %>%
+  filter(maxn>0) %>%
+  distinct(genus, species) %>%
+  dplyr::mutate(name = paste(genus, species))
+
+validated <- rfishbase::validate_names(bruv_species$name)
+
+## This is slow but essential for figuring out what fishbase name = CAAB
+# # Remove the hashes to run again
+code_crosswalk <- data.frame()
+
+for (caab_name in unique(bruv_species$name)) {
+
+  validated_name <-  rfishbase::validate_names(caab_name)
+
+  message(paste("validating: ", caab_name))
+  message(paste("validated name:", validated_name))
+
+  temp_dat <- data.frame(fishbase_scientific = validated_name,
+                         caab_scientific = caab_name)
+  code_crosswalk <- bind_rows(code_crosswalk, temp_dat)
+
+}
+
+
+mismatches <- code_crosswalk %>%
+  filter(!fishbase_scientific %in% caab_scientific)
+
+morphometrics <- rfishbase::morphometrics(validated) %>%
+  rename(fishbase_scientific = Species)
+# names(test)
+#calc mean se of aspect ratios for each species seen on bruvs
+fbmorphometrics <- morphometrics %>%
+  group_by(fishbase_scientific) %>%
+  dplyr::summarise(armean = mean(AspectRatio), n = n(), sd = sd(AspectRatio)) %>%
+  mutate(se = sd/ sqrt(n))
+ 
+#joining back up fb and our bruvs sp
+joiningbruvs <- fbmorphometrics %>%
+  left_join(code_crosswalk, by = "fishbase_scientific")
+
+#Final aspect ratio BRUV output to save
+PtCloates_aspectratio_bruvs <- joiningbruvs %>%
+  select(-fishbase_scientific)%>%
+  rename(name = caab_scientific)%>%
+  select(name, everything())
+
+write.csv(PtCloates_aspectratio_bruvs, file = "outputs/PtCloates/PtCloatesaspectratioBRUVS.csv", row.names = FALSE)
+
+#REPEAT ALL ABOVE BUT FOR BOSS:
+#determine caudal aspect ratio for each species on bruvs
+boss_species <-boss.maxn %>%
+  filter(maxn>0) %>%
+  distinct(genus, species) %>%
+  dplyr::mutate(name = paste(genus, species))
+
+validated <- rfishbase::validate_names(boss_species$name)
+
+## This is slow but essential for figuring out what fishbase name = CAAB
+# # Remove the hashes to run again
+code_crosswalk_boss <- data.frame()
+
+for (caab_name in unique(boss_species$name)) {
+  
+  validated_name <-  rfishbase::validate_names(caab_name)
+  
+  message(paste("validating: ", caab_name))
+  message(paste("validated name:", validated_name))
+  
+  temp_dat <- data.frame(fishbase_scientific = validated_name,
+                         caab_scientific = caab_name)
+  code_crosswalk_boss <- bind_rows(code_crosswalk_boss, temp_dat)
+  
+}
+
+
+mismatchesboss <- code_crosswalk_boss %>%
+  filter(!fishbase_scientific %in% caab_scientific)
+
+morphometricsboss <- rfishbase::morphometrics(validated) %>%
+  rename(fishbase_scientific = Species)
+
+#calc mean se of aspect ratios for each species seen on boss
+fbmorphometricsboss <- morphometricsboss %>%
+  group_by(fishbase_scientific) %>%
+  dplyr::summarise(armean = mean(AspectRatio), n = n(), sd = sd(AspectRatio)) %>%
+  mutate(se = sd/ sqrt(n))
+
+#joining back up fb and our boss species
+joiningboss <- fbmorphometricsboss %>%
+  left_join(code_crosswalk_boss, by = "fishbase_scientific")
+
+#Final aspect ratio BOSS output to save
+PtCloates_aspectratio_boss <- joiningboss %>%
+  select(-fishbase_scientific)%>%
+  rename(name = caab_scientific)%>%
+  select(name, everything())
+
+write.csv(PtCloates_aspectratio_boss, file = "outputs/PtCloates/PtCloatesaspectratioBOSS.csv", row.names = FALSE)
+
+#attempt at aspect ratio for individuals on bruvs (not just sp)
+bruv_individuals <- bruv.maxn %>%
+  filter(maxn>0) %>%
+  dplyr::mutate(name = paste(genus, species)) %>%
+  group_by(name)%>%
+  dplyr::summarise(totalindividuals = sum(maxn))
+
+# Duplicate rows based on the totalindividuals column
+bruv_individuals_expanded <- bruv_individuals %>%
+  uncount(totalindividuals)
+
+# View the resulting dataframe
+View(bruv_individuals_expanded)
+
+#leftjoin w aspect ratio
+bruv_individuals_aspectratio <- left_join(bruv_individuals_expanded, PtCloates_aspectratio_bruvs, by = "name")
+
+write.csv(bruv_individuals_aspectratio, file = "outputs/PtCloates/PtCindividualsaspratioBRUV.csv", row.names = FALSE)
+
+##REPEAT FOR BOSS
+#attempt at aspect ratio for individuals on bruvs (not just sp)
+boss_individuals <- boss.maxn %>%
+  filter(maxn>0) %>%
+  dplyr::mutate(name = paste(genus, species)) %>%
+  group_by(name)%>%
+  dplyr::summarise(totalindividuals = sum(maxn))
+
+# Duplicate rows based on the totalindividuals column
+boss_individuals_expanded <- boss_individuals %>%
+  uncount(totalindividuals)
+
+# View the resulting dataframe
+View(boss_individuals_expanded)
+
+#leftjoin w aspect ratio
+boss_individuals_aspectratio <- left_join(boss_individuals_expanded, PtCloates_aspectratio_boss, by = "name")
+
+write.csv(boss_individuals_aspectratio, file = "outputs/PtCloates/PtCindividualsaspratioBOSS.csv", row.names = FALSE)
 
 # write.csv(samplemaxnBRUV, file = "data/samplemaxnBRUV.csv", row.names = FALSE)
 
@@ -163,7 +302,7 @@ bossl <- bosslengths %>%
 
 ###combine maxn and lengths for BRUVS
 BOSSFISHES <- left_join(samplemaxnBOSS, bossl, by = c("id","scientific"))
-View(BOSSFISHES)
+# View(BOSSFISHES)
 
 # meanlengthBOSS <- BOSSFISHES %>%
 #   filter(!is.na(length)) %>%
@@ -177,9 +316,72 @@ medianlengthBOSS <- BOSSFISHES %>%
 
 
 #attempt at species accumulation curves
-#step1 create the df Presence/Absence matrix 
-bruvsacdf <- bruv.maxn %>%
- 
+#load Pt Cloates species accum curve rds from script 01_FSSGAM (PCO modified)
+PtCloatesspeciesaccum <- readRDS("data/staging/PtCloates/PtCloatesspeciesaccum.rds") 
+
+#generate a BOSS only DF and a BRUV only DF
+PtC_BOSS_SACdf <- PtCloatesspeciesaccum %>% 
+  filter(method == "BOSS") %>%
+  select(-method)
+
+PtC_BRUV_SACdf <- PtCloatesspeciesaccum %>%
+  filter(method =="BRUV") %>%
+  select(-method)
+
+#make each df Presence/Absence binomial matrix (ie replace any non zero number with 1) 
+   ## Create a copy of the dataframe
+  PtC_BOSS_SAC_PA <- PtC_BOSS_SACdf
+# Exclude the first column
+PtC_BOSS_SAC_PA[, -1][PtC_BOSS_SAC_PA[, -1] > 0] <- 1
+# View the new dataframe
+View(PtC_BOSS_SAC_PA)
+
+##DO the same for BRUV 
+PtC_BRUV_SAC_PA <- PtC_BRUV_SACdf
+# Exclude the first column
+PtC_BRUV_SAC_PA[, -1][PtC_BRUV_SAC_PA[, -1] > 0] <- 1
+# View the new dataframe
+View(PtC_BRUV_SAC_PA)
+
+#edit so you can generate the Sp acc curve ie make x numeric
+PtC_BOSS_spacc <- PtC_BOSS_SAC_PA %>%
+  mutate(dropnumber = row_number()) %>%
+  select(dropnumber, everything()) %>%
+  select(-unique_id) %>%
+  select(where(~!all(. == 0)))
+
+#DO the same for BRUV
+PtC_BRUV_spacc <- PtC_BRUV_SAC_PA %>%
+  mutate(dropnumber = row_number()) %>%
+  select(dropnumber, everything()) %>%
+  select(-unique_id) %>%
+  select(where(~!all(. == 0)))
+
+#generate the species accumulation curves 
+bosspaccum <- specaccum (PtC_BOSS_spacc) 
+
+BOSS_SPA_Curve <-plot(bosspaccum, xlab ="Number of deployments", ylab ="Number of species") 
+  
+bruvspaccum <- specaccum(PtC_BRUV_spacc)
+
+BRUV_SPA_Curve <-plot(bruvspaccum, xlab ="Number of deployments", ylab ="Number of species") 
+
+# Set up the PNG device for plotting
+
+# Set up a 1x2 layout for side-by-side plots
+png(
+  filename = paste("plots", name, "GABBY.png", sep = "_"),  # Specify the filename
+  width = 10, height = 5, res = 300, units = "in"        # Set the width, height, resolution, and units
+)
+
+par(mfrow = c(1, 2))
+# Plot BRUV_SPA_Curve
+plot(bruvspaccum, xlab = "Number of BRUV deployments", ylab = "Number of species", ylim = c(0, 150))
+# Plot BOSS_SPA_Curve
+plot(bosspaccum, xlab = "Number of BOSS deployments", ylab = "", ylim = c(0, 150))
+
+
+dev.off()  
 
 
 
