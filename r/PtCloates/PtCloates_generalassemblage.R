@@ -42,6 +42,7 @@ library(gridExtra)
 library(patchwork)
 library(metR)
 library(vegan)
+library(ggstance)
 
 ## Setup ----
 # set your working directory (manually, once for the whole R project)
@@ -175,7 +176,7 @@ common_count <- length(common_names)
 
 
 
-
+####NEW ASPECT RATIO CALCS
 #determine caudal aspect ratio for each species on bruvs
 bruv_species <-bruv.maxn %>%
   filter(maxn>0) %>%
@@ -479,44 +480,69 @@ ubiquityfishBOSS <- samplefishBOSS %>%
 ubiquityfishBOSS <- separate(ubiquityfishBOSS, scientific, into = c("family", "genus", "species"), sep = " ") 
 ubiquityfishBOSS$name <- paste(ubiquityfishBOSS$genus, ubiquityfishBOSS$species, sep = " ")
 
-#just the name and scaled uniquity columns from ubiquityfishBOSS df
+#new df with just the name and scaled ubiquity columns from ubiquityfishBOSS df
 suBOSS <- select(ubiquityfishBOSS, name, scaled_ubiquity)
 
-#just name and aspect ratio from PtCloates_aspectratio_bruvs
+#new df just name and aspect ratio from PtCloates_aspectratio_bruvs
 PtCloatesarBOSS <- select(PtCloates_aspectratio_boss, name, armean)
 
-su_as_df_BOSS<- left_join(suBOSS, PtCloatesarBOSS, by = "name")
+#scaled ubiquity and aspect ratio dataframe for BOSS
+su_ar_df_BOSS<- left_join(suBOSS, PtCloatesarBOSS, by = "name")
 
 #change scientific so it reads name made up of genus and species
 ubiquityfishBRUV <- separate(ubiquityfishBRUV, scientific, into = c("family", "genus", "species"), sep = " ") 
   ubiquityfishBRUV$name <- paste(ubiquityfishBRUV$genus, ubiquityfishBRUV$species, sep = " ")
 
-  #just the name and scaled uniquity columns from ubiquityfishBRUV df
+  #just the name and scaled ubiquity columns from ubiquityfishBRUV df
   suBRUV <- select(ubiquityfishBRUV, name, scaled_ubiquity)
   
   #just name and aspect ratio from PtCloates_aspectratio_bruvs
   PtCloatesarBRUV <- select(PtCloates_aspectratio_bruvs, name, armean)
+
+#scaled ubiquity and aspect ratio dataframe for BRUVS  
+  su_ar_df_BRUV<- left_join(suBRUV, PtCloatesarBRUV, by = "name")
   
-  su_as_df_BRUV<- left_join(suBRUV, PtCloatesarBRUV, by = "name")
-  
-  ###attempt1 combo plot
-  su_as_df_BRUV <- su_as_df_BRUV%>%
-    mutate(method = "BRUV")
-  
-  su_as_df_BOSS <- su_as_df_BOSS%>%
-    mutate(method = "BOSS")
+  ######
+  ###attempt to filter out bad data ie Unknown and Sus sus. Later will require further fixing ***check sp w Claude
+  su_ar_BRUV <- su_ar_df_BRUV%>%
+    filter(name != "Sus sus")%>%
+    filter(name != "Unknown spp")%>%
+    filter(name != "Unknown sp10")
+   
+  su_ar_BOSS <- su_ar_df_BOSS%>%
+    filter(name != "Sus sus")%>%
+    filter(name != "Unknown spp")
   
   #combine boss and bruv scaled ubiquity and aspect ratios to one DF
-  all_su_ar <- merge(su_as_df_BRUV, su_as_df_BOSS, by = "name", all = TRUE)
+  all_su_ar <- merge(su_ar_BRUV, su_ar_BOSS, by = "name", all = TRUE)
   
   aspectratiomean <- coalesce(all_su_ar$armean.x, all_su_ar$armean.y)
   all_su_ar <- mutate(all_su_ar, armean = aspectratiomean)
   all_su_ar <- select(all_su_ar, -armean.x, -armean.y)
+  all_su_ar <- all_su_ar %>%
+    rename(scaledubiquitybruv = scaled_ubiquity.x)%>%
+    rename(scaledubiquityboss = scaled_ubiquity.y)  ###here I have 153 species
   
   ###
-  # Filter out rows with NA values
-  bruv_su_ar <- all_su_ar[complete.cases(all_su_ar[, c("name", "scaled_ubiquity.x", "armean.x")]), ]
+  # Filter out rows with NA values in armean because we will exclude those from the plot
+ ubiquity_aspectratio <- all_su_ar %>%
+   filter(armean !="NA") %>%##now have 109 species
+    mutate(scaledubiquityboss =scaledubiquityboss * -1) %>%#make BOSS scaled ubiquity negative
+ mutate(
+   scaledubiquityboss = ifelse(is.na(scaledubiquityboss), 0, scaledubiquityboss),  # Replace NA with 0 in scaledubiquityboss
+   scaledubiquitybruv = ifelse(is.na(scaledubiquitybruv), 0, scaledubiquitybruv)  # Replace NA with 0 in scaledubiquitybruv
+ )
+ 
+ 
+  ubiquplot <- ggplot(ubiquity_aspectratio)+
+    geom_linerangeh(mapping = aes(y=armean, xmin=scaledubiquityboss, xmax=scaledubiquitybruv), size = 1)+
+    geom_vline(xintercept = 0)+
+    xlab("Scaled ubiquity")+
+    ylab("Aspect ratio of caudal fin")+
+    coord_cartesian(xlim = c(-1,1))+
+    theme_bw()
   
+  print(ubiquplot)
   # Create the plot
   plotbruv_su_ar <-ggplot(bruv_su_ar, aes(x = scaled_ubiquity.x, y = armean.x)) +
     geom_bar() +
