@@ -65,11 +65,20 @@ maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
   glimpse()
 
 
-#BOSS fish numbers seen on how many samples
+#BOSS fish species seen on how many samples
 samplefishBOSS <- boss.maxn %>%
   filter(maxn>0) %>%
   group_by(scientific) %>%
   dplyr::summarise(n = n()) 
+
+sfboss <- boss.maxn %>%
+  filter(maxn>0) %>%
+  dplyr::mutate(name = paste(genus, species))%>%
+  group_by(scientific) %>%
+  dplyr::summarise(n = n()) 
+
+# Assuming your dataframe is called df
+sfboss <- separate(sfboss, scientific, into = c("family", "genus", "species"), sep = " ")
 
 #to get each MAXN sample on BOSS
 samplemaxnBOSS <- boss.maxn %>%
@@ -82,6 +91,20 @@ overallmaxnBOSS <- boss.maxn %>%
   filter(maxn>0) %>%
   group_by(scientific) %>%
   dplyr::summarise(summaxn = sum(maxn))
+
+#Total number of individual fish seen on BOSS and remove SUS
+totalfishBOSS <- boss.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific) %>%
+  filter(scientific !="SUS SUS sus")%>%
+  dplyr::summarise(totalfish = sum(maxn))
+#sum of all individuals to see total fish seen on BOSS
+total_sumindifishboss <- sum(totalfishBOSS$totalfish)
+print(total_sumindifishboss)
+#calculate number of families on BOSS
+fishfamiliesboss <- boss.maxn %>%
+  group_by(family) %>%
+  dplyr::summarise(totalfish = sum(maxn)) # don't forget to remove Sus from this
 
 #BRUVS fish numbers seen on how many samples
 samplefishBRUV <- bruv.maxn %>%
@@ -97,10 +120,11 @@ samplemaxnBRUV <- bruv.maxn %>%
 totalfishBRUV <- bruv.maxn %>%
   filter(maxn>0) %>%
   group_by(scientific) %>%
+  filter(scientific !="SUS SUS sus")%>%
   dplyr::summarise(totalfish = sum(maxn))
 #sum of all individuals to see total fish seen on BRUVs
 total_sumindifishbruv <- sum(totalfishBRUV$totalfish)
-print(total_sumindifish)
+print(total_sumindifishbruv)
 #calculate number of families on BRUVS
 fishfamiliesbruv <- bruv.maxn %>%
   group_by(family) %>%
@@ -112,6 +136,45 @@ overallmaxnBRUV <- bruv.maxn %>%
   filter(maxn>0) %>%
   group_by(scientific) %>%
   dplyr::summarise(summaxn = sum(maxn))
+
+allfishbruv <- sum(overallmaxnBRUV$summaxn, na.rm = TRUE)
+
+allfishboss <-sum(overallmaxnBOSS$summaxn, na.rm = TRUE)
+
+#calculating species unique to BOSS vs BRUV ###NEEDS CHECKING AND FIXING
+# Remove row with "SUS SUS sus" from samplefishBOSS
+samplefishBOSS_filtered <- samplefishBOSS %>%
+  filter(scientific != "SUS SUS sus")
+
+# Remove row with "SUS SUS sus" from samplefishBRUV
+samplefishBRUV_filtered <- samplefishBRUV %>%
+  filter(scientific != "SUS SUS sus")
+
+# Identify unique scientific names in each dataframe
+unique_scientific_BOSS <- unique(samplefishBOSS_filtered$scientific)
+unique_scientific_BRUV <- unique(samplefishBRUV_filtered$scientific)
+
+unique_scientific_BOSS <- samplefishBOSS_filtered %>% distinct(scientific)
+unique_scientific_BRUV <- samplefishBRUV_filtered %>% distinct(scientific)
+
+only_in_bruv <- anti_join(unique_scientific_BRUV, unique_scientific_BOSS)
+
+
+
+# Count the number of scientific names that are unique to each dataframe
+unique_to_BOSS <- setdiff(unique_scientific_BOSS, unique_scientific_BRUV)
+unique_to_BRUV <- setdiff(unique_scientific_BRUV, unique_scientific_BOSS)
+
+species_unique_to_BOSS <- data.frame(scientific = unique_to_BOSS)
+species_unique_to_BRUV <- data.frame(scientific = unique_to_BRUV)
+
+# Count the number of scientific names found in both dataframes
+common_names <- intersect(species_unique_to_BOSS, species_unique_to_BRUV)
+common_count <- length(common_names)
+
+
+
+
 
 #determine caudal aspect ratio for each species on bruvs
 bruv_species <-bruv.maxn %>%
@@ -253,9 +316,10 @@ boss_individuals_aspectratio <- left_join(boss_individuals_expanded, PtCloates_a
 
 write.csv(boss_individuals_aspectratio, file = "outputs/PtCloates/PtCindividualsaspratioBOSS.csv", row.names = FALSE)
 
-# write.csv(samplemaxnBRUV, file = "data/samplemaxnBRUV.csv", row.names = FALSE)
+boss_ind_ar_mean<- mean(boss_individuals_aspectratio$armean, na.rm = TRUE)
+boss_ind_ar_ste_mean <- mean(boss_individuals_aspectratio$se, na.rm = TRUE)
 
-
+#work out number of fish with length measurements on BRUVS
 bruvcompletelengths <-  read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.length.csv") 
 
 bruvlengths <- bruvcompletelengths %>%
@@ -267,12 +331,10 @@ bruvl <- bruvlengths %>%
   select(unique_id, scientific, length, number) 
 
 #count number of lengths measured on BRUVs
-
 bruvfishnolengths <- bruvl %>%
-filter(!is.na(length)) 
+filter(!is.na(length)) %>%
+filter(scientific !="SUS SUS sus")
   
-
-
 ###combine maxn and lengths for BRUVS
 BRUVFISHES <- left_join(samplemaxnBRUV, bruvl, by = c("unique_id","scientific"))
 #View(BRUVFISHES)
@@ -289,6 +351,7 @@ medianlengthBRUV <- BRUVFISHES %>%
 
  # write.csv(BRUVFISHES, file = "data/BRUVFISHES.csv", row.names = FALSE)
 
+#work out number of fish with length measurements on BOSS
 bosscompletelengths <-  read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.length.csv") 
 
 bosslengths <- bosscompletelengths %>%
@@ -299,10 +362,14 @@ bosslengths <- bosscompletelengths %>%
 bossl <- bosslengths %>%
   select(id, scientific, length, number)
 
-
-###combine maxn and lengths for BRUVS
+###combine maxn and lengths for BOSS
 BOSSFISHES <- left_join(samplemaxnBOSS, bossl, by = c("id","scientific"))
 # View(BOSSFISHES)
+
+#count number of lengths measured on BRUVs
+bossfishnolengths <- bossl %>%
+  filter(!is.na(length)) %>%
+  filter(scientific !="SUS SUS sus")
 
 # meanlengthBOSS <- BOSSFISHES %>%
 #   filter(!is.na(length)) %>%
@@ -311,6 +378,7 @@ BOSSFISHES <- left_join(samplemaxnBOSS, bossl, by = c("id","scientific"))
 
 medianlengthBOSS <- BOSSFISHES %>%
   filter(!is.na(length)) %>%
+  filter(scientific !="SUS SUS sus") %>%
   group_by(scientific) %>%
   dplyr::summarise(medianlength = round(median(length), 0))
 
@@ -345,6 +413,7 @@ View(PtC_BRUV_SAC_PA)
 
 #edit so you can generate the Sp acc curve ie make x numeric
 PtC_BOSS_spacc <- PtC_BOSS_SAC_PA %>%
+  select(-matches("SUS SUS sus"))%>%
   mutate(dropnumber = row_number()) %>%
   select(dropnumber, everything()) %>%
   select(-unique_id) %>%
@@ -384,11 +453,105 @@ plot(bosspaccum, xlab = "Number of BOSS deployments", ylab = "", ylim = c(0, 150
 dev.off()  
 
 
+#CALC SCALED UBIQUITY FOR THE PLOT 
+#Assuming your dataframe is called 'samplefishBRUV' with columns 'species' and 'n'
+# Calculate the minimum and maximum ubiquity values
+min_ubiquity <- 0
+# min_ubiquity <- min(samplefishBRUV$n)
+max_ubiquity <- max(samplefishBRUV$n)
+
+# Calculate the scaled ubiquity using the formula
+ubiquityfishBRUV <- samplefishBRUV %>%
+  dplyr::mutate(scaled_ubiquity = (samplefishBRUV$n - min_ubiquity) / (max_ubiquity - min_ubiquity))
 
 
+#same but for BOSS
+# Calculate the minimum and maximum ubiquity values
+min_ubiquity <- 0
+# min_ubiquity <- min(samplefishBRUV$n)
+max_ubiquity <- max(samplefishBOSS$n)
 
-  # str(L.miniatus)
+# Calculate the scaled ubiquity using the formula
+ubiquityfishBOSS <- samplefishBOSS %>%
+  dplyr::mutate(scaled_ubiquity = (samplefishBOSS$n - min_ubiquity) / (max_ubiquity - min_ubiquity))
 
+#change scientific so it reads name made up of genus and species
+ubiquityfishBOSS <- separate(ubiquityfishBOSS, scientific, into = c("family", "genus", "species"), sep = " ") 
+ubiquityfishBOSS$name <- paste(ubiquityfishBOSS$genus, ubiquityfishBOSS$species, sep = " ")
+
+#just the name and scaled uniquity columns from ubiquityfishBOSS df
+suBOSS <- select(ubiquityfishBOSS, name, scaled_ubiquity)
+
+#just name and aspect ratio from PtCloates_aspectratio_bruvs
+PtCloatesarBOSS <- select(PtCloates_aspectratio_boss, name, armean)
+
+su_as_df_BOSS<- left_join(suBOSS, PtCloatesarBOSS, by = "name")
+
+#change scientific so it reads name made up of genus and species
+ubiquityfishBRUV <- separate(ubiquityfishBRUV, scientific, into = c("family", "genus", "species"), sep = " ") 
+  ubiquityfishBRUV$name <- paste(ubiquityfishBRUV$genus, ubiquityfishBRUV$species, sep = " ")
+
+  #just the name and scaled uniquity columns from ubiquityfishBRUV df
+  suBRUV <- select(ubiquityfishBRUV, name, scaled_ubiquity)
+  
+  #just name and aspect ratio from PtCloates_aspectratio_bruvs
+  PtCloatesarBRUV <- select(PtCloates_aspectratio_bruvs, name, armean)
+  
+  su_as_df_BRUV<- left_join(suBRUV, PtCloatesarBRUV, by = "name")
+  
+  ###attempt1 combo plot
+  su_as_df_BRUV <- su_as_df_BRUV%>%
+    mutate(method = "BRUV")
+  
+  su_as_df_BOSS <- su_as_df_BOSS%>%
+    mutate(method = "BOSS")
+  
+  #combine boss and bruv scaled ubiquity and aspect ratios to one DF
+  all_su_ar <- merge(su_as_df_BRUV, su_as_df_BOSS, by = "name", all = TRUE)
+  
+  aspectratiomean <- coalesce(all_su_ar$armean.x, all_su_ar$armean.y)
+  all_su_ar <- mutate(all_su_ar, armean = aspectratiomean)
+  all_su_ar <- select(all_su_ar, -armean.x, -armean.y)
+  
+  ###
+  # Filter out rows with NA values
+  bruv_su_ar <- all_su_ar[complete.cases(all_su_ar[, c("name", "scaled_ubiquity.x", "armean.x")]), ]
+  
+  # Create the plot
+  plotbruv_su_ar <-ggplot(bruv_su_ar, aes(x = scaled_ubiquity.x, y = armean.x)) +
+    geom_bar() +
+    # geom_text(aes(label = name), hjust = -0.1, vjust = 0.5, size = 3) +  # Add species names
+    labs(x = "Scaled Ubiquity", y = "Aspect Ratio") +  # Set axis labels
+    theme_minimal() +# Apply a minimal theme
+    xlim(0, 1) # set x axis limits
+  
+  library(forcats)
+  df <- bind_rows(su_as_df_BOSS, su_as_df_BRUV) %>% 
+    mutate(scaled_ubiquity = if_else(method == "BOSS", -scaled_ubiquity, scaled_ubiquity)#,
+           #armean = fct_reorder(armean, scaled_ubiquity)
+    ) %>%
+    dplyr::filter(!is.na(armean)) %>%
+    ungroup() %>%
+    glimpse() %>%
+    dplyr::mutate(method = as.factor(method))
+  
+  summary(df)
+      
+      
+  plotbruv_su_ar <- ggplot(df, aes(scaled_ubiquity, armean, fill = method))+
+    geom_col()+
+    scale_x_continuous(
+      breaks = seq(-1,1,0.5),
+      #Make the labels positive
+      labels = seq(-1,1,0.5) %>% abs()
+    )
+  
+  
+ print(plotbruv_su_ar) 
+ 
+ ggsave("plotbruv_su_ar.png", plot = plotbruv_su_ar, path = "plots/" , width = 8, height = 4, dpi = 300, units = "in")  
+ 
+ 
  ##BUBBLE PLOTS BY SPECIES
  L.miniatus <- samplemaxnBRUV %>%
    filter(scientific=="Lethrinidae Lethrinus miniatus")
