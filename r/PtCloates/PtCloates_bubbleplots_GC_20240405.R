@@ -277,24 +277,6 @@ print(L.miniatus.bruv.bubble)
 #SAVE TO MEG DRIVE
 ggsave("L.miniatus.bruv.png", plot = L.miniatus.bruv.bubble, path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
 
-###ATTEMPT2 L.miniatus BRUV with depth plot
-longitude_range <- range(L.miniatus.bruv$longitude, na.rm = TRUE)
-latitude_range <- range(L.miniatus.bruv$latitude, na.rm = TRUE)
-
-L.miniatus.bruv.Z <-ggplot() +
-  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
-  geom_point(data = filter(L.miniatus.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue") +
-  geom_point(data = filter(L.miniatus.bruv, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
-  coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
-  theme_classic() +
-  labs(x = "Longitude", y = "Latitude") +
-  scale_size(range = c(1, 13), name = "Relative abundance")+
-  # scale_fill_gradient(name = "Depth")+
-  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))
-
-print(L.miniatus.bruv.Z)
-
-ggsave("L.miniatus.bruv.Z.png", plot = L.miniatus.bruv.Z, path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")
 
 ##GYMNOCRANIUS PLAIN PLOTS
 Gymnocranius.bruv.bubble <- ggplot()+
@@ -590,6 +572,46 @@ print(Pristipomoides.sp1.boss.bubble)
 
 #save
 ggsave("Pristipomoides.sp1.boss.png", plot =  Pristipomoides.sp1.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in") 
+
+
+###BATHY/DEPTH PLOTS IN THE BACKGROUND
+#First  5 most ubiquitis species on BRUVS
+###GYMNOCARNIUS SP1 ***NOTE NEED TO FIX NUMBERS Gymnocranius.bruv
+longitude_range <- range(Gymnocranius.bruv$longitude, na.rm = TRUE)
+latitude_range <- range(Gymnocranius.bruv$latitude, na.rm = TRUE)
+
+Gymnocranius.bruv.z <-ggplot() +
+  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+  geom_point(data = filter(Gymnocranius.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue") +
+  geom_point(data = filter(Gymnocranius.bruv, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
+  coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
+  theme_classic() +
+  labs(x = "Longitude", y = "Latitude") +
+  scale_size(range = c(1, 10), name = "Relative abundance")+
+  # scale_fill_gradient(name = "Depth")+
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))
+
+print(Gymnocranius.bruv.z )
+ggsave(".png", plot = L.miniatus.bruv.Z, path = "plots/BubblePlots/PtCloates" , width = 7, height = 4, dpi = 300, units = "in")
+
+###L.miniatus BRUV with depth plot
+longitude_range <- range(L.miniatus.bruv$longitude, na.rm = TRUE)
+latitude_range <- range(L.miniatus.bruv$latitude, na.rm = TRUE)
+
+L.miniatus.bruv.Z <-ggplot() +
+  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+  geom_point(data = filter(L.miniatus.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue") +
+  geom_point(data = filter(L.miniatus.bruv, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
+  coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
+  theme_classic() +
+  labs(x = "Longitude", y = "Latitude") +
+  scale_size(range = c(1, 13), name = "Relative abundance")+
+  # scale_fill_gradient(name = "Depth")+
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))
+
+print(L.miniatus.bruv.Z)
+ggsave("L.miniatus.bruv.Z.png", plot = L.miniatus.bruv.Z, path = "plots/BubblePlots/PtCloates" , width = 7, height = 4, dpi = 300, units = "in")
+
 
 
 

@@ -43,6 +43,7 @@ library(patchwork)
 library(metR)
 library(vegan)
 library(ggstance)
+library(metR)
 
 ## Setup ----
 # set your working directory (manually, once for the whole R project)
@@ -423,6 +424,7 @@ PtC_BOSS_spacc <- PtC_BOSS_SAC_PA %>%
 #DO the same for BRUV
 PtC_BRUV_spacc <- PtC_BRUV_SAC_PA %>%
   mutate(dropnumber = row_number()) %>%
+  select(-matches("SUS SUS sus"))%>%
   select(dropnumber, everything()) %>%
   select(-unique_id) %>%
   select(where(~!all(. == 0)))
@@ -543,39 +545,8 @@ ubiquityfishBRUV <- separate(ubiquityfishBRUV, scientific, into = c("family", "g
     theme_bw()
   
   print(ubiquplot)
-  # Create the plot
-  plotbruv_su_ar <-ggplot(bruv_su_ar, aes(x = scaled_ubiquity.x, y = armean.x)) +
-    geom_bar() +
-    # geom_text(aes(label = name), hjust = -0.1, vjust = 0.5, size = 3) +  # Add species names
-    labs(x = "Scaled Ubiquity", y = "Aspect Ratio") +  # Set axis labels
-    theme_minimal() +# Apply a minimal theme
-    xlim(0, 1) # set x axis limits
-  
-  library(forcats)
-  df <- bind_rows(su_as_df_BOSS, su_as_df_BRUV) %>% 
-    mutate(scaled_ubiquity = if_else(method == "BOSS", -scaled_ubiquity, scaled_ubiquity)#,
-           #armean = fct_reorder(armean, scaled_ubiquity)
-    ) %>%
-    dplyr::filter(!is.na(armean)) %>%
-    ungroup() %>%
-    glimpse() %>%
-    dplyr::mutate(method = as.factor(method))
-  
-  summary(df)
-      
-      
-  plotbruv_su_ar <- ggplot(df, aes(scaled_ubiquity, armean, fill = method))+
-    geom_col()+
-    scale_x_continuous(
-      breaks = seq(-1,1,0.5),
-      #Make the labels positive
-      labels = seq(-1,1,0.5) %>% abs()
-    )
-  
-  
- print(plotbruv_su_ar) 
  
- ggsave("plotbruv_su_ar.png", plot = plotbruv_su_ar, path = "plots/" , width = 8, height = 4, dpi = 300, units = "in")  
+ ggsave("ubiquplot.png", plot = ubiquplot, path = "plots/" , width = 8, height = 4, dpi = 300, units = "in")  
  
  
  ##BUBBLE PLOTS BY SPECIES
@@ -694,8 +665,7 @@ L.miniatus.bruv.Z <-ggplot() +
   theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))
 
 print(L.miniatus.bruv.Z)
-
-ggsave("L.miniatus.bruv.Z.png", plot = L.miniatus.bruv.Z, path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")
+ ggsave("L.miniatus.bruv.Z.png", plot = L.miniatus.bruv.Z, path = "plots/BubblePlots/PtCloates" , width = 7, height = 4, dpi = 300, units = "in")
 
 ##GYMNOCRANIUS PLAIN PLOTS
  Gymnocranius.bruv.bubble <- ggplot()+
@@ -1107,13 +1077,15 @@ spatialcov_df <- as.data.frame(rasterspatialcov, xy =TRUE)
  latitude_range <- range(L.miniatus.bruv$latitude, na.rm = TRUE)
  
  L.miniatus.bruv.Z <-ggplot() +
-   geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+   geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z, fill=after_stat(level_mid)), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
    geom_point(data = filter(L.miniatus.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue") +
    geom_point(data = filter(L.miniatus.bruv, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
    coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
    theme_classic() +
+   scale_fill_viridis(name="Depth", limits=c(-300, -50), labels=c(-300, -250, -200, -150, -100, -50))+
      # scale_fill_gradient(name = "Depth")+
    theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))+
+   # scale_fill_distiller(super=metR::ScaleDiscretised, palette="Spectral")+
    labs(x = "Longitude", y = "Latitude")+
    scale_size_area(max_size=13, name = "Relative abundance", breaks = c(3, 6, 9, 12), labels = c(3, 6, 9, 12))+
    scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
@@ -1121,6 +1093,15 @@ spatialcov_df <- as.data.frame(rasterspatialcov, xy =TRUE)
    # metR::scale_fill_discretised(labels = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60), breaks= c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))
  
  print(L.miniatus.bruv.Z)
+ 
+ plot(bathdf)
+ depthplot<- ggplot() +
+   geom_tile(data = bathdf, 
+             aes(x, y, fill = Z)) 
+ 
+ 
+ print(depthplot)
+ 
  
  ggsave("L.miniatus.bruv.Z.png", plot = L.miniatus.bruv.Z, path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")
  
