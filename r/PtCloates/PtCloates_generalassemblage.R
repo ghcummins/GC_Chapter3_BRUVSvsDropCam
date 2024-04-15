@@ -1072,7 +1072,7 @@ spatialcov_df <- as.data.frame(rasterspatialcov, xy =TRUE)
  print(p3) 
  
  
- ### L.miniatus BRUV with depth plot
+# CHARLOTTE PLOT### L.miniatus BRUV with depth plot
  longitude_range <- range(L.miniatus.bruv$longitude, na.rm = TRUE)
  latitude_range <- range(L.miniatus.bruv$latitude, na.rm = TRUE)
  

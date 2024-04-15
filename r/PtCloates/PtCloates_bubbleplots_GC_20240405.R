@@ -191,7 +191,7 @@ Gymnocranius.bruv <- bruv.maxn %>%
   filter(scientific=="Lethrinidae Gymnocranius sp1") %>% 
   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
 
-Rubrioperculatus.bruv <- bruv.maxn %>%
+L.rubrioperculatus.bruv <- bruv.maxn %>%
   filter(scientific=="Lethrinidae Lethrinus rubrioperculatus") %>% 
   mutate(year = str_extract(campaignid, "^[:digit:]{4}"))
 
@@ -275,7 +275,7 @@ L.miniatus.bruv.bubble <- ggplot()+
 
 print(L.miniatus.bruv.bubble)
 #SAVE TO MEG DRIVE
-ggsave("L.miniatus.bruv.png", plot = L.miniatus.bruv.bubble, path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
+# ggsave("L.miniatus.bruv.png", plot = L.miniatus.bruv.bubble, path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
 
 
 ##GYMNOCRANIUS PLAIN PLOTS
@@ -291,7 +291,7 @@ Gymnocranius.bruv.bubble <- ggplot()+
   
   print(Gymnocranius.bruv.bubble)
 
-ggsave("Gymnocranius.bruv.png", plot = Gymnocranius.bruv.bubble, path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")
+# ggsave("Gymnocranius.bruv.png", plot = Gymnocranius.bruv.bubble, path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")
 
 
 #Gymnocranius BRUV by dominant habitat
@@ -303,9 +303,9 @@ Gymnocranius.bruv.bubble.dom <- dominant_hab +
 print(Gymnocranius.bruv.bubble.dom)
 
 #RUBRIOPERCULATUS PLAIN BRUV PLOT
-Rubrioperculatus.bruv.bubble <-ggplot()+
-  geom_point(data=filter(Rubrioperculatus.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8)+
-  geom_point(data=filter(Rubrioperculatus.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4, size = 0.5)+
+L.rubrioperculatus.bruv.bubble <-ggplot()+
+  geom_point(data=filter(L.ubrioperculatus.bruv, maxn>0), aes(x=longitude, y=latitude, size=maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8)+
+  geom_point(data=filter(L.rubrioperculatus.bruv, maxn==0), aes(x=longitude, y=latitude), shape=4, size = 0.5)+
   theme_classic()+
   labs(x = "Longitude", y = "Latitude")+
   scale_size_area(max_size=10, name = "Relative abundance", breaks = c(1, 3, 5, 7), labels = c(1, 3, 5, 7))+
@@ -314,10 +314,10 @@ Rubrioperculatus.bruv.bubble <-ggplot()+
 
 
 #view
-print(Rubrioperculatus.bruv.bubble)
+print(L.rubrioperculatus.bruv.bubble)
 
 #save
-ggsave("L.rubrioperculatus.bruv.png", plot = Rubrioperculatus.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
+# ggsave("L.rubrioperculatus.bruv.png", plot = Rubrioperculatus.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
 
 # ##Rubrio + old coastline .shp (FOR 4th CHAPTER)
 # ocf <-st_read("data/spatial/shapefiles/line_recab_merge.shp")
@@ -349,7 +349,7 @@ C.chrysophrys.bruv.bubble <- ggplot()+
 print(C.chrysophrys.bruv.bubble)
 
 #save plain bubble plot
-ggsave("C.chrysophrys.bruv.png", plot = C.chrysophrys.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
+# ggsave("C.chrysophrys.bruv.png", plot = C.chrysophrys.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
 
 ##quick view at years
 YEAR.C.chrysophrys.bruv.bubble <- ggplot() +
@@ -385,7 +385,7 @@ Pristipomoides.sp1.bruv.bubble <- ggplot()+
 print(Pristipomoides.sp1.bruv.bubble)
 
 #save plain bubble plot
-ggsave("Pristipomoides.sp1.bruv.png", plot = Pristipomoides.sp1.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
+# ggsave("Pristipomoides.sp1.bruv.png", plot = Pristipomoides.sp1.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
 
 ##BRUV PLain drop for BOSS dominant species
 #Parapercis nebulosa BRUV PLAIN plot
@@ -401,7 +401,7 @@ P.nebulosa.bruv.bubble <- ggplot()+
 print(P.nebulosa.bruv.bubble)
 
 #save plain bubble plot
-ggsave("P.nebulosa.bruv.png", plot = P.nebulosa.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
+# ggsave("P.nebulosa.bruv.png", plot = P.nebulosa.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
 
 #Pentapodus nagasakiensis BRUV PLAIN plot   
 Pentapodus.bruv.bubble <- ggplot()+
@@ -416,7 +416,7 @@ Pentapodus.bruv.bubble <- ggplot()+
 print(Pentapodus.bruv.bubble)
 
 #save plain bubble plot
-ggsave("Pentapodus.bruv.png", plot = Pentapodus.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
+# ggsave("Pentapodus.bruv.png", plot = Pentapodus.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
 
 #Lutjanus sebae BRUV PLAIN plot   
 L.sebae.bruv.bubble <- ggplot()+
@@ -431,7 +431,7 @@ L.sebae.bruv.bubble <- ggplot()+
 print(L.sebae.bruv.bubble)
 
 #save plain bubble plot
-ggsave("L.sebae.bruv.png", plot = L.sebae.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
+# ggsave("L.sebae.bruv.png", plot = L.sebae.bruv.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
 
 
 #BOSS PLOTS
@@ -448,7 +448,7 @@ P.nebulosa.boss.bubble <-ggplot()+
 print(P.nebulosa.boss.bubble)
 
 #save
-ggsave("P.nebulosa.boss.png", plot = P.nebulosa.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
+# ggsave("P.nebulosa.boss.png", plot = P.nebulosa.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
 
 L.miniatus.boss.bubble <- ggplot()+
   geom_point(data=filter(L.miniatus.boss, maxn>0), aes(x=longitude, y=latitude, size=maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8)+
@@ -462,7 +462,7 @@ L.miniatus.boss.bubble <- ggplot()+
 print(L.miniatus.boss.bubble)
 
 #save
-ggsave("L.miniatus.boss.png", plot = L.miniatus.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
+# ggsave("L.miniatus.boss.png", plot = L.miniatus.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in")  
 
 
 Gymnocranius.boss.bubble <- ggplot()+
@@ -477,7 +477,7 @@ Gymnocranius.boss.bubble <- ggplot()+
 print(Gymnocranius.boss.bubble)
 
 #save
-ggsave("Gymnocranius.boss.png", plot = Gymnocranius.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in") 
+# ggsave("Gymnocranius.boss.png", plot = Gymnocranius.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in") 
 
 # Gymnocranius.boss.bubble.domhab <- dominant_hab +
 #   geom_point(data=filter(Gymnocranius.boss, maxn>0), aes(x=longitude, y=latitude, size=maxn))+
@@ -499,7 +499,7 @@ P.nagasakiensis.boss.bubble <-ggplot()+
 print(P.nagasakiensis.boss.bubble)
 
 #save
-ggsave("P.nagasakiensis.boss.png", plot = P.nagasakiensis.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in") 
+# ggsave("P.nagasakiensis.boss.png", plot = P.nagasakiensis.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in") 
 
 #L. sebae plain bubbleplot
 L.sebae.boss.bubble <- ggplot()+
@@ -525,7 +525,7 @@ ggplot() +
 print(L.sebae.boss.bubble)
 
 #save
-ggsave("L.sebae.boss.png", plot = L.sebae.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in") 
+# ggsave("L.sebae.boss.png", plot = L.sebae.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in") 
 
 ##BOSS PLain drop for BRUV dominant species
 #BOSS L.rubrioperculatus plain bubble plot
@@ -541,7 +541,7 @@ L.rubrioperculatus.boss.bubble <- ggplot()+
 print(L.rubrioperculatus.boss.bubble)
 
 #save
-ggsave("L.rubrioperculatus.boss.png", plot = L.rubrioperculatus.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in") 
+# ggsave("L.rubrioperculatus.boss.png", plot = L.rubrioperculatus.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in") 
 
 #BOSS C.chrysophrys plain bubble plot
 C.chrysophrys.boss.bubble <- ggplot()+
@@ -556,7 +556,7 @@ C.chrysophrys.boss.bubble <- ggplot()+
 print(C.chrysophrys.boss.bubble)
 
 #save
-ggsave("C.chrysophrys.boss.png", plot =  C.chrysophrys.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in") 
+# ggsave("C.chrysophrys.boss.png", plot =  C.chrysophrys.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in") 
 
 #BOSS Pristipomoides sp1 plain bubble plot
 Pristipomoides.sp1.boss.bubble <- ggplot()+
@@ -571,47 +571,250 @@ Pristipomoides.sp1.boss.bubble <- ggplot()+
 print(Pristipomoides.sp1.boss.bubble)
 
 #save
-ggsave("Pristipomoides.sp1.boss.png", plot =  Pristipomoides.sp1.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in") 
+# ggsave("Pristipomoides.sp1.boss.png", plot =  Pristipomoides.sp1.boss.bubble , path = "plots/BubblePlots/PtCloates" , width = 8, height = 4, dpi = 300, units = "in") 
 
 
 ###BATHY/DEPTH PLOTS IN THE BACKGROUND
-#First  5 most ubiquitis species on BRUVS
+# Load bathymetry data 
+bathdf <- readRDS(paste(paste0('data/spatial/rasters/',                         
+                               name), 'ga_bathy.rds', sep = "_"))
+#First  5 most ubiquitis species on BRUVS and BOSS immediately after for comparison because these will be side by side 
 ###GYMNOCARNIUS SP1 ***NOTE NEED TO FIX NUMBERS Gymnocranius.bruv
 longitude_range <- range(Gymnocranius.bruv$longitude, na.rm = TRUE)
 latitude_range <- range(Gymnocranius.bruv$latitude, na.rm = TRUE)
 
 Gymnocranius.bruv.z <-ggplot() +
-  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
-  geom_point(data = filter(Gymnocranius.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue") +
+  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z, fill=after_stat(level_mid)), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+  geom_point(data = filter(Gymnocranius.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8) +
   geom_point(data = filter(Gymnocranius.bruv, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
   coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
   theme_classic() +
-  labs(x = "Longitude", y = "Latitude") +
-  scale_size(range = c(1, 10), name = "Relative abundance")+
+  scale_fill_viridis(name="Depth", limits=c(-300, -50), labels=c(-300, -250, -200, -150, -100, -50))+
   # scale_fill_gradient(name = "Depth")+
-  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))+
+  # scale_fill_distiller(super=metR::ScaleDiscretised, palette="Spectral")+
+  labs(x = "Longitude", y = "Latitude")+
+  scale_size_area(max_size=14, name = "Relative abundance", breaks = c(2, 4, 6, 8), labels = c(2, 4, 6, 8))+
+  scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.01))
+# metR::scale_fill_discretised(labels = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60), breaks= c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))
 
-print(Gymnocranius.bruv.z )
-ggsave(".png", plot = L.miniatus.bruv.Z, path = "plots/BubblePlots/PtCloates" , width = 7, height = 4, dpi = 300, units = "in")
+print(Gymnocranius.bruv.z)
+
+ggsave("Gymnocranius.bruv.z.png", plot = Gymnocranius.bruv.z  , path = "plots/BubblePlots/PtCloates" , width = 7, height = 4, dpi = 300, units = "in") 
+
+#Gymnocranius Sp1 BOSS depth
+Gymnocranius.boss.z <-ggplot() +
+  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z, fill=after_stat(level_mid)), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+  geom_point(data = filter(Gymnocranius.boss, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8) +
+  geom_point(data = filter(Gymnocranius.boss, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
+  coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
+  theme_classic() +
+  scale_fill_viridis(name="Depth", limits=c(-300, -50), labels=c(-300, -250, -200, -150, -100, -50))+
+  # scale_fill_gradient(name = "Depth")+
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))+
+  # scale_fill_distiller(super=metR::ScaleDiscretised, palette="Spectral")+
+  labs(x = "Longitude", y = "Latitude")+
+  scale_size_area(max_size=11, name = "Relative abundance", breaks = c(2, 4, 6), labels = c(2, 4, 6))+
+  scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.01))
+# metR::scale_fill_discretised(labels = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60), breaks= c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))
+
+print(Gymnocranius.boss.z)
+
+ggsave("Gymnocranius.boss.z.png", plot = Gymnocranius.boss.z  , path = "plots/BubblePlots/PtCloates" , width = 7, height = 4, dpi = 300, units = "in") 
+
+##L. rubrioperculatus BRUV depth plot
+longitude_range <- range(L.rubrioperculatus.bruv$longitude, na.rm = TRUE)
+latitude_range <- range(L.rubrioperculatus.bruv$latitude, na.rm = TRUE)
+
+L.rubrioperculatus.bruv.z <-ggplot() +
+  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z, fill=after_stat(level_mid)), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+  geom_point(data = filter(L.rubrioperculatus.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8) +
+  geom_point(data = filter(L.rubrioperculatus.bruv, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
+  coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
+  theme_classic() +
+  scale_fill_viridis(name="Depth", limits=c(-300, -50), labels=c(-300, -250, -200, -150, -100, -50))+
+  # scale_fill_gradient(name = "Depth")+
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))+
+  # scale_fill_distiller(super=metR::ScaleDiscretised, palette="Spectral")+
+  labs(x = "Longitude", y = "Latitude")+
+  scale_size_area(max_size=13, name = "Relative abundance", breaks = c(1,3 ,5,  7), labels = c(1,3,  5, 7))+
+  scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.01))+
+  guides(size = guide_legend(order = 1, title.position ="top"),
+         fill = guide_colorbar(order = 2, title.position ="top"))
+# metR::scale_fill_discretised(labels = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60), breaks= c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))
+
+print(L.rubrioperculatus.bruv.z)
+
+ggsave("L.rubrioperculatus.bruv.z.png", plot =  L.rubrioperculatus.bruv.z , path = "plots/BubblePlots/PtCloates" , width = 7, height = 4, dpi = 300, units = "in") 
+
+##L. rubrioperculatus BOSS depth plot
+L.rubrioperculatus.boss.z <-ggplot() +
+  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z, fill=after_stat(level_mid)), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+  geom_point(data = filter(L.rubrioperculatus.boss, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8) +
+  geom_point(data = filter(L.rubrioperculatus.boss, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
+  coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
+  theme_classic() +
+  scale_fill_viridis(name="Depth", limits=c(-300, -50), labels=c(-300, -250, -200, -150, -100, -50))+
+  # scale_fill_gradient(name = "Depth")+
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))+
+  # scale_fill_distiller(super=metR::ScaleDiscretised, palette="Spectral")+
+  labs(x = "Longitude", y = "Latitude")+
+  scale_size_area(max_size=7, name = "Relative abundance", breaks = c(1,2), labels = c(1,2))+
+  scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.01))+
+  guides(size = guide_legend(order = 1, title.position ="top"),
+         fill = guide_colorbar(order = 2, title.position ="top"))
+# metR::scale_fill_discretised(labels = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60), breaks= c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))
+
+print(L.rubrioperculatus.boss.z)
+
+ggsave("L.rubrioperculatus.boss.z.png", plot =  L.rubrioperculatus.boss.z , path = "plots/BubblePlots/PtCloates" , width = 7, height = 4, dpi = 300, units = "in") 
+
+##L. rubrioperculatus BOSS depth plot
 
 ###L.miniatus BRUV with depth plot
 longitude_range <- range(L.miniatus.bruv$longitude, na.rm = TRUE)
 latitude_range <- range(L.miniatus.bruv$latitude, na.rm = TRUE)
 
-L.miniatus.bruv.Z <-ggplot() +
-  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
-  geom_point(data = filter(L.miniatus.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue") +
+L.miniatus.bruv.z <-ggplot() +
+  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z, fill=after_stat(level_mid)), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+  geom_point(data = filter(L.miniatus.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8) +
   geom_point(data = filter(L.miniatus.bruv, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
   coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
   theme_classic() +
-  labs(x = "Longitude", y = "Latitude") +
-  scale_size(range = c(1, 13), name = "Relative abundance")+
+  scale_fill_viridis(name="Depth", limits=c(-300, -50), labels=c(-300, -250, -200, -150, -100, -50))+
   # scale_fill_gradient(name = "Depth")+
-  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))+
+  # scale_fill_distiller(super=metR::ScaleDiscretised, palette="Spectral")+
+  labs(x = "Longitude", y = "Latitude")+
+  scale_size_area(max_size=13, name = "Relative abundance", breaks = c(3, 6, 9, 12), labels = c(3, 6, 9, 12))+
+  scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.01))+
+  guides(size = guide_legend(order = 1, title.position ="top"),
+         fill = guide_colorbar(order = 2, title.position ="top"))
+# metR::scale_fill_discretised(labels = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60), breaks= c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))
 
-print(L.miniatus.bruv.Z)
-ggsave("L.miniatus.bruv.Z.png", plot = L.miniatus.bruv.Z, path = "plots/BubblePlots/PtCloates" , width = 7, height = 4, dpi = 300, units = "in")
+print(L.miniatus.bruv.z)
 
+ggsave("L.miniatus.bruv.z.png", plot =  L.miniatus.bruv.z , path = "plots/BubblePlots/PtCloates" , width = 7, height = 4, dpi = 300, units = "in") 
+
+#L.miniatus depth BOSS
+L.miniatus.boss.z <-ggplot() +
+  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z, fill=after_stat(level_mid)), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+  geom_point(data = filter(L.miniatus.boss, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8) +
+  geom_point(data = filter(L.miniatus.boss, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
+  coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
+  theme_classic() +
+  scale_fill_viridis(name="Depth", limits=c(-300, -50), labels=c(-300, -250, -200, -150, -100, -50))+
+  # scale_fill_gradient(name = "Depth")+
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))+
+  # scale_fill_distiller(super=metR::ScaleDiscretised, palette="Spectral")+
+  labs(x = "Longitude", y = "Latitude")+
+  scale_size_area(max_size=5, name = "Relative abundance", breaks = c(1, 2), labels = c(1, 2))+
+  scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.01))+
+  guides(size = guide_legend(order = 1, title.position ="top"),
+         fill = guide_colorbar(order = 2, title.position ="top"))
+# metR::scale_fill_discretised(labels = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60), breaks= c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))
+
+print(L.miniatus.boss.z)
+
+ggsave("L.miniatus.boss.z.png", plot =  L.miniatus.boss.z , path = "plots/BubblePlots/PtCloates" , width = 7, height = 4, dpi = 300, units = "in") 
+
+#Carangoides chrysophrys depth BRUV
+C.chrysophrys.bruv.z  <-ggplot() +
+  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z, fill=after_stat(level_mid)), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+  geom_point(data = filter(C.chrysophrys.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8) +
+  geom_point(data = filter(C.chrysophrys.bruv, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
+  coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
+  theme_classic() +
+  scale_fill_viridis(name="Depth", limits=c(-300, -50), labels=c(-300, -250, -200, -150, -100, -50))+
+  # scale_fill_gradient(name = "Depth")+
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))+
+  # scale_fill_distiller(super=metR::ScaleDiscretised, palette="Spectral")+
+  labs(x = "Longitude", y = "Latitude")+
+  scale_size_area(max_size=15, name = "Relative abundance", breaks = c(1, 5, 9, 13), labels = c(1, 5, 9, 13))+
+  scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.01))+
+  guides(size = guide_legend(order = 1, title.position ="top"),
+         fill = guide_colorbar(order = 2, title.position ="top"))
+# metR::scale_fill_discretised(labels = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60), breaks= c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))
+
+print(C.chrysophrys.bruv.z)
+
+ggsave("C.chrysophrys.bruv.z.png", plot =  C.chrysophrys.bruv.z , path = "plots/BubblePlots/PtCloates" , width = 7, height = 4, dpi = 300, units = "in") 
+
+#Carangoides chrysophrys depth BOSS
+C.chrysophrys.boss.z  <-ggplot() +
+  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z, fill=after_stat(level_mid)), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+  geom_point(data = filter(C.chrysophrys.boss, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8) +
+  geom_point(data = filter(C.chrysophrys.boss, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
+  coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
+  theme_classic() +
+  scale_fill_viridis(name="Depth", limits=c(-300, -50), labels=c(-300, -250, -200, -150, -100, -50))+
+  # scale_fill_gradient(name = "Depth")+
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))+
+  # scale_fill_distiller(super=metR::ScaleDiscretised, palette="Spectral")+
+  labs(x = "Longitude", y = "Latitude")+
+  scale_size_area(max_size=4, name = "Relative abundance", breaks = c(1), labels = c(1))+
+  scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.01))+
+  guides(size = guide_legend(order = 1, title.position ="top"),
+         fill = guide_colorbar(order = 2, title.position ="top"))
+# metR::scale_fill_discretised(labels = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60), breaks= c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))
+
+print(C.chrysophrys.boss.z)
+
+ggsave("C.chrysophrys.boss.z.png", plot =  C.chrysophrys.boss.z , path = "plots/BubblePlots/PtCloates" , width = 7, height = 4, dpi = 300, units = "in") 
+
+#Pristipomoides sp1 depth BRUV
+Pristipomoides.sp1.bruv.z  <-ggplot() +
+  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z, fill=after_stat(level_mid)), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+  geom_point(data = filter(Pristipomoides.sp1.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8) +
+  geom_point(data = filter(Pristipomoides.sp1.bruv, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
+  coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
+  theme_classic() +
+  scale_fill_viridis(name="Depth", limits=c(-300, -50), labels=c(-300, -250, -200, -150, -100, -50))+
+  # scale_fill_gradient(name = "Depth")+
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))+
+  # scale_fill_distiller(super=metR::ScaleDiscretised, palette="Spectral")+
+  labs(x = "Longitude", y = "Latitude")+
+  scale_size_area(max_size=15, name = "Relative abundance", breaks = c(1, 5, 9, 13,17), labels = c(1, 5, 9, 13,17))+
+  scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.01))+
+  guides(size = guide_legend(order = 1, title.position ="top"),
+         fill = guide_colorbar(order = 2, title.position ="top"))
+# metR::scale_fill_discretised(labels = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60), breaks= c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))
+
+print(Pristipomoides.sp1.bruv.z)
+
+ggsave("Pristipomoides.sp1.bruv.z.png", plot =  Pristipomoides.sp1.bruv.z , path = "plots/BubblePlots/PtCloates" , width = 8, height = 5, dpi = 300, units = "in") 
+
+#Pristipomoides sp1 depth BOSS
+Pristipomoides.sp1.boss.z  <-ggplot() +
+  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z, fill=after_stat(level_mid)), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+  geom_point(data = filter(Pristipomoides.sp1.boss, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8) +
+  geom_point(data = filter(Pristipomoides.sp1.boss, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
+  coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
+  theme_classic() +
+  scale_fill_viridis(name="Depth", limits=c(-300, -50), labels=c(-300, -250, -200, -150, -100, -50))+
+  # scale_fill_gradient(name = "Depth")+
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))+
+  # scale_fill_distiller(super=metR::ScaleDiscretised, palette="Spectral")+
+  labs(x = "Longitude", y = "Latitude")+
+  scale_size_area(max_size=8, name = "Relative abundance", breaks = c(2, 3, 5), labels = c(2, 3, 5))+
+  scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.01))+
+  guides(size = guide_legend(order = 1, title.position ="top"),
+         fill = guide_colorbar(order = 2, title.position ="top"))
+# metR::scale_fill_discretised(labels = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60), breaks= c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))
+
+print(Pristipomoides.sp1.boss.z)
+
+ggsave("Pristipomoides.sp1.boss.z.png", plot =  Pristipomoides.sp1.boss.z , path = "plots/BubblePlots/PtCloates" , width = 8, height = 5, dpi = 300, units = "in")
 
 
 
@@ -715,13 +918,30 @@ print(dominant_hab)
 
 
 p3 <- dominant_hab +
-  geom_point(data = filter(L.miniatus.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue") +
+  geom_point(data = filter(L.miniatus.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8) +
   geom_point(data = filter(L.miniatus.bruv, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
-  scale_size(range = c(1, 13), name = "Relative abundance") +
+  scale_size_area(max_size=13, name = "Relative abundance", breaks = c(3, 6, 9, 12), labels = c(3, 6, 9, 12))+
+  #scale_size(range = c(1, 13), name = "Relative abundance") +
   labs(x = "Longitude", y = "Latitude")
 
 print(p3) 
 
+L.miniatus.bruv.z <-ggplot() +
+  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z, fill=after_stat(level_mid)), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
+  geom_point(data = filter(L.miniatus.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8) +
+  geom_point(data = filter(L.miniatus.bruv, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
+  coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
+  theme_classic() +
+  scale_fill_viridis(name="Depth", limits=c(-300, -50), labels=c(-300, -250, -200, -150, -100, -50))+
+  # scale_fill_gradient(name = "Depth")+
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))+
+  # scale_fill_distiller(super=metR::ScaleDiscretised, palette="Spectral")+
+  labs(x = "Longitude", y = "Latitude")+
+  scale_size_area(max_size=13, name = "Relative abundance", breaks = c(3, 6, 9, 12), labels = c(3, 6, 9, 12))+
+  scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.01))+
+  guides(size = guide_legend(order = 1, title.position ="top"),
+         fill = guide_colorbar(order = 2, title.position ="top"))
 
 ### L.miniatus BRUV with depth plot
 longitude_range <- range(L.miniatus.bruv$longitude, na.rm = TRUE)
