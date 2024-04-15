@@ -926,22 +926,6 @@ p3 <- dominant_hab +
 
 print(p3) 
 
-L.miniatus.bruv.z <-ggplot() +
-  geom_contour_filled(data = bathdf, aes(x = x, y = y, z = Z, fill=after_stat(level_mid)), breaks = c(-300,-290, -280, -270, -260, -250, -240, -230, -220, -210, -200, -190, -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60))+ # Add geom_contour
-  geom_point(data = filter(L.miniatus.bruv, maxn > 0), aes(x = longitude, y = latitude, size = maxn), shape = 21, colour = "blue4", fill = "dodgerblue", alpha = 0.8) +
-  geom_point(data = filter(L.miniatus.bruv, maxn == 0), aes(x = longitude, y = latitude), shape = 4, size = 0.5) +
-  coord_cartesian(xlim = longitude_range, ylim = latitude_range) +  # Set plot limits
-  theme_classic() +
-  scale_fill_viridis(name="Depth", limits=c(-300, -50), labels=c(-300, -250, -200, -150, -100, -50))+
-  # scale_fill_gradient(name = "Depth")+
-  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5))+
-  # scale_fill_distiller(super=metR::ScaleDiscretised, palette="Spectral")+
-  labs(x = "Longitude", y = "Latitude")+
-  scale_size_area(max_size=13, name = "Relative abundance", breaks = c(3, 6, 9, 12), labels = c(3, 6, 9, 12))+
-  scale_x_continuous(labels = scales::number_format(accuracy = 0.01))+
-  scale_y_continuous(labels = scales::number_format(accuracy = 0.01))+
-  guides(size = guide_legend(order = 1, title.position ="top"),
-         fill = guide_colorbar(order = 2, title.position ="top"))
 
 ### L.miniatus BRUV with depth plot
 longitude_range <- range(L.miniatus.bruv$longitude, na.rm = TRUE)
