@@ -79,21 +79,28 @@ sfboss <- boss.maxn %>%
   dplyr::mutate(name = paste(genus, species))%>%
   group_by(scientific) %>%
   dplyr::summarise(n = n()) 
+  
+sfboss_inds <- boss.maxn %>%
+  filter(maxn>0) %>%
+  dplyr::mutate(name = paste(genus, species))%>%
+  group_by(scientific) %>%  
+  dplyr::summarise(totalfish = sum(maxn))
 
-# Assuming your dataframe is called df
-sfboss <- separate(sfboss, scientific, into = c("family", "genus", "species"), sep = " ")
+sfboss_inds_n <- sfboss %>%
+  left_join(sfboss_inds %>% select(scientific, totalfish), by = "scientific")
+
+# Creating new columns for fam, genus and sp
+sfboss_allnames <- separate(sfboss_inds_n, scientific, into = c("family", "genus", "species"), sep = " ")
+
+#save
+write.csv(sfboss_allnames, file = "outputs/PtCloates/PtCloatesBOSS_fishlist.csv", row.names = FALSE)
+
 
 #to get each MAXN sample on BOSS
 samplemaxnBOSS <- boss.maxn %>%
   filter(maxn>0)
 
 # write.csv(samplemaxnBOSS, file = "data/samplemaxnBOSS.csv", row.names = FALSE)
-
-##overallmaxn on BOSS per fish species
-overallmaxnBOSS <- boss.maxn %>%
-  filter(maxn>0) %>%
-  group_by(scientific) %>%
-  dplyr::summarise(summaxn = sum(maxn))
 
 #Total number of individual fish seen on BOSS and remove SUS
 totalfishBOSS <- boss.maxn %>%
@@ -114,6 +121,29 @@ samplefishBRUV <- bruv.maxn %>%
   filter(maxn>0) %>%
   group_by(scientific) %>%
   dplyr::summarise(n = n())
+
+sfbruv <- bruv.maxn %>%
+  filter(maxn>0) %>%
+  dplyr::mutate(name = paste(genus, species))%>%
+  group_by(scientific) %>%
+  dplyr::summarise(n = n()) 
+
+sfbruv_inds <- bruv.maxn %>%
+  filter(maxn>0) %>%
+  dplyr::mutate(name = paste(genus, species))%>%
+  group_by(scientific) %>%  
+  dplyr::summarise(totalfish = sum(maxn))
+
+sfbruv_inds_n <- sfbruv %>%
+  left_join(sfbruv_inds %>% select(scientific, totalfish), by = "scientific")
+
+# Creating new columns for fam, genus and sp
+sfbruv_allnames <- separate(sfbruv_inds_n, scientific, into = c("family", "genus", "species"), sep = " ")
+
+#save
+write.csv(sfbruv_allnames, file = "outputs/PtCloates/PtCloatesBRUVS_fishlist.csv", row.names = FALSE)
+
+
 
 #to get each MAXN sample on BRUVS
 samplemaxnBRUV <- bruv.maxn %>%
