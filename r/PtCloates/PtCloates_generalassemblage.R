@@ -56,6 +56,7 @@ name <- "PtCloates"   # set study name
 #MaxN
 boss.maxn   <- read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.maxn.csv")%>%
   dplyr::mutate(method = "BOSS")%>%
+  dplyr::mutate(unique_id = paste(campaignid,sample, sep ="_"))%>%
   glimpse()
 bruv.maxn <- read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.maxn.csv")%>%
   #dplyr::mutate(method = "BRUV")%>%
@@ -216,17 +217,22 @@ fbmorphometrics <- morphometrics %>%
   dplyr::summarise(armean = mean(AspectRatio), n = n(), sd = sd(AspectRatio)) %>%
   mutate(se = sd/ sqrt(n))
  
-#joining back up fb and our bruvs sp
+#joining back up fb and our bruvs species list
 joiningbruvs <- fbmorphometrics %>%
   left_join(code_crosswalk, by = "fishbase_scientific")
 
-#Final aspect ratio BRUV output to save
+#Final aspect ratio BRUV output to save (this is our BRUV species w aspect ratio)
 PtCloates_aspectratio_bruvs <- joiningbruvs %>%
   select(-fishbase_scientific)%>%
   rename(name = caab_scientific)%>%
   select(name, everything())
 
-write.csv(PtCloates_aspectratio_bruvs, file = "outputs/PtCloates/PtCloatesaspectratioBRUVS.csv", row.names = FALSE)
+#write.csv(PtCloates_aspectratio_bruvs, file = "outputs/PtCloates/PtCloatesaspectratioBRUVS.csv", row.names = FALSE)
+
+##summary statistics for Pt Cloates aspect ratio BRUV (this is our BRUV species w aspect ratio)
+#Note this is all species (not all individual fish)
+mean_ptc_ar_bruv <- mean(PtCloates_aspectratio_bruvs$armean, na.rm = TRUE)
+median_ptc_ar_bruv <- median(PtCloates_aspectratio_bruvs$armean, na.rm = TRUE)
 
 #REPEAT ALL ABOVE BUT FOR BOSS:
 #determine caudal aspect ratio for each species on bruvs
@@ -254,7 +260,6 @@ for (caab_name in unique(boss_species$name)) {
   
 }
 
-
 mismatchesboss <- code_crosswalk_boss %>%
   filter(!fishbase_scientific %in% caab_scientific)
 
@@ -277,9 +282,14 @@ PtCloates_aspectratio_boss <- joiningboss %>%
   rename(name = caab_scientific)%>%
   select(name, everything())
 
-write.csv(PtCloates_aspectratio_boss, file = "outputs/PtCloates/PtCloatesaspectratioBOSS.csv", row.names = FALSE)
+# write.csv(PtCloates_aspectratio_boss, file = "outputs/PtCloates/PtCloatesaspectratioBOSS.csv", row.names = FALSE)
 
-#attempt at aspect ratio for individuals on bruvs (not just sp)
+##summary statistics for Pt Cloates aspect ratio BOSS (this is our BOSS species w aspect ratio)
+#Note this is all species (not all individual fish)
+mean_ptc_ar_boss <- mean(PtCloates_aspectratio_boss$armean, na.rm = TRUE)
+median_ptc_ar_boss <- median(PtCloates_aspectratio_boss$armean, na.rm = TRUE)
+
+#Aspect ratio for individuals on bruvs (not just sp) - ALL FISH INDIVIDUALS SEEN
 bruv_individuals <- bruv.maxn %>%
   filter(maxn>0) %>%
   dplyr::mutate(name = paste(genus, species)) %>%
@@ -296,7 +306,18 @@ View(bruv_individuals_expanded)
 #leftjoin w aspect ratio
 bruv_individuals_aspectratio <- left_join(bruv_individuals_expanded, PtCloates_aspectratio_bruvs, by = "name")
 
-write.csv(bruv_individuals_aspectratio, file = "outputs/PtCloates/PtCindividualsaspratioBRUV.csv", row.names = FALSE)
+#write.csv(bruv_individuals_aspectratio, file = "outputs/PtCloates/PtCindividualsaspratioBRUV.csv", row.names = FALSE)
+
+#SUMMARY STATISTICS for BRUV all individuals and aspect ratio
+mean_ptc_indi_ar_bruv <- mean(bruv_individuals_aspectratio$armean, na.rm = TRUE)
+median_ptc_indi_ar_bruv <- median(bruv_individuals_aspectratio$armean, na.rm = TRUE)
+perc25_ptc_indi_ar_bruv <- quantile(bruv_individuals_aspectratio$armean, probs = 0.25, na.rm = TRUE)
+perc75_ptc_indi_ar_bruv <- quantile(bruv_individuals_aspectratio$armean, probs = 0.75, na.rm = TRUE)
+IQR_indi_ar_bruv <- (perc75_ptc_indi_ar_bruv - perc25_ptc_indi_ar_bruv)
+IQR1.5_indi_ar_bruv <- (IQR_indi_ar_bruv * 1.5)
+summary(bruv_individuals_aspectratio$armean)
+table(is.na(bruv_individuals_aspectratio$armean))
+
 
 ##REPEAT FOR BOSS
 #attempt at aspect ratio for individuals on bruvs (not just sp)
@@ -316,10 +337,13 @@ View(boss_individuals_expanded)
 #leftjoin w aspect ratio
 boss_individuals_aspectratio <- left_join(boss_individuals_expanded, PtCloates_aspectratio_boss, by = "name")
 
-write.csv(boss_individuals_aspectratio, file = "outputs/PtCloates/PtCindividualsaspratioBOSS.csv", row.names = FALSE)
+#write.csv(boss_individuals_aspectratio, file = "outputs/PtCloates/PtCindividualsaspratioBOSS.csv", row.names = FALSE)
 
+#SUMMARY STATISTICS for BOSS all individuals and aspect ratio
 boss_ind_ar_mean<- mean(boss_individuals_aspectratio$armean, na.rm = TRUE)
 boss_ind_ar_ste_mean <- mean(boss_individuals_aspectratio$se, na.rm = TRUE)
+summary(boss_individuals_aspectratio$armean)
+table(is.na(boss_individuals_aspectratio$armean))
 
 #work out number of fish with length measurements on BRUVS
 bruvcompletelengths <-  read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.length.csv") 
