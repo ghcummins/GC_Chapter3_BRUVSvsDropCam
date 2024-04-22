@@ -57,6 +57,7 @@ name <- "PtCloates"   # set study name
 boss.maxn   <- read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.maxn.csv")%>%
   dplyr::mutate(method = "BOSS")%>%
   dplyr::mutate(unique_id = paste(campaignid,sample, sep ="_"))%>%
+  filter()
   glimpse()
 bruv.maxn <- read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.maxn.csv")%>%
   #dplyr::mutate(method = "BRUV")%>%

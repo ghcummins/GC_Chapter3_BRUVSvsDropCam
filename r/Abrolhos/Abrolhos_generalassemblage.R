@@ -57,17 +57,49 @@ name <- "Abrolhos"   # set study name
 boss.maxn   <- read.csv("data/staging/Abrolhos/2021-05_Abrolhos_BOSS.complete.maxn.csv")%>%
   dplyr::mutate(method = "BOSS")%>%
   dplyr::mutate(unique_id = paste(campaignid,sample, sep ="_"))%>%
+  dplyr::mutate(name = paste(genus, species))%>%
   dplyr::filter(location == "NPZ6")%>%
   glimpse()
+
+#MaxN BRUV
 bruv.maxn <- read.csv("data/staging/Abrolhos/2021-05_Abrolhos_stereo-BRUVs.complete.maxn.csv")%>%
   #dplyr::mutate(method = "BRUV")%>%
   dplyr::mutate(method = "BRUV",
                 sample=as.character(sample))%>%
   dplyr::mutate(unique_id = paste(campaignid,sample, sep ="_"))%>%
+  dplyr::mutate(name = paste(genus, species))%>%
   dplyr::filter(location == "NPZ6")%>%
   glimpse()
 
+#BOSS fish species seen on how many samples
+samplefishboss <- boss.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific, name) %>%
+  dplyr::summarise(n = n()) 
 
+#BOSS individual fish ie MaxN
+totalfishboss <- boss.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific, name) %>%
+dplyr::summarise(totalfish = sum(maxn))
 
+#Shallow Bank Boss maxn column (total fish) and n (no. of drops)
+SBboss_maxn_n <- samplefishboss %>%
+  left_join(totalfishboss %>% select(scientific, totalfish), by = "scientific")
 
+#BRUV fish species seen on how many samples
+samplefishbruv <- bruv.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific, name) %>%
+  dplyr::summarise(n = n()) 
+
+#BOSS individual fish ie MaxN
+totalfishbruv <- bruv.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific, name) %>%
+  dplyr::summarise(totalfish = sum(maxn))
+
+#Shallow Bank Boss maxn column (total fish) and n (no. of drops)
+SBbruv_maxn_n <- samplefishbruv %>%
+  left_join(totalfishbruv %>% select(scientific, totalfish), by = "scientific")
 
