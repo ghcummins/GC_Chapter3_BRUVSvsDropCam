@@ -68,6 +68,13 @@ bruv.maxn <- read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.maxn.csv")%>
 maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
   glimpse()
 
+# apogonbruv <- bruv.maxn %>%
+#   filter(maxn>0) %>%
+#   group_by(scientific)
+
+apogonboss <- boss.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific)
 
 #BOSS fish species seen on how many samples
 samplefishBOSS <- boss.maxn %>%
