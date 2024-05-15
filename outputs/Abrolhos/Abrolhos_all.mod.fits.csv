@@ -1,7 +1,0 @@
-"","modname","AICc","BIC","r2.vals","r2.vals.unique","edf","edf.less.1","delta.AICc","delta.BIC","wi.AICc","wi.BIC","z","reef","mean.relief","roughness","detrended","cumsum.wi"
-"BOSS.total.abundance","mean.relief",428.07713489676,434.2171283721,0.53066,NA,2.86,0,0,0,1,1,0,0,1,0,0,1
-"BRUV.total.abundance","z",266.094244080682,268.671603531168,0.59348,NA,2.8,0,0,0,0.845,0.837,1,0,0,0,0,0.845
-"BOSS.species.richness","mean.relief",201.322295084575,206.236790702716,0.61578,NA,2,0,0,0,1,1,0,0,1,0,0,1
-"BRUV.species.richness.z","z",148.664531627696,150.998693118767,0.50157,NA,2,0,0,0,0.419,0.426,1,0,0,0,0,0.419
-"BRUV.species.richness.reef","reef",148.989334018627,151.323495509662,0.49478,NA,2,0,0.325,0.325,0.356,0.362,0,1,0,0,0,0.775
-"BRUV.species.richness.detrended","detrended",150.575850541117,153.039038925585,0.48205,NA,2.35,0,1.911,2.04,0.161,0.154,0,0,0,0,1,0.936

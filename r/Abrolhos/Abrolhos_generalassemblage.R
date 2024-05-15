@@ -87,19 +87,30 @@ dplyr::summarise(totalfish = sum(maxn))
 SBboss_maxn_n <- samplefishboss %>%
   left_join(totalfishboss %>% select(scientific, totalfish), by = "scientific")
 
+#change columns so we have Family genus and species seperated - to be consistent w Pt CLoates list
+SBboss_allnames <- separate(SBboss_maxn_n, scientific, into = c("family", "genus", "species"), sep = " ")
+
+#save
+write.csv(SBboss_allnames, file = "outputs/Abrolhos/ShallowBankBOSS_fishlist.csv", row.names = FALSE)
+
 #BRUV fish species seen on how many samples
 samplefishbruv <- bruv.maxn %>%
   filter(maxn>0) %>%
   group_by(scientific, name) %>%
   dplyr::summarise(n = n()) 
 
-#BOSS individual fish ie MaxN
+#BRUV individual fish ie MaxN
 totalfishbruv <- bruv.maxn %>%
   filter(maxn>0) %>%
   group_by(scientific, name) %>%
   dplyr::summarise(totalfish = sum(maxn))
 
-#Shallow Bank Boss maxn column (total fish) and n (no. of drops)
+#Shallow Bank BRUV maxn column (total fish) and n (no. of drops)
 SBbruv_maxn_n <- samplefishbruv %>%
   left_join(totalfishbruv %>% select(scientific, totalfish), by = "scientific")
 
+#change columns so we have Family genus and species seperated - to be consistent w Pt CLoates list
+SBbruv_allnames <- separate(SBbruv_maxn_n, scientific, into = c("family", "genus", "species"), sep = " ")
+
+#save
+write.csv(SBbruv_allnames, file = "outputs/Abrolhos/ShallowBankBRUV_fishlist.csv", row.names = FALSE)

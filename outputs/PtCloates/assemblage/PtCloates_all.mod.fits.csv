@@ -1,0 +1,8 @@
+"","modname","AICc","BIC","r2.vals","r2.vals.unique","edf","edf.less.1","delta.AICc","delta.BIC","wi.AICc","wi.BIC","z","reef","tpi","roughness","detrended","cumsum.wi"
+"total.abundance_BOSS","detrended+reef+roughness",5321.61095190335,5339.50690069517,0.04517,NA,6.95,0,0,0,0.999,0.999,0,1,0,1,1,0.999
+"species.richness_BOSS","reef+roughness+tpi",424.41165307323,437.162082574616,0.20849,NA,4.87,0,0,0,0.969,0.938,0,1,1,1,0,0.969
+"total.abundance_BRUV","reef+tpi+z",1783.92866171619,1797.51010580882,0.08411,NA,5.85,0,0,0,1,0.999,1,1,1,0,0,1
+"species.richness_BRUV.tpi+z","tpi+z",508.406585652453,515.590217000475,0.29336,NA,3,0,0,1.739,0.315,0.233,1,0,1,0,0,0.315
+"species.richness_BRUV.reef+tpi+z","reef+tpi+z",508.946779883617,518.565298450102,0.29983,NA,4.06,0,0.54,4.715,0.24,0.053,1,1,1,0,0,0.555
+"species.richness_BRUV.z","z",509.012926944934,513.850774725689,0.28551,NA,2,0,0.606,0,0.232,0.556,1,0,0,0,0,0.787
+"species.richness_BRUV.reef+z","reef+z",509.185239899147,516.36893100538,0.29233,NA,3,0,0.779,2.518,0.213,0.158,1,1,0,0,0,1

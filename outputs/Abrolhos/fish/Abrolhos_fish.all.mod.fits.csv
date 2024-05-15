@@ -1,0 +1,20 @@
+"","modname","AICc","BIC","r2.vals","r2.vals.unique","edf","edf.less.1","delta.AICc","delta.BIC","wi.AICc","wi.BIC","z","reef","tpi","mean.relief","sd.relief","roughness","detrended","cumsum.wi"
+"Labridae Choerodon rubescens_BOSS.mean.relief","mean.relief",36.4051565266666,44.0073748989222,0.22364,NA,2.82,0,0,0,0.485,0.681,0,0,0,1,0,0,0,0.485
+"Labridae Choerodon rubescens_BOSS.mean.relief+tpi","mean.relief+tpi",37.3113590790685,47.0760421895172,0.28116,NA,4.58,0,0.906,3.069,0.308,0.147,0,0,1,1,0,0,0,0.793
+"Labridae Coris auricularis_BOSS","z",163.710609482371,171.297154906897,0.11921,NA,2.79,0,0,0,0.538,0.643,1,0,0,0,0,0,0,0.538
+"Labridae Suezichthys cyanolaemus_BOSS.detrended+sd.relief","detrended+sd.relief",59.3206749799904,66.9640878544806,0.10386,NA,3,0,0,0,0.704,0.811,0,0,0,0,1,0,1,0.704
+"Labridae Suezichthys cyanolaemus_BOSS.detrended+sd.relief+tpi","detrended+sd.relief+tpi",61.0530782346652,69.8711536200362,0.11041,NA,4,0,1.732,2.907,0.296,0.189,0,0,1,0,1,0,1,1
+"Lethrinidae Lethrinus miniatus_BOSS.reef+sd.relief","reef+sd.relief",56.1757147255887,65.6904432942629,0.19169,NA,4.34,0,0,0,0.612,0.681,0,1,0,0,1,0,0,0.612
+"Lethrinidae Lethrinus miniatus_BOSS.reef+sd.relief+tpi","reef+sd.relief+tpi",57.087563371641,67.2072463945035,0.10998,NA,5.06,0,0.912,1.517,0.388,0.319,0,1,1,0,1,0,0,1
+"Mullidae Parupeneus spilurus_BOSS.mean.relief","mean.relief",71.6491744735548,79.2279417474429,0.10725,NA,2.77,0,0,0,0.45,0.465,0,0,0,1,0,0,0,0.45
+"Mullidae Parupeneus spilurus_BOSS.z","z",73.1833803501205,80.7099949718225,0.04624,NA,2.69,0,1.534,1.482,0.209,0.221,1,0,0,0,0,0,0,0.659
+"Labridae Choerodon rubescens_BRUV.z","z",59.3314389873565,61.8930931208504,0.28053,NA,2.86,0,0,0,0.684,0.62,1,0,0,0,0,0,0,0.684
+"Labridae Choerodon rubescens_BRUV.sd.relief+z","sd.relief+z",60.886358710064,62.8862933452446,0.29969,NA,3.92,0,1.555,0.993,0.314,0.377,1,0,0,0,1,0,0,0.998
+"Labridae Coris auricularis_BRUV.z","z",141.669112403775,144.230759688532,0.17547,NA,2.86,0,0,0,0.429,0.357,1,0,0,0,0,0,0,0.429
+"Labridae Coris auricularis_BRUV.reef+sd.relief","reef+sd.relief",143.277434023123,145.406035616656,0.49795,NA,3.95,0,1.608,1.175,0.192,0.199,0,1,0,0,1,0,0,0.621
+"Labridae Suezichthys cyanolaemus_BRUV","mean.relief",36.3032748613933,38.8619196032668,0.25273,NA,2.91,0,0,0,0.84,0.803,0,0,0,1,0,0,0,0.84
+"Lethrinidae Lethrinus miniatus_BRUV.reef","reef",69.8650643437673,72.4232037409512,0.74127,NA,2.93,0,0,0,0.277,0.242,0,1,0,0,0,0,0,0.277
+"Lethrinidae Lethrinus miniatus_BRUV.z","z",70.2893164773429,72.876244024186,0.3495,NA,2.61,0,0.424,0.453,0.224,0.193,1,0,0,0,0,0,0,0.501
+"Lethrinidae Lethrinus miniatus_BRUV.reef+roughness","reef+roughness",71.1181671389423,73.2481727208175,0.69639,NA,3.93,0,1.253,0.825,0.148,0.16,0,1,0,0,0,1,0,0.649
+"Lethrinidae Lethrinus miniatus_BRUV.reef+sd.relief","reef+sd.relief",71.4242042054683,73.5544284388651,0.79131,NA,3.93,0,1.559,1.131,0.127,0.138,0,1,0,0,1,0,0,0.776
+"Mullidae Parupeneus spilurus_BRUV","detrended+sd.relief",30.3204902525954,32.4627396327665,0.31122,NA,3.85,0,0,0,0.98,0.978,0,0,0,0,1,0,1,0.98
