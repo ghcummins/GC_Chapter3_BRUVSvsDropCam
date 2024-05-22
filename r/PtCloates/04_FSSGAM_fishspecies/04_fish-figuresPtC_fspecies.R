@@ -3,7 +3,7 @@
 # Data:    BRUV & BOSS fish MaxN
 # Task:    Plot fish model predictions
 # author:  Claude Spencer & Gabby Cummins
-# date:    November 2023
+# date:    May 2024
 ##
 
 # Clear your environment
@@ -26,10 +26,6 @@ name <- "PtCloates"
 dat <- readRDS(paste0("outputs/PtCloates/", name, "_predicted-fish.RDS")) %>%
   # dplyr::rename(species.richness = p_richness) %>%
   mutate(z = abs(z))%>%
-  rename(BRUV.ta = p_BOSS_ta) %>%
-  mutate(BRUV.ta = ifelse(BRUV.ta < 0, 0, BRUV.ta)) %>%
-  rename(BOSS.ta =p_BRUV_ta) %>%
-  mutate(BOSS.ta = ifelse(BOSS.ta < 0, 0, BOSS.ta)) %>%
   glimpse()
 
 # Set CRS for shapefiles
@@ -64,9 +60,9 @@ npz_cols <- scale_colour_manual(values = c("National Park Zone" = "#7bbc63"),
                                 name = "Australian Marine Parks")
 
 
-#Build elements for plot 1; BRUV TOTAL ABUNDANCE
+#Build elements for plot 1; BRUV P.nebulosa
 p1 <- ggplot() +
-  geom_tile(data = dat %>% filter(z >= 71 & z <=215), aes(x, y, fill = BRUV.ta)) +
+  geom_tile(data = dat %>% filter(z >= 71 & z <=215), aes(x, y, fill = p_P_nebulosa_BRUV.fit)) +
   scale_fill_viridis(direction =-1)+
   geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
                breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
@@ -80,7 +76,7 @@ p1 <- ggplot() +
   coord_sf(xlim = c(113.4, 113.8),                              # Set plot limits
            ylim = c(-22.85, -22.75)) +
   labs(x = NULL, y = NULL, fill = "ΣMaxN",                                    # Labels  
-       colour = NULL, title = "BRUV predicted fish abundance at PtCloates, Ningaloo") +
+       colour = NULL, title = "BRUV Parapercis nebulosa abundance at PtCloates, Ningaloo") +
   annotate("text", x = c(113.65, 113.57, 113.51),          # Add contour labels manually
            y = c(-22.75, -22.75, -22.75), 
            label = c("30m", "70m", "200m"),
@@ -89,11 +85,12 @@ p1 <- ggplot() +
   theme(
     plot.title = element_text(size = 14, hjust = 0.5)  # Center title horizontally
   )
-print(p1)
-png(filename = "plots/PtCloates/PtCloates_BRUV_ta.png", 
+# print(p1)
+png(filename = "plots/PtCloates/PtCloates_BRUV_P_nebulosa.png", 
       
       
-         width = 8, height = 4, res = 300, units = "in")                             # Change the dimensions here as necessary
+         width = 8, height = 4, res = 300, units = "in")        
+p1# Change the dimensions here as necessary
 dev.off()
   
   

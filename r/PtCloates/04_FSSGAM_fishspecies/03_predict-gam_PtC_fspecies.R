@@ -1,9 +1,9 @@
 ###
 # Project: Gabby PhD Ch3 PtCloates  Habitat & Fish
 # Data:    BRUV & BOSS fish MaxN
-# Task:    Fish model prediction
+# Task:    Fish model prediction for nebulsa and miniatus at Pt Cloates
 # author:  Claude Spencer & Gabby Cummins
-# date:    November 2023
+# date:    May 2024
 ##
 
 rm(list=ls())
@@ -23,7 +23,7 @@ library(GlobalArchive)
 name <- "PtCloates"  # set study name
 
 # read in
-dat1 <- readRDS("data/staging/PtCloates/PtCloates.fish.maxn.rds")%>%
+dat1 <- readRDS("data/staging/PtCloates/PtCloates.fish.dat.maxn.rds")%>%
   dplyr::mutate(reef =rock+inverts)%>%
   mutate(z = abs(z), scientific = paste(method,scientific,sep=".")) %>%
   #mutate(status = ifelse(is.na(status), "No-take", status)) %>%
@@ -60,7 +60,7 @@ preddf <- phab
  
 
 # # Re-set the predictors for modeling----
-pred.vars <- c("z", "reef", "mean.relief", "sd.relief",
+pred.vars <- c("z", "reef", "lineartrend", "aspect",
                "tpi","roughness","detrended") 
 
 
@@ -68,38 +68,41 @@ pred.vars <- c("z", "reef", "mean.relief", "sd.relief",
 # Greater than size of maturity openness+recfish+reef+UCUR+VCUR
 unique(dat1$scientific)
 
-#L.miniatus ##PUT IN TOP MODEL PREDICTORS
-m_BOSS_ta <-gam(maxn ~ s(reef, k=3, bs = "cr"),
-                  data = dat1 %>% dplyr::filter(scientific %in% "BOSS.total.abundance"),
-                family = gaussian(link="identity"))
-summary(m_BOSS_ta)
+#Parapercis nebulosa ##PUT IN TOP MODEL PREDICTORS should k = 5? as ok at 80% zeros
+Parapercis_nebulosa_BRUV <-gam(number ~ s(reef, k=3, bs = "cr") + s(z, k = 3, bs = "cr"), 
+                  data = dat1 %>% dplyr::filter(scientific %in% "BRUV.Pinguipedidae Parapercis nebulosa"),
+                family = tw())
+summary(Parapercis_nebulosa_BRUV)
 
-m_BRUV_ta <-gam(maxn ~ s(z, k=3, bs = "cr"),
-                data = dat1 %>% dplyr::filter(scientific %in% "BRUV.total.abundance"),
-                family = gaussian(link="identity"))
-summary(m_BRUV_ta)
+Parapercis_nebulosa_BOSS <-gam(number ~ s(detrended, k=3, bs = "cr")+ s(reef, k = 3, bs = "cr"), 
+                data = dat1 %>% dplyr::filter(scientific %in% "BOSS.Pinguipedidae Parapercis nebulosa"),
+                family = tw())
+summary(Parapercis_nebulosa_BOSS)
 
 
-#Species richness
-m_BOSS_richness <- gam(maxn ~ s(reef, k = 3, bs = "cr") +s(roughness, k = 3, bs = "cr"),  
-                  data = dat1 %>% dplyr::filter(scientific %in% "BOSS.species.richness"), 
-                  family = gaussian(link="identity"))
-summary(m_BOSS_richness)
+#Lethrinus miniatus
+Lethrinus_miniatus_BRUV <- gam(number ~ s(reef, k = 3, bs = "cr") +s(z, k = 3, bs = "cr"),  
+                  data = dat1 %>% dplyr::filter(scientific %in% "BRUV.Lethrinidae Lethrinus miniatus"), 
+                  family = tw())
+summary(Lethrinus_miniatus_BRUV)
 
-m_BRUV_richness <- gam(maxn ~s(z, k = 3, bs = "cr"),
-                       data = dat1 %>% dplyr::filter(scientific %in% "BRUV.species.richness"),
-                       family = gaussian(link="identity"))
-summary(m_BRUV_richness)
+Lethrinus_miniatus_BOSS <- gam(number ~s(detrended, k = 3, bs = "cr") +s(z, k = 3, bs = "cr"), 
+                       data = dat1 %>% dplyr::filter(scientific %in% "BOSS.Lethrinidae Lethrinus miniatus"),
+                       family = tw())
+summary(Lethrinus_miniatus_BOSS)
 
 
 
 # predict, rasterise and plot ### CHANGE TO se.fit = TRUE fo individual fish species!
 preddf <- cbind(preddf, 
-                "p_BOSS_ta" = predict(m_BOSS_ta, preddf, type = "response"),
-                "p_BRUV_ta" = predict(m_BRUV_ta, preddf, type = "response"),
-                "p_BOSS_richness" = predict(m_BOSS_richness, preddf, type = "response"),
-                "p_BRUV_richness" = predict(m_BRUV_richness, preddf, type = "response"))
+                "p_P_nebulosa_BRUV" = predict(Parapercis_nebulosa_BRUV, preddf, type = "response", se.fit = T),
+                "p_P_nebulosa_BOSS" = predict(Parapercis_nebulosa_BOSS, preddf, type = "response", se.fit = T),
+                "p_L_miniatus_BRUV" = predict(Lethrinus_miniatus_BRUV, preddf, type = "response", se.fit = T),
+                "p_L_miniatus_BOSS" = predict(Lethrinus_miniatus_BOSS, preddf, type = "response", se.fit = T))
                 
+# # reduce prediction area to within sampled range
+# preddf <- preddf %>%
+#   filter(z >= 215, z <= 71)
 
 prasts <- rast(preddf %>% dplyr::select(x, y, starts_with("p_")),
                         crs = "epsg:4326") 

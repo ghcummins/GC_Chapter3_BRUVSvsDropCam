@@ -64,7 +64,8 @@ dat.response <- maxn %>%
   mutate(response = paste(scientific, method, sep = "_")) %>%
   glimpse()
 
-
+unique_names <- unique(dat.response[["response"]])
+print(unique_names)
 
 # #length
 # boss.length <- read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.length.csv")%>%
@@ -207,8 +208,10 @@ pred.vars = c("z",
               "sand", 
               "rock",
               "inverts", 
-              "mean.relief",
-              "sd.relief",
+              "aspect",
+              "lineartrend",
+              #"mean.relief",
+              #"sd.relief",
               #"slope",
               "tpi",
               "roughness",
@@ -219,18 +222,18 @@ pred.vars = c("z",
 
 # Specify the columns you want to include in corr.pred.vars
 selected_cols <- c("z", "sand", "rock", "inverts", 
-                   "mean.relief", "sd.relief",
+                   "aspect", "lineartrend",
                    "tpi", "roughness", "detrended")
 
 # Create the new data frame corr.pred.vars
 corr.pred.vars <- dat.maxn %>%
   select(all_of(selected_cols))
-##take out slope
+##take out slope and sand and put rock and inverts as reef
 
 # Check for correlation of predictor variables- remove anything highly correlated (>0.95)---
 round(cor(corr.pred.vars[,pred.vars]), 2)
 # nothing is highly correlated 
-
+#save corr table GC
 # Plot of likely transformations - thanks to Anna Cresswell for this loop!
 par(mfrow = c(3, 2))
 for (i in pred.vars) {

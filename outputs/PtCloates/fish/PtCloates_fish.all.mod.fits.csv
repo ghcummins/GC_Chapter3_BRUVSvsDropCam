@@ -1,15 +1,20 @@
-"","modname","AICc","BIC","r2.vals","r2.vals.unique","edf","edf.less.1","delta.AICc","delta.BIC","wi.AICc","wi.BIC","z","reef","tpi","mean.relief","sd.relief","roughness","detrended","cumsum.wi"
-"Lethrinidae Gymnocranius sp1_BRUV","mean.relief+tpi+z",313.593779737073,329.623361766592,0.17705,NA,4.94,0,0,0,0.753,0.675,1,0,1,1,0,0,0,0.753
-"Lethrinidae Lethrinus miniatus_BOSS.sd.relief+z","sd.relief+z",36.4495884586929,51.8986052012899,0.02106,NA,3.78,0,0,0,0.553,0.806,1,0,0,0,1,0,0,0.553
-"Lethrinidae Lethrinus miniatus_BOSS.roughness+sd.relief+tpi","roughness+sd.relief+tpi",38.0999685443194,56.0462474205555,0.02968,NA,4.82,0,1.65,4.148,0.242,0.101,0,0,1,0,1,1,0,0.795
-"Lethrinidae Lethrinus miniatus_BRUV","mean.relief+z",306.844300249508,322.823212474751,0.19579,NA,4.77,0,0,0,0.538,0.516,1,0,0,1,0,0,0,0.538
-"Nemipteridae Pentapodus nagasakiensis_BRUV.mean.relief+tpi+z","mean.relief+tpi+z",224.768421537922,242.631092761943,0.10238,NA,5.51,0,0,4.056,0.459,0.066,1,0,1,1,0,0,0,0.459
-"Nemipteridae Pentapodus nagasakiensis_BRUV.tpi+z","tpi+z",225.739089059867,239.603054391128,0.11002,NA,3.68,0,0.971,1.028,0.282,0.298,1,0,1,0,0,0,0,0.741
-"Pinguipedidae Parapercis nebulosa_BOSS.detrended","detrended",118.086168496867,128.975356885605,0.03651,NA,2.07,0,0,0,0.116,0.511,0,0,0,0,0,0,1,0.116
-"Pinguipedidae Parapercis nebulosa_BOSS.detrended+z","detrended+z",118.592330022703,133.344137071508,0.04259,NA,3.43,0,0.506,4.369,0.09,0.058,1,0,0,0,0,0,1,0.206
-"Pinguipedidae Parapercis nebulosa_BOSS.detrended+roughness","detrended+roughness",118.964027245187,133.617682277186,0.04319,NA,3.39,0,0.878,4.642,0.075,0.05,0,0,0,0,0,1,1,0.281
-"Pinguipedidae Parapercis nebulosa_BOSS.z","z",119.288229401878,132.276950636405,0.02671,NA,2.81,0,1.202,3.302,0.063,0.098,1,0,0,0,0,0,0,0.344
-"Pinguipedidae Parapercis nebulosa_BOSS.detrended+reef","detrended+reef",119.522494098659,136.294455130323,0.06038,NA,4.05,0,1.436,7.319,0.056,0.013,0,1,0,0,0,0,1,0.4
-"Pinguipedidae Parapercis nebulosa_BOSS.detrended+sd.relief","detrended+sd.relief",119.569343134198,136.512606002184,0.05509,NA,4.13,0,1.483,7.537,0.055,0.012,0,0,0,0,1,0,1,0.455
-"Pinguipedidae Parapercis nebulosa_BOSS.detrended+reef+z","detrended+reef+z",119.627513570574,137.384515584552,0.05592,NA,4.67,0,1.541,8.409,0.054,0.008,1,1,0,0,0,0,1,0.509
-"Pinguipedidae Parapercis nebulosa_BRUV","mean.relief+z",247.508648779722,263.516986960387,0.10441,NA,4.86,0,0,0,0.748,0.893,1,0,0,1,0,0,0,0.748
+"","modname","AICc","BIC","r2.vals","r2.vals.unique","edf","edf.less.1","delta.AICc","delta.BIC","wi.AICc","wi.BIC","z","reef","tpi","aspect","roughness","detrended","cumsum.wi"
+"Lethrinidae Gymnocranius sp1_BRUV.reef+tpi+z","reef+tpi+z",317.106131896772,334.883400057814,0.16843,NA,5.54,0,0,0,0.57,0.605,1,1,1,0,0,0,0.57
+"Lethrinidae Gymnocranius sp1_BRUV.aspect+reef+z","aspect+reef+z",318.097905206326,337.839612350979,0.17339,NA,6.23,0,0.992,2.956,0.347,0.138,1,1,0,1,0,0,0.917
+"Lethrinidae Lethrinus miniatus_BOSS.detrended+z","detrended+z",47.7280630274199,63.238776878259,0.01737,NA,3.84,0,0,0,0.707,0.724,1,0,0,0,0,1,0.707
+"Lethrinidae Lethrinus miniatus_BOSS.tpi+z","tpi+z",49.7167751765997,65.206348178818,0.01718,NA,3.82,0,1.989,1.968,0.262,0.271,1,0,1,0,0,0,0.969
+"Lethrinidae Lethrinus miniatus_BRUV.reef+z","reef+z",309.924349861553,325.898706626752,0.18862,NA,4.76,0,0,0,0.356,0.289,1,1,0,0,0,0,0.356
+"Lethrinidae Lethrinus miniatus_BRUV.aspect+reef+z","aspect+reef+z",309.925077794537,325.900066435849,0.18862,NA,5.76,1,0.001,0.001,0.356,0.289,1,1,0,1,0,0,0.712
+"Nemipteridae Pentapodus nagasakiensis_BRUV.tpi+z","tpi+z",225.739086470478,239.603046304296,0.11002,NA,3.68,0,0,1.028,0.345,0.177,1,0,1,0,0,0,0.345
+"Nemipteridae Pentapodus nagasakiensis_BRUV.aspect+tpi+z","aspect+tpi+z",225.740001687072,239.605122439058,0.11001,NA,4.68,1,0.001,1.03,0.345,0.177,1,0,1,1,0,0,0.69
+"Pinguipedidae Parapercis nebulosa_BOSS.aspect+detrended","aspect+detrended",118.081881877086,128.962308175557,0.03651,NA,3.07,1,0,0,0.133,0.331,0,0,0,1,0,1,0.133
+"Pinguipedidae Parapercis nebulosa_BOSS.detrended","detrended",118.08616847968,128.975356868433,0.03651,NA,2.07,0,0.004,0.013,0.132,0.328,0,0,0,0,0,1,0.265
+"Pinguipedidae Parapercis nebulosa_BOSS.detrended+z","detrended+z",118.592330022704,133.34413707151,0.04259,NA,3.43,0,0.51,4.382,0.103,0.037,1,0,0,0,0,1,0.368
+"Pinguipedidae Parapercis nebulosa_BOSS.detrended+roughness","detrended+roughness",118.964026280003,133.617681311771,0.04319,NA,3.39,0,0.882,4.655,0.085,0.032,0,0,0,0,1,1,0.453
+"Pinguipedidae Parapercis nebulosa_BOSS.z","z",119.288229401878,132.276950636405,0.02671,NA,2.81,0,1.206,3.315,0.073,0.063,1,0,0,0,0,0,0.526
+"Pinguipedidae Parapercis nebulosa_BOSS.detrended+reef","detrended+reef",119.522486947453,136.294447980323,0.06038,NA,4.05,0,1.441,7.332,0.065,0.008,0,1,0,0,0,1,0.591
+"Pinguipedidae Parapercis nebulosa_BOSS.aspect+detrended+reef","aspect+detrended+reef",119.522731169553,136.294989238193,0.06038,NA,5.05,1,1.441,7.333,0.065,0.008,0,1,0,1,0,1,0.656
+"Pinguipedidae Parapercis nebulosa_BOSS.detrended+reef+z","detrended+reef+z",119.627513583962,137.384515597946,0.05592,NA,4.67,0,1.546,8.422,0.061,0.005,1,1,0,0,0,1,0.717
+"Pinguipedidae Parapercis nebulosa_BRUV.reef+z","reef+z",271.763803528106,287.752271502997,0.09375,NA,4.82,0,0,0,0.388,0.454,1,1,0,0,0,0,0.388
+"Pinguipedidae Parapercis nebulosa_BRUV.aspect+reef+z","aspect+reef+z",271.76434168723,287.753333814864,0.09375,NA,5.82,1,0.001,0.001,0.388,0.454,1,1,0,1,0,0,0.776
+"Pinguipedidae Parapercis nebulosa_BRUV.reef+tpi+z","reef+tpi+z",272.884393925965,290.957858793051,0.08977,NA,5.84,0,1.121,3.206,0.222,0.091,1,1,1,0,0,0,0.998
