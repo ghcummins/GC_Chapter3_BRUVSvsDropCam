@@ -193,27 +193,29 @@ i1 <- ggplot() +
   geom_sf(data = mpa, aes(fill = ZoneName), alpha = 3/5, colour = NA) +
   nmpa_fills +
   labs(x = NULL, y = NULL, fill = "Australian Marine Parks") +
-  guides(fill = guide_legend(override.aes = list(size = 0.2), ncol = 2)) +
+  guides(fill = guide_legend(override.aes = list(size = 0.5), ncol = 2)) +
   new_scale_fill() +
   geom_sf(data = wampa, aes(fill = waname), alpha = 2/5, colour = NA) +
   wampa_fills +
   labs(fill = "State Marine Parks") +
-  guides(fill = guide_legend(override.aes = list(size = 0.2), ncol = 2)) +
+  guides(fill = guide_legend(override.aes = list(size = 0.5), ncol = 2)) +
   new_scale_fill() +
   geom_sf(data = cwatr, colour = "firebrick", alpha = 4/5, size = 0.2) +
-  geom_point(data = ninbruvs, colour = "#D55E00", aes(longitude, latitude),
-             alpha = 0.6, shape = 10, size = 0.1) +
-  geom_point(data = ninboss, colour = "#56B4E9", aes(longitude, latitude), 
-             alpha = 0.6, shape = 10, size = 0.1) +
+  geom_point(data = ninbruvs, aes(longitude, latitude, fill ="BRUV"),
+             shape = 21, size = 1, colour="grey3") +
+  geom_point(data = ninboss, aes(longitude, latitude, fill = "BOSS"), 
+             shape = 21, size = 1, colour = "grey3") +
   coord_sf(xlim = c(113.4, 113.75), 
            ylim = c(-22.65, -22.85)) +                           
   theme_minimal() +
-  theme(axis.text = element_text(size = 3),
-        legend.title = element_text(size = 4),
-        legend.text = element_text(size = 4),
-        legend.key.size = unit(0.2, "cm"))
+  theme(axis.text = element_text(size = 5),
+        legend.title = element_text(size = 7),
+        legend.text = element_text(size = 6),
+        legend.key.size = unit(0.2, "cm")) +
+scale_fill_manual(name = "Observation Type", 
+                   values = c("BRUV" = "grey50", "BOSS" = "ivory1")) +
+  guides(color = guide_legend(override.aes = list(fill = c("grey50", "ivory1"), shape = 21, size = 1)))
 i1 
-
 
 # Inset 2 - Abrolhos
 i2 <- ggplot() +
@@ -231,25 +233,28 @@ i2 <- ggplot() +
   geom_sf(data = mpa, aes(fill = factor(ZoneName)), alpha = 3/5, colour = NA) +
   nmpa_fills +
   labs(x = NULL, y = NULL, fill = "Australian Marine Parks") +
-  guides(fill = guide_legend(override.aes = list(size = 0.2), ncol = 2)) +
+  guides(fill = guide_legend(override.aes = list(size = 0.5), ncol = 2)) +
   new_scale_fill() +
   geom_sf(data = wampa, aes(fill = factor(waname)), alpha = 2/5, colour = NA) +
   wampa_fills +
   labs(fill = "State Marine Parks") +
-  guides(fill = guide_legend(override.aes = list(size = 0.2), ncol = 2)) +
+  guides(fill = guide_legend(override.aes = list(size = 0.5), ncol = 2)) +
   new_scale_fill() +
   geom_sf(data = cwatr, colour = "firebrick", alpha = 4/5, size = 0.2) +
-  geom_point(data = abrboss, colour = "#56B4E9", aes(longitude, latitude),
-             alpha = 0.6, shape = 10, size = 0.1) +
-  geom_point(data = abrbruvs, colour = "#D55E00", aes(longitude, latitude),
-             alpha = 0.6, shape = 10, size = 0.1) +
+  geom_point(data = abrboss, aes(longitude, latitude, fill = "BOSS"),
+             colour = "grey3", shape = 21, size = 1) +
+  geom_point(data = abrbruvs, aes(longitude, latitude, fill = "BRUV"),
+             colour = "grey3", shape = 21, size = 1) +
   coord_sf(xlim = c(113.2, 113.8), 
            ylim = c(-28.0, -28.35)) +                           
   theme_minimal() +
-  theme(axis.text = element_text(size = 3),
-        legend.title = element_text(size = 4),
-        legend.text = element_text(size = 4),
-        legend.key.size = unit(0.2, "cm"))
+  theme(axis.text = element_text(size = 5),
+        legend.title = element_text(size = 7),
+        legend.text = element_text(size = 6),
+        legend.key.size = unit(0.2, "cm"))+
+  scale_fill_manual(name = "Observation Type", 
+                    values = c("BRUV" = "grey50", "BOSS" = "ivory1")) +
+  guides(color = guide_legend(override.aes = list(fill = c("grey50", "ivory1"), shape = 21, size = 1)))
 i2
 
 
@@ -258,6 +263,10 @@ swcboss_sf <- st_as_sf(swcboss, coords = c("longitude", "latitude"), crs = 4326,
 
 swcbruvs_sf <- st_as_sf(swcbruvs, coords = c("longitude", "latitude"), crs = 4326, remove =F) %>%
   st_crop(xmin = 114.72, xmax = 114.95, ymin = -34.15, ymax = -34.05)
+
+swcbruvs_df <- st_drop_geometry(swcbruvs_sf)
+
+swcboss_df <- st_drop_geometry(swcboss_sf)
 
 # # Define the bounding box coordinates
 # bbox <- st_bbox(c(xmin = 114.72, xmax = 114.95, ymin = -34.15, ymax = -34.05), crs = st_crs(4326))
@@ -283,27 +292,30 @@ i3 <- ggplot() +
   geom_sf(data = mpa, aes(fill = ZoneName), alpha = 3/5, colour = NA) +
   nmpa_fills +
   labs(x = NULL, y = NULL, fill = "Australian Marine Parks") +
-  guides(fill = guide_legend(override.aes = list(size = 0.2), ncol = 2)) +
+  guides(fill = guide_legend(override.aes = list(size = 0.5), ncol = 2)) +
   new_scale_fill() +
   geom_sf(data = wampa, aes(fill = waname), alpha = 2/5, colour = NA) +
   wampa_fills +
   labs(fill = "State Marine Parks") +
-  guides(fill = guide_legend(override.aes = list(size = 0.2), ncol = 2)) +
+  guides(fill = guide_legend(override.aes = list(size = 0.5), ncol = 2)) +
   new_scale_fill() +
   geom_sf(data = cwatr, colour = "firebrick", alpha = 4/5, size = 0.2) +
-  geom_sf(data = swcboss_sf, colour = "#56B4E9", fill = NA,
-             alpha = 0.6, shape = 10, size = 0.1)  +
-  # geom_point(data = swcboss_sf, colour = "#56B4E9", aes(longitude, latitude),
-  #         alpha = 0.6, shape = 10, size = 0.1) +
-  geom_sf(data = swcbruvs_sf, colour = "#D55E00",
-             alpha = 0.6, shape = 10, size = 0.1) +
+  # geom_sf(data = swcboss_sf, fill = "BOSS", 
+  #         colour = "grey3", shape = 21, size = 1)  +
+   geom_point(data = swcboss_sf, aes(longitude, latitude, fill = "BOSS"),
+           colour = "grey3", shape = 21, size = 1) +
+  geom_point(data = swcbruvs_sf, aes(longitude, latitude, fill = "BRUV"),
+             colour = "grey3", shape = 21, size = 1) +
   coord_sf(xlim = c(114.7, 115.05),
            ylim = c(-34.0, -34.2)) +
   theme_minimal() +
-  theme(axis.text = element_text(size = 3),
-        legend.title = element_text(size = 4),
-        legend.text = element_text(size = 4),
-        legend.key.size = unit(0.2, "cm"))
+  theme(axis.text = element_text(size = 5),
+        legend.title = element_text(size = 7),
+        legend.text = element_text(size = 6),
+        legend.key.size = unit(0.2, "cm"))+
+  scale_fill_manual(name = "Observation Type", 
+                    values = c("BRUV" = "grey50", "BOSS" = "ivory1")) +
+  guides(color = guide_legend(override.aes = list(fill = c("grey50", "ivory1"), shape = 21, size = 1)))
 i3
 
 
@@ -351,13 +363,16 @@ design <- "
 # i1 + i2 + i3 +plot_layout(design = design, guides = "collect")
 # i1 /i2 /i3
 
-inset1 <- i5 + inset_element(i4, left = 0.01, bottom = 0.75, right = 0.4, top = 1)+
-  theme(plot.margin = margin(5,5,5,5))
+inset1 <- i5 + inset_element(i4, left = 0.01, bottom = 0.75, right = 0.4, top = 1)
+  # theme(plot.margin = margin(5,5,5,5))
 inset1
 
-layout <- i1 + i2  +i3 + inset1 + guide_area() + plot_layout(design = design, guides = "collect")
+layout <- i1 + i2  +i3 + inset1 + plot_layout(design = design, guides = "collect")
 layout
 
-ggsave("plots/Overall-fish4-sampling-locations.png", dpi = 300, width = 4, height = 6)
+# layout <- i1 + i2  +i3 + inset1 + guide_area() + plot_layout(design = design, guides = "collect")
+# layout
+
+ggsave("plots/Overall-fish6-sampling-locations.png", dpi = 300, width = 6, height = 8)
 
 

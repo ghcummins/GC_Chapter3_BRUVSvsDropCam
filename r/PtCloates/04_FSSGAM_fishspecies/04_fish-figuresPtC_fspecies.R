@@ -19,6 +19,8 @@ library(scales)
 library(dismo)
 library(viridis)
 library(patchwork)
+library(png)
+library(grid)
 
 # Set your study name
 name <- "PtCloates"                                                      
@@ -60,6 +62,9 @@ npz_cols <- scale_colour_manual(values = c("National Park Zone" = "#7bbc63"),
                                 name = "Australian Marine Parks")
 
 
+p.neb <- readPNG("data/images/Parapercis nebulosa.png")
+p.neb_grob <- rasterGrob(p.neb, width = unit(1, "cm"), height = unit(0.5, "cm"), interpolate = TRUE)
+
 #Build elements for plot 1; BRUV P.nebulosa
 p1 <- ggplot() +
   geom_tile(data = dat %>% filter(z >= 71 & z <=215), aes(x, y, fill = p_P_nebulosa_BRUV.fit)) +
@@ -68,125 +73,145 @@ p1 <- ggplot() +
                breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
                colour = "#000000",
                alpha = 1, size = 0.5) + 
-  
-  geom_sf(data = npz, fill = NA, colour = "darkgreen", linewidth = 0.5) +  
+    geom_sf(data = npz, fill = NA, colour = "darkgreen", linewidth = 0.5) +  
   npz_cols+
   new_scale_colour() +
   geom_sf(data = aus, fill = "seashell2", colour = "grey80", linewidth = 0.5) +      # Add national park zones
   coord_sf(xlim = c(113.4, 113.8),                              # Set plot limits
-           ylim = c(-22.85, -22.75)) +
-  labs(x = NULL, y = NULL, fill = "ΣMaxN",                                    # Labels  
-       colour = NULL, title = "BRUV Parapercis nebulosa abundance at PtCloates, Ningaloo") +
+           ylim = c(-22.81, -22.67)) +
+  labs(x = NULL, y = NULL, fill = "BRUV\nrelative\nabundance",                                    # Labels  
+       colour = NULL) +
   annotate("text", x = c(113.65, 113.57, 113.51),          # Add contour labels manually
            y = c(-22.75, -22.75, -22.75), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
+  annotate("text", x = 113.4, y = -22.67, label = expression(italic("P. nebulosa")),
+           hjust = 0, size = 2.5, colour = "#000000") + # Add italicized text at top left
+  annotation_custom(p.neb_grob, xmin = 113.39, xmax = 113.45, ymin = -22.70, ymax = -22.68) +
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 14, hjust = 0.5)  # Center title horizontally
+    plot.title = element_text(size = 14, hjust = 0.5),# Center title horizontally
+    legend.title = element_text(hjust = 0.3, size =7),
+    legend.text = element_text(size =6)
   )
-# print(p1)
+ print(p1)
 png(filename = "plots/PtCloates/PtCloates_BRUV_P_nebulosa.png", 
       
       
-         width = 8, height = 4, res = 300, units = "in")        
+         width = 8, height = 4, res = 600, units = "in")        
 p1# Change the dimensions here as necessary
 dev.off()
   
   
-#Build elements for plot 1; BOSS TOTAL ABUNDANCE
+#Build elements for plot 1; BOSS relative abundance P. nebulosa
 p2 <- ggplot() +
-  geom_tile(data = dat %>% filter(z >= 71 & z <=215), aes(x, y, fill = BOSS.ta)) +
-  scale_fill_viridis(direction = -1, na.value = "transparent", limits= c(0,160))+
+  geom_tile(data = dat %>% filter(z >= 71 & z <=215), aes(x, y, fill = p_P_nebulosa_BOSS.fit)) +
+  scale_fill_viridis(direction = -1)+
   #scale_fill_gradientn(colours = c("#fde725", "#21918c", "#440154"), na.value = "transparent") +
   geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
                breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
                colour = "#000000",
                alpha = 1, size = 0.5) + 
-  
-  geom_sf(data = npz, fill = NA, colour = "darkgreen", linewidth = 0.5) +  
+    geom_sf(data = npz, fill = NA, colour = "darkgreen", linewidth = 0.5) +  
   npz_cols+
   new_scale_colour() +
   geom_sf(data = aus, fill = "seashell2", colour = "grey80", linewidth = 0.5) +      # Add national park zones
   coord_sf(xlim = c(113.4, 113.8),                              # Set plot limits
-           ylim = c(-22.85, -22.75)) +
-  labs(x = NULL, y = NULL, fill = "ΣMaxN",                                    # Labels  
-       colour = NULL, title = "BOSS predicted fish abundance at Pt Cloates, Ningaloo") +
+           ylim = c(-22.81, -22.67)) +
+  labs(x = NULL, y = NULL, fill = "BOSS\nrelative\nabundance",                                    # Labels  
+       colour = NULL) +
   annotate("text", x = c(113.65, 113.57, 113.51),          # Add contour labels manually
            y = c(-22.75, -22.75, -22.75), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
+  annotate("text", x = 113.4, y = -22.67, label = expression(italic("P. nebulosa")),
+           hjust = 0, size = 2.5, colour = "#000000") +
+  annotation_custom(p.neb_grob, xmin = 113.39, xmax = 113.45, ymin = -22.70, ymax = -22.68) +
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 14, hjust = 0.5)  # Center title horizontally
-  )
+    plot.title = element_text(size = 14, hjust = 0.5),  # Center title horizontally
+    legend.title = element_text(hjust = 0.3, size = 7),
+    legend.text = element_text(size =6),
+    axis.text = element_text(size =7)
+    )
 print(p2)
-png(filename = "plots/PtCloates/PtCloates_BOSS_ta.png", 
-    
-    
-    width = 10, height = 12, res = 300, units = "in")                             # Change the dimensions here as necessary
+png(filename = "plots/PtCloates/PtCloates_BOSS_P_nebulosa.png", 
+        width = 8, height =4, res = 600, units = "in")                             # Change the dimensions here as necessary
 dev.off()
+
+l.min <- readPNG("data/images/Lethrinus miniatus.png")
+l.min_grob <- rasterGrob(l.min, width = unit(1.5, "cm"), height = unit(0.75, "cm"), interpolate = TRUE)
   
-#Build elements for plot 3; BRUV SPECIES RICHNESS
+#Build elements for plot 3; BRUV L. miniatis. fit
 p3 <- ggplot() +
-  geom_tile(data = dat %>% filter(z >= 71 & z <=215), aes(x, y, fill = p_BRUV_richness)) +
-  scale_fill_viridis(direction =-1, na.value = "transparent", limits= c(0,40)) +
+  geom_tile(data = dat %>% filter(z >= 71 & z <=215), aes(x, y, fill = p_L_miniatus_BRUV.fit)) +
+  scale_fill_viridis(direction =-1) +
   geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
                breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
                colour = "#000000",
                alpha = 1, size = 0.5) + 
-  
   geom_sf(data = npz, fill = NA, colour = "darkgreen", linewidth = 0.5) +  
   npz_cols+
   new_scale_colour() +
   geom_sf(data = aus, fill = "seashell2", colour = "grey80", linewidth = 0.5) +      # Add national park zones
   coord_sf(xlim = c(113.4, 113.8),                              # Set plot limits
-           ylim = c(-22.85, -22.75)) +
-  labs(x = NULL, y = NULL, fill = "N. fish species",                                    # Labels  
-       colour = NULL, title = "BRUV predicted species richness at Point Cloates, Ningaloo") +
-  annotate("text", x = c(113.65, 113.57, 113.51),          # Add contour labels manually
-           y = c(-22.75, -22.75, -22.75), 
+           ylim = c(-22.81, -22.66)) +
+  labs(x = NULL, y = NULL, fill = "BRUV\nrelative\nabundance",                                    # Labels  
+       colour = NULL) +
+  annotate("text", x = c(113.63, 113.57, 113.51),          # Add contour labels manually
+           y = c(-22.7, -22.7, -22.7), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
+  annotate("text", x = 113.4, y = -22.66, label = expression(italic("L. miniatus")),
+           hjust = 0, size = 2.5, colour = "#000000") +
+  annotation_custom(l.min_grob, xmin = 113.4, xmax = 113.45, ymin = -22.705, ymax = -22.665) +
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 14, hjust = 0.5)  # Center title horizontally
-  )
+    #plot.title = element_text(size = 14, hjust = 0.5),  # Center title horizontally
+    legend.title = element_text(hjust = 0.3, size = 7),
+    legend.text = element_text(size =6),
+    axis.text = element_text(size =7)
+    )
 print(p3)
-png(filename = "plots/PtCloates/PtCloates_BRUV_richness.png", 
+png(filename = "plots/PtCloates/PtCloates_BRUV_L_miniatus.png", 
     
     
-    width = 8, height = 4, res = 300, units = "in")                             # Change the dimensions here as necessary
+    width = 8, height = 4, res = 600, units = "in")                             # Change the dimensions here as necessary
 dev.off()  
 
 
-#Build elements for plot 4; BRUV SPECIES RICHNESS
+#Build elements for plot 4; L miniatus BOSS
 p4 <- ggplot() +
-  geom_tile(data = dat %>% filter(z >= 71 & z <=215), aes(x, y, fill = p_BOSS_richness)) +
-  scale_fill_viridis(direction =-1, na.value = "transparent", limits= c(0,40)) +
+  geom_tile(data = dat %>% filter(z >= 71 & z <=215), aes(x, y, fill = p_L_miniatus_BOSS.fit)) +
+  scale_fill_viridis(direction =-1) +
   geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
                breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
                colour = "#000000",
                alpha = 1, size = 0.5) + 
-  
-  geom_sf(data = npz, fill = NA, colour = "darkgreen", linewidth = 0.5) +  
+    geom_sf(data = npz, fill = NA, colour = "darkgreen", linewidth = 0.5) +  
   npz_cols+
   new_scale_colour() +
   geom_sf(data = aus, fill = "seashell2", colour = "grey80", linewidth = 0.5) +      # Add national park zones
   coord_sf(xlim = c(113.4, 113.8),                              # Set plot limits
-           ylim = c(-22.85, -22.75)) +
-    labs(x = NULL, y = NULL, fill = "N. fish species",                                    # Labels  
-       colour = NULL, title = "BOSS predicted species richness at Point Cloates, Ningaloo") +
+           ylim = c(-22.81, -22.66)) +
+    labs(x = NULL, y = NULL, fill = "BOSS\nrelative\nabundance",                                    # Labels  
+       colour = NULL) +
   annotate("text", x = c(113.65, 113.57, 113.51),          # Add contour labels manually
            y = c(-22.75, -22.75, -22.75), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
+  annotate("text", x = 113.4, y = -22.66, label = expression(italic("L. miniatus")),
+           hjust = 0, size = 2.5, colour = "#000000") +
+  annotation_custom(l.min_grob, xmin = 113.4, xmax = 113.45, ymin = -22.705, ymax = -22.665) +
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 14, hjust = 0.5)  # Center title horizontally
-  )
+    plot.title = element_text(size = 14, hjust = 0.5),  # Center title horizontally
+    legend.title = element_text(hjust = 0.3, size = 7),
+    legend.text = element_text(size =6),
+    axis.text = element_text(size =7)
+    )
 print(p4)
-png(filename = "plots/PtCloates/PtCloates_BOSS_richness.png", 
+png(filename = "plots/PtCloates/PtCloates_BOSS_L_miniatus.png", 
     
     
     width = 8, height = 4, res = 300, units = "in")                             # Change the dimensions here as necessary

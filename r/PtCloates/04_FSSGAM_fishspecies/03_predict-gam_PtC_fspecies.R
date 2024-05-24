@@ -60,7 +60,7 @@ preddf <- phab
  
 
 # # Re-set the predictors for modeling----
-pred.vars <- c("z", "reef", "lineartrend", "aspect",
+pred.vars <- c("z", "reef", "aspect",
                "tpi","roughness","detrended") 
 
 
