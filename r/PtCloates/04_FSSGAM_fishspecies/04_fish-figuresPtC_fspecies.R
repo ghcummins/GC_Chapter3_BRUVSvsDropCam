@@ -42,7 +42,7 @@ aus     <- st_read("data/spatial/shapefiles/cstauscd_r.mif") %>%                
 # aus     <- aus[aus$FEAT_CODE == "mainland" ]                                   # Add islands here if needed
 aumpa   <- st_read("data/spatial/shapefiles/AustraliaNetworkMarineParks.shp")   # All aus mpas
 st_crs(aus) <- st_crs(aumpa)                                                    # Set CRS to match - WGS84 and GDA94 effectively the same
-e <- ext(112, 116, -30, -26)                                                 # Change your extent here
+e <- ext(112, 116, -23, -22)                                                 # Change your extent here
 mpa <- st_crop(aumpa, e)                                                        # All commonwealth zones in the study area
 npz <- mpa[mpa$ZoneName %in% "National Park Zone", ]                            # Only National Park Zones in the study area
 
@@ -92,7 +92,8 @@ p1 <- ggplot() +
   theme(
     plot.title = element_text(size = 14, hjust = 0.5),# Center title horizontally
     legend.title = element_text(hjust = 0.3, size =7),
-    legend.text = element_text(size =6)
+    legend.text = element_text(size =6),
+    axis.text = element_text(size =7)
   )
  print(p1)
 png(filename = "plots/PtCloates/PtCloates_BRUV_P_nebulosa.png", 
@@ -136,8 +137,91 @@ p2 <- ggplot() +
     )
 print(p2)
 png(filename = "plots/PtCloates/PtCloates_BOSS_P_nebulosa.png", 
-        width = 8, height =4, res = 600, units = "in")                             # Change the dimensions here as necessary
+    
+        width = 8, height =4, res = 600, units = "in")  # Change the dimensions here as necessary
+p2
 dev.off()
+
+#normalise the inverse of st.error
+dat1 <- dat %>%
+  dplyr::mutate(ppneb.BOSS.alpha = 1 - (p_P_nebulosa_BOSS.se.fit - min(p_P_nebulosa_BOSS.se.fit))/(max(p_P_nebulosa_BOSS.se.fit) - min(p_P_nebulosa_BOSS.se.fit)))
+summary(dat1)
+
+##NEW PLOT WITH SE AND MEAN
+p2.5 <- ggplot() +
+  geom_tile(data = dat1 %>% filter (z >= 71 & z <= 215), aes(x, y, fill = p_P_nebulosa_BOSS.fit, alpha =   ppneb.BOSS.alpha))+
+  scale_alpha_continuous(range = c(0, 1), name = "Standard error")+
+  scale_fill_gradient(low = "white", high ="forestgreen", name = "BOSS mean relative abundance")+
+  geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
+              breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
+              colour = "#000000",
+              alpha = 1, size = 0.5) + 
+  geom_sf(data = npz, fill = NA, colour = "darkgreen", linewidth = 0.5) +  
+  npz_cols+
+  new_scale_colour() +
+  geom_sf(data = aus, fill = "seashell2", colour = "grey80", linewidth = 0.5) +      # Add national park zones
+  coord_sf(xlim = c(113.4, 113.8),                              # Set plot limits
+           ylim = c(-22.81, -22.67)) +
+  labs(x = NULL, y = NULL, fill = "BOSS\nrelative\nabundance",                                    # Labels  
+       colour = NULL) +
+  annotate("text", x = c(113.65, 113.57, 113.51),          # Add contour labels manually
+           y = c(-22.75, -22.75, -22.75), 
+           label = c("30m", "70m", "200m"),
+           size = 2, colour = "#000000") +
+  annotate("text", x = 113.4, y = -22.67, label = expression(italic("P. nebulosa")),
+           hjust = 0, size = 2.5, colour = "#000000") +
+  annotation_custom(p.neb_grob, xmin = 113.39, xmax = 113.45, ymin = -22.70, ymax = -22.68) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, hjust = 0.5),  # Center title horizontally
+    legend.title = element_text(hjust = 0.3, size = 7),
+    legend.text = element_text(size =6),
+    axis.text = element_text(size =7)
+  )
+print(p2.5)
+png(filename = "plots/PtCloates/PtCloates_BOSS_P_nebulosa_meanSE_take3.png", 
+    
+    width = 8, height =4, res = 600, units = "in")  # Change the dimensions here as necessary
+p2.5
+dev.off()
+
+
+##NEW PLOT WITH SE AND MEAN ### DOESNT WORK DO SIDE BY SIDE!!!!!!
+p2.6 <- ggplot() +
+  geom_tile(data = dat1 %>% filter(z >= 71 & z <= 215), 
+            aes(x, y, fill = p_P_nebulosa_BOSS.fit, alpha = ppneb.BOSS.alpha)) +
+ 
+  scale_fill_viridis(option = "viridis", direction = -1, name = "BOSS mean relative abundance") +
+  scale_alpha_continuous(range = c(0, 1), name = "Standard Error (SE)") +
+  geom_contour(data = bathdf, aes(x = x, y = y, z = Z), 
+               breaks = c(-30, -70, -200), 
+               colour = "#000000", alpha = 1, size = 0.5) + 
+  geom_sf(data = npz, fill = NA, colour = "darkgreen", linewidth = 0.5) +  
+  npz_cols +
+  new_scale_colour() +
+  geom_sf(data = aus, fill = "seashell2", colour = "grey80", linewidth = 0.5) +  
+  coord_sf(xlim = c(113.4, 113.8), ylim = c(-22.81, -22.67)) +
+  labs(x = NULL, y = NULL, fill = "BOSS\nrelative\nabundance", colour = NULL) +
+  annotate("text", x = c(113.65, 113.57, 113.51), y = c(-22.75, -22.75, -22.75), 
+           label = c("30m", "70m", "200m"), size = 2, colour = "#000000") +
+  annotate("text", x = 113.4, y = -22.67, label = expression(italic("P. nebulosa")),
+           hjust = 0, size = 2.5, colour = "#000000") +
+  annotation_custom(p.neb_grob, xmin = 113.39, xmax = 113.45, ymin = -22.70, ymax = -22.68) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, hjust = 0.5),  
+    legend.title = element_text(hjust = 0.3, size = 7),
+    legend.text = element_text(size = 6),
+    axis.text = element_text(size = 7)
+  )
+
+print(p2.6)
+png(filename = "plots/PtCloates/PtCloates_BOSS_P_nebulosa_meanSE_viridis.png", 
+    width = 8, height = 4, res = 600, units = "in")
+print(p2.6)
+dev.off()
+
+
 
 l.min <- readPNG("data/images/Lethrinus miniatus.png")
 l.min_grob <- rasterGrob(l.min, width = unit(1.5, "cm"), height = unit(0.75, "cm"), interpolate = TRUE)

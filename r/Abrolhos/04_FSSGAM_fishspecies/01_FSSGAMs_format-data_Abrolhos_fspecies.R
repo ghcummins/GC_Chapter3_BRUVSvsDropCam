@@ -3,7 +3,7 @@
 # Data:    BOSS & BRUV fish, habitat
 # Task:    Join PtCloates BOSS and BRUV, format data for fssGAM
 # author:  Gabby, Claude, Brooke, Kingsley
-# date:    October 2023
+# date:    May 2024
 ##
 
 rm(list=ls())
@@ -99,8 +99,8 @@ allhab <- readRDS("data/staging/habitat/Abrolhos_habitat-bathy-derivatives.rds")
 #   glimpse()
 
 allhab <- allhab %>%
-  #transform(kelps = kelps / broad.total.points.annotated) %>%
-  #transform(macroalgae = macroalgae / broad.total.points.annotated) %>%
+  transform(kelps = kelps / broad.total.points.annotated) %>%
+  transform(macroalgae = macroalgae / broad.total.points.annotated) %>%
   transform(sand = sand / broad.total.points.annotated) %>%
   transform(rock = rock / broad.total.points.annotated) %>%
   transform(inverts = inverts / broad.total.points.annotated) %>%
@@ -116,7 +116,9 @@ metadata <- maxn %>%
 
 dat.maxn <- dat.response %>%
   left_join(allhab) %>%
-  left_join(metadata) 
+  left_join(metadata) %>%
+  dplyr::mutate(reef =rock+inverts+macroalgae+kelps)
+###CHECK REEF IS OK W CLAUDE
 
 # look at top species ----
 # maxn.sum <- maxn %>%
@@ -205,33 +207,31 @@ names(dat.maxn)
 names(allhab)
 
 pred.vars = c("z", 
-              "sand", 
-              "rock",
-              "inverts", 
               "mean.relief",
               "sd.relief",
-              "macroalgae",
+              #"reef",
+              #"macroalgae",
               #"slope",
               "tpi",
               "roughness",
-              "detrended") 
+              "detrended",
+              "aspect",
+              "reef") 
 
 # predictor variables Removed at first pass---
 # broad.Sponges and broad.Octocoral.Black and broad.Consolidated 
 
 # Specify the columns you want to include in corr.pred.vars
-selected_cols <- c("z", "sand", "rock", "inverts", "macroalgae", 
-                   "mean.relief", "sd.relief",
+pred.vars <- c("z", "sand", "rock", "inverts", "macroalgae", "kelps",
+                   "mean.relief", "sd.relief", "reef", "aspect",
                    "tpi", "roughness", "detrended")
 
 # Create the new data frame corr.pred.vars
-corr.pred.vars <- dat.maxn %>%
-  select(all_of(selected_cols))
+corrtable <- as.data.frame(round(cor(dat.maxn[ , pred.vars]), 2))
 ##take out slope
+## reef and mean.relief are too correlated. Which should I choose?
 
-# Check for correlation of predictor variables- remove anything highly correlated (>0.95)---
-round(cor(corr.pred.vars[,pred.vars]), 2)
-# nothing is highly correlated 
+write.csv(corrtable, file = "outputs/Abrolhos/fish/correlation-table.csv")
 
 # Plot of likely transformations - thanks to Anna Cresswell for this loop!
 par(mfrow = c(3, 2))

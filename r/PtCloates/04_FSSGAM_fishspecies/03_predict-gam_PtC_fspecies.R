@@ -46,6 +46,7 @@ dat1 <- readRDS("data/staging/PtCloates/PtCloates.fish.dat.maxn.rds")%>%
 #   dplyr::select(-Z)%>%
 #   glimpse()
 
+#Note below file taken from output of Ch2
 phab <- readRDS("data/spatial/rasters/raw bathymetry/PtCloates_spatial_habitat_predictions.rds") %>%
   dplyr::rename(reef = pinverts.fit)%>%
   ga.clean.names()%>%
