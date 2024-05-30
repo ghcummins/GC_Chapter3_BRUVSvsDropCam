@@ -23,8 +23,8 @@ library(GlobalArchive)
 name <- "Abrolhos"  # set study name
 
 # read in
-dat1 <- readRDS("data/staging/Abrolhos/Abrolhos.maxn.rds")%>%
-  dplyr::mutate(reef =rock+inverts)%>%
+dat1 <- readRDS("data/staging/Abrolhos/Abrolhos.fish.dat.maxn.rds")%>%
+  # dplyr::mutate(reef =rock+inverts)%>%
   mutate(z = abs(z), scientific = paste(method,scientific,sep=".")) %>%
   #mutate(status = ifelse(is.na(status), "No-take", status)) %>%
   glimpse()
@@ -46,10 +46,10 @@ dat1 <- readRDS("data/staging/Abrolhos/Abrolhos.maxn.rds")%>%
 #   dplyr::select(-Z)%>%
 #   glimpse()
 
-phab <- readRDS("data/spatial/rasters/raw bathymetry/PtCloates_spatial_habitat_predictions.rds") %>%
-  dplyr::rename(reef = pinverts.fit)%>%
+phab <- readRDS("data/spatial/rasters/raw bathymetry/Abrolhos_spatial_habitat_predictions.rds") %>%
   ga.clean.names()%>%
-  mutate(z =abs(z))
+  mutate(z =abs(z)) %>%
+  dplyr::mutate(reef =prock.fit+pinverts.fit+pmacroalg.fit)
 
 preddf <- phab
 
@@ -60,7 +60,7 @@ preddf <- phab
  
 
 # # Re-set the predictors for modeling----
-pred.vars <- c("z", "reef",
+pred.vars <- c("z", "reef", "aspect",
                "tpi","roughness","detrended") 
 
 
@@ -68,42 +68,136 @@ pred.vars <- c("z", "reef",
 # Greater than size of maturity openness+recfish+reef+UCUR+VCUR
 unique(dat1$scientific)
 
-#Total abundance ##PUT IN TOP MODEL PREDICTORS
-m_BOSS_ta <-gam(maxn ~ s(reef, k=3, bs = "cr"),
-                  data = dat1 %>% dplyr::filter(scientific %in% "BOSS.total.abundance"),
-                family = gaussian(link="identity"))
-summary(m_BOSS_ta)
+#Relative abundance of individual fish species
+Choerodon_rubescens_BOSS <-gam(number ~ s(reef, k=3, bs = "cr"),
+                  data = dat1 %>% dplyr::filter(scientific %in% "BOSS.Labridae Choerodon rubescens"),
+                family = tw())
+summary(Choerodon_rubescens_BOSS)
 
-m_BRUV_ta <-gam(maxn ~ s(z, k=3, bs = "cr"),
-                data = dat1 %>% dplyr::filter(scientific %in% "BRUV.total.abundance"),
-                family = gaussian(link="identity"))
-summary(m_BRUV_ta)
+Choerodon_rubescens_BRUV <-gam(number ~ s(z, k=3, bs = "cr"),
+                data = dat1 %>% dplyr::filter(scientific %in% "BRUV.Labridae Choerodon rubescens"),
+                family = tw())
+summary(Choerodon_rubescens_BRUV)
 
+Coris_auricularis_BOSS <- gam(number ~ s(z, k = 3, bs = "cr"),   
+                  data = dat1 %>% dplyr::filter(scientific %in% "BOSS.Labridae Coris auricularis"), 
+                  family = tw())
+summary(Coris_auricularis_BOSS)
 
-#Species richness
-m_BOSS_richness <- gam(maxn ~ s(reef, k = 3, bs = "cr") +s(roughness, k = 3, bs = "cr"),  
-                  data = dat1 %>% dplyr::filter(scientific %in% "BOSS.species.richness"), 
-                  family = gaussian(link="identity"))
-summary(m_BOSS_richness)
+Coris_auricularis_BRUV <- gam(number ~s(reef, k = 3, bs = "cr"),
+                       data = dat1 %>% dplyr::filter(scientific %in% "BRUV.Labridae Coris auricularis"),
+                       family = tw())
+summary(Coris_auricularis_BRUV)
 
-m_BRUV_richness <- gam(maxn ~s(z, k = 3, bs = "cr"),
-                       data = dat1 %>% dplyr::filter(scientific %in% "BRUV.species.richness"),
-                       family = gaussian(link="identity"))
-summary(m_BRUV_richness)
+Suezichthys_cyanolaemus_BOSS <- gam(number ~ s(z, k=3, bs = "cr"),
+                                    data = dat1 %>% dplyr::filter(scientific %in% "BOSS.Labridae Suezichthys cyanolaemus"),
+                                    family = tw())
+summary(Suezichthys_cyanolaemus_BOSS)
 
+Suezichthys_cyanolaemus_BRUV <- gam(number ~ s(aspect, k=3, bs = "cr") + s(roughness, k=3, bs = "cr"),
+                                    data = dat1 %>% dplyr::filter(scientific %in% "BRUV.Labridae Suezichthys cyanolaemus"),
+                                    family = tw())
+summary(Suezichthys_cyanolaemus_BRUV)
 
+dat1$method <- as.factor(dat1$method)
 
+Lethrinus_miniatus_BOSS <- gam(number ~ s(z, k=3, bs = "cr", by = method),
+                               data = dat1 %>% dplyr::filter(scientific %in% c("BOSS.Lethrinidae Lethrinus miniatus")),
+                               family = tw())
+summary(Lethrinus_miniatus_BOSS)
+
+Lethrinus_miniatus_BRUV <- gam(number ~ s(z, k=3, bs = "cr") + s(reef, k=3, bs = "cr"),
+                               data = dat1 %>% dplyr::filter(scientific %in% "BRUV.Lethrinidae Lethrinus miniatus"),
+                               family = tw())
+summary(Lethrinus_miniatus_BRUV)
+
+###30/05/2024 NEW MODELLING 
+Lethrinus_miniatus_BOSSBRUV <- gam(number ~ s(z, k=3, bs = "cr", by = method) + s(reef, k=3, bs = "cr", by = method) + method,
+                                   data = dat1 %>% dplyr::filter(scientific %in% c("BOSS.Lethrinidae Lethrinus miniatus","BRUV.Lethrinidae Lethrinus miniatus")),
+                                   family = tw())
+summary(Lethrinus_miniatus_BOSSBRUV)
+
+dat_total <- dat1 %>%
+  dplyr::filter(scientific %in% c("BOSS.Lethrinidae Lethrinus miniatus", "BRUV.Lethrinidae Lethrinus miniatus"))
+
+testdata <- expand.grid(z = seq(min(dat1$z), max(dat1$z), length.out = 20),
+              reef = mean(Lethrinus_miniatus_BOSSBRUV$model$reef),
+              method = c("BOSS", "BRUV")) %>%
+  distinct() %>%
+  glimpse
+
+L.miniatus.fits <- predict.gam(Lethrinus_miniatus_BOSSBRUV, newdata = testdata, type = 'response', se.fit = T)
+
+predicts_total_z <- testdata %>%
+  data.frame(L.miniatus.fits) %>%
+  group_by(z, method) %>%
+  summarise(number = mean(fit), se.fit = mean(se.fit))  %>%
+  ungroup()
+
+testdata1 <- expand.grid(method = c("BOSS", "BRUV"), 
+                         z = mean(Lethrinus_miniatus_BOSSBRUV$model$z),
+                         reef = mean(Lethrinus_miniatus_BOSSBRUV$model$reef)) %>%
+  distinct() %>%
+  glimpse() 
+
+L.m.fits <- predict.gam(Lethrinus_miniatus_BOSSBRUV, newdata = testdata1, type = 'response', se.fit = T)
+
+predicts_total_method <- testdata1 %>%
+  data.frame(L.m.fits) %>%
+  group_by(method) %>%
+  summarise(number = mean(fit), se.fit = mean(se.fit)) %>%
+  ungroup()
+
+testdata2 <- expand.grid(reef = seq(min(dat1$reef), max(dat1$reef), length.out = 20),
+                         method = c("BOSS", "BRUV"),
+                         z = mean(Lethrinus_miniatus_BOSSBRUV$model$z)) %>%
+  distinct() %>%
+  glimpse()
+
+L.m.fits2 <- predict.gam(Lethrinus_miniatus_BOSSBRUV, newdata = testdata2, type = 'response', se.fit = T)
+
+predicts_total_reef <- testdata2 %>%
+  data.frame(L.m.fits2) %>%
+  group_by(reef, method) %>%
+  summarise(number = mean(fit), se.fit = mean(se.fit)) %>%
+  ungroup()
+  
+gg_total_z <- ggplot() + 
+  # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
+  geom_line(data = predicts_total_z, aes(x = z, y = number, group=method, colour=method), alpha = 0.5)+
+  geom_line(data = predicts_total_z, aes(x = z, y = number - se.fit, group=method, colour=method), linetype = "dashed", alpha = 0.5) +
+  geom_line(data = predicts_total_z, aes(x = z, y = number + se.fit, group=method, colour=method), linetype = "dashed", alpha = 0.5) +
+  theme_classic() +
+  #ylim(0,50)+
+  labs(x = "Depth", y = "Residual Abundance of Lethrinus miniatus") 
+gg_total_z
+  
+gg_total_reef <- ggplot() + 
+  # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
+  geom_line(data = predicts_total_reef, aes(x = reef, y = number, group=method, colour=method), alpha = 0.5)+
+  geom_line(data = predicts_total_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed", alpha = 0.5) +
+  geom_line(data = predicts_total_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed", alpha = 0.5) +
+  theme_classic() +
+  #ylim(0,50)+
+  labs(x = "Reef (not significant)", y = "Residual Abundance of Lethrinus miniatus") 
+gg_total_reef
+  
+  
 # predict, rasterise and plot
 preddf <- cbind(preddf, 
-                "p_BOSS_ta" = predict(m_BOSS_ta, preddf, type = "response"),
-                "p_BRUV_ta" = predict(m_BRUV_ta, preddf, type = "response"),
-                "p_BOSS_richness" = predict(m_BOSS_richness, preddf, type = "response"),
-                "p_BRUV_richness" = predict(m_BRUV_richness, preddf, type = "response"))
+                "p_C_rubescens_BOSS" = predict(Choerodon_rubescens_BOSS, preddf, type = "response", se.fit = T),
+                "p_C_rubescens_BRUV" = predict(Choerodon_rubescens_BRUV, preddf, type = "response", se.fit = T),
+                "p_C_auricularis_BOSS" = predict(Coris_auricularis_BOSS, preddf, type = "response", se.fit = T),
+                "p_C_auricularis_BRUV" = predict(Coris_auricularis_BRUV, preddf, type = "response", se.fit = T),
+                "p_S_cyanolaemus_BOSS" = predict(Suezichthys_cyanolaemus_BOSS, preddf, type = "response", se.fit = T),
+                "p_S_cyanolaemus_BRUV" = predict(Suezichthys_cyanolaemus_BRUV, preddf, type = "response", se.fit = T),
+                "p_L_miniatus_BOSS" = predict(Lethrinus_miniatus_BOSS, preddf, type = "response", se.fit = T),
+                "p_L_miniatus_BRUV" = predict(Lethrinus_miniatus_BRUV, preddf, type = "response", se.fit = T))
                 
 
 prasts <- rast(preddf %>% dplyr::select(x, y, starts_with("p_")),
                         crs = "epsg:4326") 
 plot(prasts)
 
-saveRDS(preddf, paste0("outputs/PtCloates/", name, "_predicted-fish.RDS"))
+saveRDS(preddf, paste0("outputs/Abrolhos/fish/", name, "_predicted-fish.RDS"))
 
