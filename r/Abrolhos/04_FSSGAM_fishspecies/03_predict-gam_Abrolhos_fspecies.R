@@ -52,9 +52,12 @@ phab <- readRDS("data/spatial/rasters/raw bathymetry/Abrolhos_spatial_habitat_pr
   dplyr::mutate(reef =prock.fit+pinverts.fit+pmacroalg.fit)
 
 preddf <- phab
+preddf$method <- "BRUV"
+preddf_bruv <-preddf
+preddf_boss <-preddf
+preddf_boss$method <- "BOSS"
 
-#
-# 
+
 # presp <- vect(preddf, geom = c("x", "y"))
 # preddf <- cbind(terra::extract(test, presp), preddf)
  
@@ -164,22 +167,29 @@ predicts_total_reef <- testdata2 %>%
   
 gg_total_z <- ggplot() + 
   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-  geom_line(data = predicts_total_z, aes(x = z, y = number, group=method, colour=method), alpha = 0.5)+
-  geom_line(data = predicts_total_z, aes(x = z, y = number - se.fit, group=method, colour=method), linetype = "dashed", alpha = 0.5) +
-  geom_line(data = predicts_total_z, aes(x = z, y = number + se.fit, group=method, colour=method), linetype = "dashed", alpha = 0.5) +
+  geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
+  geom_line(data = predicts_total_z, aes(x = z, y = number, group=method, colour=method))+
+  geom_line(data = predicts_total_z, aes(x = z, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_line(data = predicts_total_z, aes(x = z, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
+  # geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
   theme_classic() +
   #ylim(0,50)+
-  labs(x = "Depth", y = "Residual Abundance of Lethrinus miniatus") 
+  labs(x = "Depth", y = "Abundance (residual)") +
+  scale_colour_manual(values = c("BRUV" = "#666666", "BOSS" = "black")) +
+  scale_fill_manual(values = c("BRUV" = "grey74", "BOSS" = "ghostwhite"))
 gg_total_z
   
 gg_total_reef <- ggplot() + 
   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-  geom_line(data = predicts_total_reef, aes(x = reef, y = number, group=method, colour=method), alpha = 0.5)+
-  geom_line(data = predicts_total_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed", alpha = 0.5) +
-  geom_line(data = predicts_total_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed", alpha = 0.5) +
+  geom_line(data = predicts_total_reef, aes(x = reef, y = number, group=method, colour=method))+
+  geom_line(data = predicts_total_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_line(data = predicts_total_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_ribbon(data = predicts_total_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
   theme_classic() +
   #ylim(0,50)+
-  labs(x = "Reef (not significant)", y = "Residual Abundance of Lethrinus miniatus") 
+  labs(x = "Reef (not significant)", y = "Abundance (residual)") +
+  scale_colour_manual(values = c("BRUV" = "#666666", "BOSS" = "#000000")) +
+  scale_fill_manual(values = c("BRUV" = "grey54", "BOSS" = "ivory2"))
 gg_total_reef
   
   
@@ -191,8 +201,8 @@ preddf <- cbind(preddf,
                 "p_C_auricularis_BRUV" = predict(Coris_auricularis_BRUV, preddf, type = "response", se.fit = T),
                 "p_S_cyanolaemus_BOSS" = predict(Suezichthys_cyanolaemus_BOSS, preddf, type = "response", se.fit = T),
                 "p_S_cyanolaemus_BRUV" = predict(Suezichthys_cyanolaemus_BRUV, preddf, type = "response", se.fit = T),
-                "p_L_miniatus_BOSS" = predict(Lethrinus_miniatus_BOSS, preddf, type = "response", se.fit = T),
-                "p_L_miniatus_BRUV" = predict(Lethrinus_miniatus_BRUV, preddf, type = "response", se.fit = T))
+                "p_L_miniatus_BOSS" = predict(Lethrinus_miniatus_BOSSBRUV, preddf_boss, type = "response", se.fit = T),
+                "p_L_miniatus_BRUV" = predict(Lethrinus_miniatus_BOSSBRUV, preddf_bruv, type = "response", se.fit = T))
                 
 
 prasts <- rast(preddf %>% dplyr::select(x, y, starts_with("p_")),
