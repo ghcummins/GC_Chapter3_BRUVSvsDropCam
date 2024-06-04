@@ -128,3 +128,6 @@ write.csv(fish.all.mod.fits[ , -2], file = paste(savedir, paste(name, "fish.all.
 write.csv(fish.all.var.imp, file = paste(savedir, paste(name, "fish.all.var.imp.csv", sep = "_"), sep = "/"))
 
 
+### 30/05/2024 Create tidy residual plots to visualise the relationships between fish relative abundance and 
+##the environmental covariates z (depth) and reef with each method (BOSS & BRUV) on same residual plot.
+

@@ -35,26 +35,22 @@ working.dir <- getwd()
 setwd(working.dir)
 name <- "Abrolhos"  # set study name
 
-dat <- readRDS("data/staging/Abrolhos/Abrolhos.fish.dat.maxn.rds")%>%
-  dplyr::mutate(reef =rock+inverts+macroalgae)%>%
-  #mutate(z = abs(z), scientific = paste(method,scientific,sep=".")) %>%
-  #mutate(status = ifelse(is.na(status), "No-take", status)) %>%
-    glimpse()
+dat <- readRDS("data/staging/Abrolhos/Abrolhos.fish.dat.maxn.rds") %>%
+      glimpse()
     # unique(dat$scientific)
 
 # # Re-set the predictors for modeling----
-pred.vars <- c("z", "reef", "tpi", "mean.relief", "sd.relief",
+pred.vars <- c("z", "reef", "tpi", "aspect",
                "roughness","detrended") 
-
-
 
 # # Check to make sure Response vector has not more than 80% zeros----
 unique.vars <- unique(as.character(dat$response))
+print(unique.vars)
 
 resp.vars <- character()
 for(i in 1:length(unique.vars)){
   temp.dat <- dat[which(dat$response == unique.vars[i]), ]
-  if(length(which(temp.dat$number == 0)) / nrow(temp.dat) < 0.9){
+  if(length(which(temp.dat$number == 0)) / nrow(temp.dat) < 0.8){
     resp.vars <- c(resp.vars, unique.vars[i])}
 }
 resp.vars
