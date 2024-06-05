@@ -117,8 +117,7 @@ metadata <- maxn %>%
 dat.maxn <- dat.response %>%
   left_join(allhab) %>%
   left_join(metadata) %>%
-  dplyr::mutate(reef =rock+inverts+macroalgae+kelps)
-###CHECK REEF IS OK W CLAUDE
+  dplyr::mutate(reef =rock+inverts+macroalgae)
 
 # look at top species ----
 # maxn.sum <- maxn %>%

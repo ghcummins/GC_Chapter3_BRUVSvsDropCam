@@ -25,9 +25,14 @@ library(grid)
 # Set your study name
 name <- "Abrolhos"                                                      
 
-dat <- readRDS(paste0("outputs/Abrolhos/fish/", name, "_predicted-fish.RDS")) %>%
+bossdat <- readRDS(paste0("outputs/Abrolhos/fish/", name, "_BOSS_predicted_fish.RDS")) %>%
   # dplyr::rename(species.richness = p_richness) %>%
-  mutate(z = abs(z))%>%
+  # mutate(z = abs(z))%>%
+  glimpse()
+
+bruvdat <- readRDS(paste0("outputs/Abrolhos/fish/", name, "_BRUV_predicted_fish.RDS")) %>%
+  # dplyr::rename(species.richness = p_richness) %>%
+  # mutate(z = abs(z))%>%
   glimpse()
 
 # Set CRS for shapefiles
@@ -67,7 +72,7 @@ npz_cols <- scale_colour_manual(values = c("National Park Zone" = "#7bbc63"),
 
 #Build elements for plot 1; BOSS C rubescens
 p1 <- ggplot() +
-  geom_tile(data = dat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_C_rubescens_BOSS.fit)) +
+  geom_tile(data = bossdat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_C_rubescens.fit)) +
   scale_fill_viridis(direction =-1)+
   geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
                breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
@@ -96,7 +101,7 @@ p1 <- ggplot() +
     axis.text = element_text(size =7)
   )
  print(p1)
-png(filename = "plots/Abrolhos/Abrolhos_BOSS_C_rubescens.png", 
+png(filename = "plots/Abrolhos/Abrolhos_BOSS_C_rubescens_z_reef.png", 
       
       
          width = 8, height = 4, res = 600, units = "in")        
@@ -105,7 +110,7 @@ dev.off()
   
 #BRUV
 p1.5 <- ggplot() +
-  geom_tile(data = dat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_C_rubescens_BRUV.fit)) +
+  geom_tile(data = bruvdat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_C_rubescens.fit)) +
   scale_fill_viridis(direction =-1)+
   geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
                breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
@@ -134,7 +139,7 @@ p1.5 <- ggplot() +
     axis.text = element_text(size =7)
   )
 print(p1.5)
-png(filename = "plots/Abrolhos/Abrolhos_BRUV_C_rubescens.png", 
+png(filename = "plots/Abrolhos/Abrolhos_BRUV_C_rubescens_z_reef.png", 
     
     
     width = 8, height = 4, res = 600, units = "in")        

@@ -1,10 +1,10 @@
 "","z","reef","tpi","aspect","roughness","detrended"
-"Labridae Choerodon rubescens_BOSS",0.509,0.431,0.523,0.117,0,0
+"Labridae Choerodon rubescens_BOSS",0.683,0.272,0.667,0.095,0,0.001
 "Labridae Coris auricularis_BOSS",1,0,0.204,0,0,0
 "Labridae Suezichthys cyanolaemus_BOSS",1,0,0.15,0,0,0
-"Lethrinidae Lethrinus miniatus_BOSS",0.878,0.074,0.199,0.063,0.001,0.021
-"Labridae Choerodon rubescens_BRUV",0.811,0.134,0.134,0.05,0,0.05
-"Labridae Coris auricularis_BRUV",0.646,0.264,0.087,0.002,0,0.002
-"Labridae Suezichthys cyanolaemus_BRUV",0.011,0.01,0.282,0.469,0.469,0.002
-"Lethrinidae Lethrinus miniatus_BRUV",0.627,0.074,0.047,0.117,0.073,0.117
-"Mullidae Parupeneus spilurus_BRUV",0,0.01,0.01,0.989,0,0.989
+"Lethrinidae Lethrinus miniatus_BOSS",0.724,0.214,0.188,0.182,0.001,0.017
+"Labridae Choerodon rubescens_BRUV",0.737,0.114,0.114,0.087,0,0.046
+"Labridae Coris auricularis_BRUV",0.138,0.44,0.44,0.072,0,0
+"Labridae Suezichthys cyanolaemus_BRUV",0,0.994,0.003,0.994,0.003,0
+"Lethrinidae Lethrinus miniatus_BRUV",0.34,0.245,0.04,0.245,0.04,0.063
+"Mullidae Parupeneus spilurus_BRUV",0,0.004,0.004,0.994,0,0.994
