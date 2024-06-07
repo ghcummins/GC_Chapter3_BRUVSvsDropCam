@@ -66,11 +66,11 @@ bathdf <- readRDS(paste(paste0('data/spatial/rasters/',
 npz_cols <- scale_colour_manual(values = c("National Park Zone" = "#7bbc63"),
                                 name = "Australian Marine Parks")
 
-#CHANGE BELOW
-# p.neb <- readPNG("data/images/Parapercis nebulosa.png")
-# p.neb_grob <- rasterGrob(p.neb, width = unit(1, "cm"), height = unit(0.5, "cm"), interpolate = TRUE)
+#FISH IMAGE
+c.rub <- readJPEG("data/images/abrolhos/Choerodon rubescens 3cm.jpg")
+c.rub_grob <- rasterGrob(c.rub, width = unit(2.0, "cm"), height = unit(0.9, "cm"), interpolate = TRUE)
 
-#Build elements for plot 1; BOSS C rubescens
+# Build elements for plot 1; BOSS C rubescens
 p1 <- ggplot() +
   geom_tile(data = bossdat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_C_rubescens.fit)) +
   scale_fill_viridis(direction =-1)+
@@ -86,29 +86,43 @@ p1 <- ggplot() +
            ylim = c(-28.15, -27.95)) +
   labs(x = NULL, y = NULL, fill = "BOSS\nrelative\nabundance",                                    # Labels  
        colour = NULL) +
-  annotate("text", x = c(113.428836237, 113.388204915, 113.255153069),          # Add contour labels manually
+  annotate("text", x = c(113.428836237, 113.388204915, 113.265),          # Add contour labels manually
            y = c(-28.078038504, -28.078038504, -28.078038504), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
-  # annotate("text", x = 113.4, y = -28.0, label = expression(italic("C. rubescens")),
-  #          hjust = 0, size = 2.5, colour = "#000000") + # Add italicized text at top left
-  # annotation_custom(p.neb_grob, xmin = 113.39, xmax = 113.45, ymin = -22.70, ymax = -22.68) +
-  theme_minimal() +
+    annotate("text", x = 113.17, y = -28.13, label = expression(italic("C. rubescens")),
+           hjust = 0.1, size = 2.5, colour = "#000000") + # Add italicized text at top left
+  annotation_custom(c.rub_grob, xmin = 113.16, xmax = 113.24, ymin = -28.08, ymax = -28.13) +
+  ggspatial::annotation_north_arrow(
+    location = "tr", which_north = "true",
+    pad_x = unit(0, "in"), pad_y = unit(0.1, "in"),
+    style = ggspatial::north_arrow_nautical(
+      fill = c("grey40", "white"),
+      line_col = "grey20"),
+    # text_family = "ArcherPro Book"),
+    height = unit(1, "cm"),
+    width = unit(1, "cm"))+
+    theme_minimal() +
   theme(
+    panel.grid.major = element_blank(),
     plot.title = element_text(size = 14, hjust = 0.5),# Center title horizontally
     legend.title = element_text(hjust = 0.3, size =7),
     legend.text = element_text(size =6),
-    axis.text = element_text(size =7)
+    axis.text = element_text(size =7),
+    panel.border = element_rect(colour = "black", fill = NA, size = 0.5),
+    #axis.line.x.bottom = element_line(colour = "black", linewidth = 0.5),
+    #axis.line.y.left = element_line(colour = "black", linewidth = 0.5),
+    axis.ticks = element_line(colour = "black")
   )
  print(p1)
-png(filename = "plots/Abrolhos/Abrolhos_BOSS_C_rubescens_z_reef.png", 
-      
-      
-         width = 8, height = 4, res = 600, units = "in")        
+# png(filename = "plots/Abrolhos/Abrolhos_BOSS_C_rubescens_z_reef.png", 
+#       
+#       
+#          width = 8, height = 4, res = 600, units = "in")      ##SAVEOUT  
 p1# Change the dimensions here as necessary
 dev.off()
   
-#BRUV
+#BRUV C rubsescens
 p1.5 <- ggplot() +
   geom_tile(data = bruvdat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_C_rubescens.fit)) +
   scale_fill_viridis(direction =-1)+
@@ -124,32 +138,47 @@ p1.5 <- ggplot() +
            ylim = c(-28.15, -27.95)) +
   labs(x = NULL, y = NULL, fill = "BRUV\nrelative\nabundance",                                    # Labels  
        colour = NULL) +
-  annotate("text", x = c(113.428836237, 113.388204915, 113.255153069),          # Add contour labels manually
+  annotate("text", x = c(113.428836237, 113.388204915, 113.265),          # Add contour labels manually
            y = c(-28.078038504, -28.078038504, -28.078038504), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
-  # annotate("text", x = 113.4, y = -28.0, label = expression(italic("C. rubescens")),
-  #          hjust = 0, size = 2.5, colour = "#000000") + # Add italicized text at top left
-  # annotation_custom(p.neb_grob, xmin = 113.39, xmax = 113.45, ymin = -22.70, ymax = -22.68) +
+  annotate("text", x = 113.17, y = -28.13, label = expression(italic("C. rubescens")),
+           hjust = 0.1, size = 2.5, colour = "#000000") + # Add italicized text at top left
+  annotation_custom(c.rub_grob, xmin = 113.16, xmax = 113.24, ymin = -28.08, ymax = -28.13) +
+  ggspatial::annotation_north_arrow(
+    location = "tr", which_north = "true",
+    pad_x = unit(0, "in"), pad_y = unit(0.1, "in"),
+    style = ggspatial::north_arrow_nautical(
+      fill = c("grey40", "white"),
+      line_col = "grey20"),
+    # text_family = "ArcherPro Book"),
+    height = unit(1, "cm"),
+    width = unit(1, "cm"))+
   theme_minimal() +
   theme(
+    panel.grid.major = element_blank(),
     plot.title = element_text(size = 14, hjust = 0.5),# Center title horizontally
     legend.title = element_text(hjust = 0.3, size =7),
     legend.text = element_text(size =6),
-    axis.text = element_text(size =7)
+    axis.text = element_text(size =7),
+    panel.border = element_rect(colour = "black", fill = NA, size = 0.5),
+    #axis.line.x.bottom = element_line(colour = "black", linewidth = 0.5),
+    #axis.line.y.left = element_line(colour = "black", linewidth = 0.5),
+    axis.ticks = element_line(colour = "black")
   )
-print(p1.5)
-png(filename = "plots/Abrolhos/Abrolhos_BRUV_C_rubescens_z_reef.png", 
-    
-    
-    width = 8, height = 4, res = 600, units = "in")        
+  print(p1.5)
+# png(filename = "plots/Abrolhos/Abrolhos_BRUV_C_rubescens_z_reef.png", 
+#        width = 8, height = 4, res = 600, units = "in")        
 p1.5# Change the dimensions here as necessary
 dev.off()
 
-  
+# FISH IMAGE
+c.aur <-  readJPEG("data/images/abrolhos/Coris auricularis 3cm.jpg")
+c.aur_grob <- rasterGrob(c.aur, width = unit(1.8, "cm"), height = unit(0.6, "cm"), interpolate = TRUE)
+
 #Build elements for plot 1; BOSS relative abundance Coris auricularis 
 p2 <- ggplot() +
-  geom_tile(data = dat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_C_auricularis_BOSS.fit)) +
+  geom_tile(data = bossdat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_C_auricularis.fit)) +
   scale_fill_viridis(direction =-1)+
   geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
                breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
@@ -163,31 +192,43 @@ p2 <- ggplot() +
            ylim = c(-28.15, -27.95)) +
   labs(x = NULL, y = NULL, fill = "BOSS\nrelative\nabundance",                                    # Labels  
        colour = NULL) +
-  annotate("text", x = c(113.428836237, 113.388204915, 113.255153069),          # Add contour labels manually
+  annotate("text", x = c(113.428836237, 113.388204915, 113.265),          # Add contour labels manually
            y = c(-28.078038504, -28.078038504, -28.078038504), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
-  # annotate("text", x = 113.4, y = -28.0, label = expression(italic("C. rubescens")),
-  #          hjust = 0, size = 2.5, colour = "#000000") + # Add italicized text at top left
-  # annotation_custom(p.neb_grob, xmin = 113.39, xmax = 113.45, ymin = -22.70, ymax = -22.68) +
+  annotate("text", x = 113.17, y = -28.13, label = expression(italic("C. auricularis")),
+           hjust = 0.1, size = 2.5, colour = "#000000") + # Add italicized text at top left
+  annotation_custom(c.aur_grob, xmin = 113.16, xmax = 113.24, ymin = -28.08, ymax = -28.13) +
+  ggspatial::annotation_north_arrow(
+    location = "tr", which_north = "true",
+    pad_x = unit(0, "in"), pad_y = unit(0.1, "in"),
+    style = ggspatial::north_arrow_nautical(
+      fill = c("grey40", "white"),
+      line_col = "grey20"),
+    # text_family = "ArcherPro Book"),
+    height = unit(1, "cm"),
+    width = unit(1, "cm"))+
   theme_minimal() +
   theme(
+    panel.grid.major = element_blank(),
     plot.title = element_text(size = 14, hjust = 0.5),# Center title horizontally
     legend.title = element_text(hjust = 0.3, size =7),
     legend.text = element_text(size =6),
-    axis.text = element_text(size =7)
+    axis.text = element_text(size =7),
+    panel.border = element_rect(colour = "black", fill = NA, size = 0.5),
+    #axis.line.x.bottom = element_line(colour = "black", linewidth = 0.5),
+    #axis.line.y.left = element_line(colour = "black", linewidth = 0.5),
+    axis.ticks = element_line(colour = "black")
   )
-print(p2)
-png(filename = "plots/Abrolhos/Abrolhos_BOSS_C_auricularis.png", 
-    
-    
-    width = 8, height = 4, res = 600, units = "in")        
+  print(p2)
+# png(filename = "plots/Abrolhos/Abrolhos_BOSS_C_auricularis.png", 
+#         width = 8, height = 4, res = 600, units = "in")        
 p2# Change the dimensions here as necessary
 dev.off()
 
 #Build elements for plot 1; BRUV relative abundance Coris auricularis 
 p2.5 <- ggplot() +
-  geom_tile(data = dat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_C_auricularis_BRUV.fit)) +
+  geom_tile(data = bruvdat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_C_auricularis.fit)) +
   scale_fill_viridis(direction =-1)+
   geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
                breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
@@ -201,25 +242,37 @@ p2.5 <- ggplot() +
            ylim = c(-28.15, -27.95)) +
   labs(x = NULL, y = NULL, fill = "BRUV\nrelative\nabundance",                                    # Labels  
        colour = NULL) +
-  annotate("text", x = c(113.428836237, 113.388204915, 113.255153069),          # Add contour labels manually
+  annotate("text", x = c(113.428836237, 113.388204915, 113.265),          # Add contour labels manually
            y = c(-28.078038504, -28.078038504, -28.078038504), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
-  # annotate("text", x = 113.4, y = -28.0, label = expression(italic("C. rubescens")),
-  #          hjust = 0, size = 2.5, colour = "#000000") + # Add italicized text at top left
-  # annotation_custom(p.neb_grob, xmin = 113.39, xmax = 113.45, ymin = -22.70, ymax = -22.68) +
+  annotate("text", x = 113.17, y = -28.13, label = expression(italic("C. auricularis")),
+           hjust = 0.1, size = 2.5, colour = "#000000") + # Add italicized text at top left
+  annotation_custom(c.aur_grob, xmin = 113.16, xmax = 113.24, ymin = -28.08, ymax = -28.13) +
+  ggspatial::annotation_north_arrow(
+    location = "tr", which_north = "true",
+    pad_x = unit(0, "in"), pad_y = unit(0.1, "in"),
+    style = ggspatial::north_arrow_nautical(
+      fill = c("grey40", "white"),
+      line_col = "grey20"),
+    # text_family = "ArcherPro Book"),
+    height = unit(1, "cm"),
+    width = unit(1, "cm"))+
   theme_minimal() +
   theme(
+    panel.grid.major = element_blank(),
     plot.title = element_text(size = 14, hjust = 0.5),# Center title horizontally
     legend.title = element_text(hjust = 0.3, size =7),
     legend.text = element_text(size =6),
-    axis.text = element_text(size =7)
+    axis.text = element_text(size =7),
+    panel.border = element_rect(colour = "black", fill = NA, size = 0.5),
+    #axis.line.x.bottom = element_line(colour = "black", linewidth = 0.5),
+    #axis.line.y.left = element_line(colour = "black", linewidth = 0.5),
+    axis.ticks = element_line(colour = "black")
   )
-print(p2.5)
-png(filename = "plots/Abrolhos/Abrolhos_BRUV_C_auricularis.png", 
-    
-    
-    width = 8, height = 4, res = 600, units = "in")        
+  print(p2.5)
+# png(filename = "plots/Abrolhos/Abrolhos_BRUV_C_auricularis.png", 
+#         width = 8, height = 4, res = 600, units = "in")   ##SAVEOUT     
 p2.5# Change the dimensions here as necessary
 dev.off()
 
@@ -228,7 +281,7 @@ l.min_grob <- rasterGrob(l.min, width = unit(1.5, "cm"), height = unit(0.75, "cm
  
 #Build elements for plot 1; BOSS relative abundance L miniatus
 p3 <- ggplot() +
-  geom_tile(data = dat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_L_miniatus_BOSS.fit)) +
+  geom_tile(data = bossdat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_L_miniatus.fit)) +
   scale_fill_viridis(direction =-1)+
   geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
                breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
@@ -242,31 +295,45 @@ p3 <- ggplot() +
            ylim = c(-28.15, -27.95)) +
   labs(x = NULL, y = NULL, fill = "BOSS\nrelative\nabundance",                                    # Labels  
        colour = NULL) +
-  annotate("text", x = c(113.428836237, 113.388204915, 113.255153069),          # Add contour labels manually
+  annotate("text", x = c(113.428836237, 113.388204915, 113.265),          # Add contour labels manually
            y = c(-28.078038504, -28.078038504, -28.078038504), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
-  # annotate("text", x = 113.4, y = -28.0, label = expression(italic("C. rubescens")),
-  #          hjust = 0, size = 2.5, colour = "#000000") + # Add italicized text at top left
-  # annotation_custom(p.neb_grob, xmin = 113.39, xmax = 113.45, ymin = -22.70, ymax = -22.68) +
+  annotate("text", x = 113.17, y = -28.13, label = expression(italic("L. miniatus")),
+           hjust = 0.1, size = 2.5, colour = "#000000") + # Add italicized text at top left
+  annotation_custom(l.min_grob, xmin = 113.16, xmax = 113.24, ymin = -28.08, ymax = -28.13) +
+  ggspatial::annotation_north_arrow(
+    location = "tr", which_north = "true",
+    pad_x = unit(0, "in"), pad_y = unit(0.1, "in"),
+    style = ggspatial::north_arrow_nautical(
+      fill = c("grey40", "white"),
+      line_col = "grey20"),
+      # text_family = "ArcherPro Book"),
+    height = unit(1, "cm"),
+    width = unit(1, "cm"))+
   theme_minimal() +
   theme(
+    panel.grid.major = element_blank(),
     plot.title = element_text(size = 14, hjust = 0.5),# Center title horizontally
     legend.title = element_text(hjust = 0.3, size =7),
     legend.text = element_text(size =6),
-    axis.text = element_text(size =7)
+    axis.text = element_text(size =7),
+    panel.border = element_rect(colour = "black", fill = NA, size = 0.5),
+     #axis.line.x.bottom = element_line(colour = "black", linewidth = 0.5),
+     #axis.line.y.left = element_line(colour = "black", linewidth = 0.5),
+    axis.ticks = element_line(colour = "black")
   )
 print(p3)
-png(filename = "plots/Abrolhos/Abrolhos_BOSS_L_miniatus.png", 
-    
-    
-    width = 8, height = 4, res = 600, units = "in")        
+# png(filename = "plots/Abrolhos/Abrolhos_BOSS_L_miniatus.png", 
+#     
+#     
+#     width = 8, height = 4, res = 600, units = "in")   ###SAVE OUT     
 p3# Change the dimensions here as necessary
 dev.off()
  
 #Build elements for plot 1; BRUV relative abundance L miniatus
 p3.5 <- ggplot() +
-  geom_tile(data = dat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_L_miniatus_BRUV.fit)) +
+  geom_tile(data = bruvdat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_L_miniatus.fit)) +
   scale_fill_viridis(direction =-1)+
   geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
                breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
@@ -280,32 +347,47 @@ p3.5 <- ggplot() +
            ylim = c(-28.15, -27.95)) +
   labs(x = NULL, y = NULL, fill = "BRUV\nrelative\nabundance",                                    # Labels  
        colour = NULL) +
-  annotate("text", x = c(113.428836237, 113.388204915, 113.255153069),          # Add contour labels manually
+  annotate("text", x = c(113.428836237, 113.388204915, 113.265),          # Add contour labels manually
            y = c(-28.078038504, -28.078038504, -28.078038504), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
-  # annotate("text", x = 113.4, y = -28.0, label = expression(italic("C. rubescens")),
-  #          hjust = 0, size = 2.5, colour = "#000000") + # Add italicized text at top left
-  # annotation_custom(p.neb_grob, xmin = 113.39, xmax = 113.45, ymin = -22.70, ymax = -22.68) +
+  annotate("text", x = 113.17, y = -28.13, label = expression(italic("L. miniatus")),
+           hjust = 0, size = 2.5, colour = "#000000") + # Add italicized text at top left
+  annotation_custom(l.min_grob, xmin = 113.16, xmax = 113.24, ymin = -28.08, ymax = -28.13) +
+  ggspatial::annotation_north_arrow(
+    location = "tr", which_north = "true",
+    pad_x = unit(0, "in"), pad_y = unit(0.1, "in"),
+    style = ggspatial::north_arrow_nautical(
+      fill = c("grey40", "white"),
+      line_col = "grey20"),
+    # text_family = "ArcherPro Book"),
+    height = unit(1, "cm"),
+    width = unit(1, "cm"))+
   theme_minimal() +
   theme(
+    panel.grid.major = element_blank(),
     plot.title = element_text(size = 14, hjust = 0.5),# Center title horizontally
     legend.title = element_text(hjust = 0.3, size =7),
     legend.text = element_text(size =6),
-    axis.text = element_text(size =7)
+    axis.text = element_text(size =7),
+    panel.border = element_rect(colour = "black", fill = NA, size = 0.5),
+    # axis.line.x.bottom = element_line(colour = "black", linewidth = 0.5),
+    # axis.line.y.left = element_line(colour = "black", linewidth = 0.5),
+    axis.ticks = element_line(colour = "black")
   )
 print(p3.5)
-png(filename = "plots/Abrolhos/Abrolhos_BRUV_L_miniatus.png", 
-    
-    
-    width = 8, height = 4, res = 600, units = "in")        
+# png(filename = "plots/Abrolhos/Abrolhos_BRUV_L_miniatus.png", 
+#         width = 8, height = 4, res = 600, units = "in")       ###SAVEOUT 
 p3.5# Change the dimensions here as necessary
 dev.off()
 
+#FISH IMAGE
+s.cya <- readJPEG("data/images/abrolhos/suezichthys.jpg")
+s.cya_grob <- rasterGrob(s.cya, width = unit(1.0, "cm"), height = unit(0.5, "cm"), interpolate = TRUE)
 
 #Build elements for plot 1; BOSS relative abundance S cyanolaemus
 p4 <- ggplot() +
-  geom_tile(data = dat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_S_cyanolaemus_BOSS.fit)) +
+  geom_tile(data = bossdat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_S_cyanolaemus.fit)) +
   scale_fill_viridis(direction =-1)+
   geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
                breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
@@ -319,21 +401,35 @@ p4 <- ggplot() +
            ylim = c(-28.15, -27.95)) +
   labs(x = NULL, y = NULL, fill = "BOSS\nrelative\nabundance",                                    # Labels  
        colour = NULL) +
-  annotate("text", x = c(113.428836237, 113.388204915, 113.255153069),          # Add contour labels manually
+  annotate("text", x = c(113.428836237, 113.388204915, 113.265),          # Add contour labels manually
            y = c(-28.078038504, -28.078038504, -28.078038504), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
-  # annotate("text", x = 113.4, y = -28.0, label = expression(italic("C. rubescens")),
-  #          hjust = 0, size = 2.5, colour = "#000000") + # Add italicized text at top left
-  # annotation_custom(p.neb_grob, xmin = 113.39, xmax = 113.45, ymin = -22.70, ymax = -22.68) +
+  annotate("text", x = 113.17, y = -28.13, label = expression(italic("S. cyanolaemus")),
+           hjust = 0.1, size = 2.5, colour = "#000000") + # Add italicized text at top left
+  annotation_custom(s.cya_grob, xmin = 113.16, xmax = 113.24, ymin = -28.08, ymax = -28.13) +
+  ggspatial::annotation_north_arrow(
+    location = "tr", which_north = "true",
+    pad_x = unit(0, "in"), pad_y = unit(0.1, "in"),
+    style = ggspatial::north_arrow_nautical(
+      fill = c("grey40", "white"),
+      line_col = "grey20"),
+    # text_family = "ArcherPro Book"),
+    height = unit(1, "cm"),
+    width = unit(1, "cm"))+
   theme_minimal() +
   theme(
+    panel.grid.major = element_blank(),
     plot.title = element_text(size = 14, hjust = 0.5),# Center title horizontally
     legend.title = element_text(hjust = 0.3, size =7),
     legend.text = element_text(size =6),
-    axis.text = element_text(size =7)
+    axis.text = element_text(size =7),
+    panel.border = element_rect(colour = "black", fill = NA, size = 0.5),
+    #axis.line.x.bottom = element_line(colour = "black", linewidth = 0.5),
+    #axis.line.y.left = element_line(colour = "black", linewidth = 0.5),
+    axis.ticks = element_line(colour = "black")
   )
-print(p4)
+  print(p4)
 png(filename = "plots/Abrolhos/Abrolhos_BOSS_S_cyanolaemus.png", 
     
     
@@ -341,9 +437,9 @@ png(filename = "plots/Abrolhos/Abrolhos_BOSS_S_cyanolaemus.png",
 p4# Change the dimensions here as necessary
 dev.off()
 
-#Build elements for plot 1; BOSS relative abundance S cyanolaemus
+#Build elements for plot 1; BRUV relative abundance S cyanolaemus
 p4.5 <- ggplot() +
-  geom_tile(data = dat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_S_cyanolaemus_BRUV.fit)) +
+  geom_tile(data = bruvdat %>% filter(z >= 26 & z <=189), aes(x, y, fill = p_S_cyanolaemus.fit)) +
   scale_fill_viridis(direction =-1)+
   geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
                breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
@@ -357,19 +453,33 @@ p4.5 <- ggplot() +
            ylim = c(-28.15, -27.95)) +
   labs(x = NULL, y = NULL, fill = "BRUV\nrelative\nabundance",                                    # Labels  
        colour = NULL) +
-  annotate("text", x = c(113.428836237, 113.388204915, 113.255153069),          # Add contour labels manually
+  annotate("text", x = c(113.428836237, 113.388204915, 113.265),          # Add contour labels manually
            y = c(-28.078038504, -28.078038504, -28.078038504), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
-  # annotate("text", x = 113.4, y = -28.0, label = expression(italic("C. rubescens")),
-  #          hjust = 0, size = 2.5, colour = "#000000") + # Add italicized text at top left
-  # annotation_custom(p.neb_grob, xmin = 113.39, xmax = 113.45, ymin = -22.70, ymax = -22.68) +
+  annotate("text", x = 113.17, y = -28.13, label = expression(italic("S. cyanolaemus")),
+           hjust = 0.1, size = 2.5, colour = "#000000") + # Add italicized text at top left
+  annotation_custom(s.cya_grob, xmin = 113.16, xmax = 113.24, ymin = -28.08, ymax = -28.13) +
+  ggspatial::annotation_north_arrow(
+    location = "tr", which_north = "true",
+    pad_x = unit(0, "in"), pad_y = unit(0.1, "in"),
+    style = ggspatial::north_arrow_nautical(
+      fill = c("grey40", "white"),
+      line_col = "grey20"),
+    # text_family = "ArcherPro Book"),
+    height = unit(1, "cm"),
+    width = unit(1, "cm"))+
   theme_minimal() +
   theme(
+    panel.grid.major = element_blank(),
     plot.title = element_text(size = 14, hjust = 0.5),# Center title horizontally
     legend.title = element_text(hjust = 0.3, size =7),
     legend.text = element_text(size =6),
-    axis.text = element_text(size =7)
+    axis.text = element_text(size =7),
+    panel.border = element_rect(colour = "black", fill = NA, size = 0.5),
+    #axis.line.x.bottom = element_line(colour = "black", linewidth = 0.5),
+    #axis.line.y.left = element_line(colour = "black", linewidth = 0.5),
+    axis.ticks = element_line(colour = "black")
   )
 print(p4.5)
 png(filename = "plots/Abrolhos/Abrolhos_BRUV_S_cyanolaemus.png", 
@@ -379,9 +489,15 @@ png(filename = "plots/Abrolhos/Abrolhos_BRUV_S_cyanolaemus.png",
 p4.5# Change the dimensions here as necessary
 dev.off()
 
+fish_Abrolhos <- p3 + p3.5 + p1 + p1.5 + p2 + p2.5 + p4 + p4.5 + plot_layout(ncol =2)
+fish_Abrolhos
 
-
-
+ggsave(filename = "plots/Abrolhos/BOSSBRUV_Abrolhos_spatialplots.png", 
+       plot = fish_Abrolhos, 
+       width = 14, 
+       height = 16, 
+       dpi = 800, 
+       units = "in")
 
 
 
