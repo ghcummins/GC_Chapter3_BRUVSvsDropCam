@@ -116,7 +116,8 @@ metadata <- maxn %>%
 
 dat.maxn <- dat.response %>%
   left_join(allhab) %>%
-  left_join(metadata) 
+  left_join(metadata) %>%
+  dplyr::mutate(reef=rock+inverts)
 
 # look at top species ----
 # maxn.sum <- maxn %>%
@@ -205,9 +206,10 @@ names(dat.maxn)
 names(allhab)
 
 pred.vars = c("z", 
-              "sand", 
-              "rock",
-              "inverts", 
+              #"sand", 
+              #"rock",
+              #"inverts",
+              "reef",
               "aspect",
               "lineartrend",
               #"mean.relief",
@@ -221,7 +223,7 @@ pred.vars = c("z",
 # broad.Sponges and broad.Octocoral.Black and broad.Consolidated 
 
 # Specify the columns you want to include in corr.pred.vars
-selected_cols <- c("z", "sand", "rock", "inverts", 
+selected_cols <- c("z", "reef", 
                    "aspect", "lineartrend",
                    "tpi", "roughness", "detrended")
 

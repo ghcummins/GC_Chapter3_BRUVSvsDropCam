@@ -36,7 +36,7 @@ setwd(working.dir)
 name <- "PtCloates"  # set study name
 
 dat <- readRDS("data/staging/PtCloates/PtCloates.fish.dat.maxn.rds")%>%
-  dplyr::mutate(reef =rock+inverts)%>%
+  #dplyr::mutate(reef =rock+inverts)%>%
   #mutate(z = abs(z), scientific = paste(method,scientific,sep=".")) %>%
   #mutate(status = ifelse(is.na(status), "No-take", status)) %>%
     glimpse()
@@ -80,7 +80,7 @@ for(i in 1:length(resp.vars)){
   use.dat$location <- as.factor(use.dat$location)
   Model1  <- gam(number ~ s(depth, k = 3, bs='cr'),
                  family = tw(),  data = use.dat)
-  
+  #Check with claude if this should be z and not depth
   model.set <- generate.model.set(use.dat = use.dat,
                                   test.fit = Model1,
                                   pred.vars.cont = pred.vars,
