@@ -115,10 +115,10 @@ p1 <- ggplot() +
     axis.ticks = element_line(colour = "black")
   )
  print(p1)
-# png(filename = "plots/Abrolhos/Abrolhos_BOSS_C_rubescens_z_reef.png", 
-#       
-#       
-#          width = 8, height = 4, res = 600, units = "in")      ##SAVEOUT  
+png(filename = "plots/Abrolhos/Abrolhos_BOSS_C_rubescens_z_reef.png",
+
+
+         width = 8, height = 6, res = 600, units = "in")      ##SAVEOUT
 p1# Change the dimensions here as necessary
 dev.off()
   
@@ -174,7 +174,7 @@ dev.off()
 
 # FISH IMAGE
 c.aur <-  readJPEG("data/images/abrolhos/Coris auricularis 3cm.jpg")
-c.aur_grob <- rasterGrob(c.aur, width = unit(1.8, "cm"), height = unit(0.6, "cm"), interpolate = TRUE)
+c.aur_grob <- rasterGrob(c.aur, width = unit(1.5, "cm"), height = unit(0.5, "cm"), interpolate = TRUE)
 
 #Build elements for plot 1; BOSS relative abundance Coris auricularis 
 p2 <- ggplot() +
