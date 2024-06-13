@@ -8,7 +8,7 @@ install_github("UWAMEGFisheries/GlobalArchive") #to check for updates
 library(GlobalArchive)
 # To connect to life.history
 library(httpuv)
-library(googlesheets)
+library(googlesheets4)
 # To tidy data
 library(tidyr)
 library(plyr)
@@ -16,6 +16,14 @@ library(dplyr)
 library(readr)
 library(ggplot2)
 library(stringr)
+devtools::install_github("GlobalArchiveManual/CheckEM") # will only run if there is any updates
+library(CheckEM)
+
+# options(gargle_oauth_cache = ".secrets")
+# # check the value of the option, if you like
+# gargle::gargle_oauth_cache()
+# googlesheets4::gs4_auth()
+
 
 ## Set Study Name ----
 # Change this to suit your study name. This will also be the prefix on your final saved files.
@@ -25,14 +33,14 @@ study<-"PtCloates_BOSS"
 working.dir<-getwd()
 
 ## Save these directory names to use later----
-staging.dir<-paste(working.dir,"data/raw/Staging",sep="/") 
-download.dir<-paste(working.dir,"data/raw/EM Export",sep="/")
-tidy.dir<-paste(working.dir,"data/Tidy",sep="/")
+staging.dir<-paste(working.dir,"data/staging/PtCloates",sep="/") 
+download.dir<-paste(working.dir,"data/raw/em export",sep="/")
+tidy.dir<-paste(working.dir,"data/tidy/PtCloates",sep="/")
 plots.dir=paste(working.dir,"plots/format",sep="/")
-error.dir=paste(working.dir,"data/raw/errors to check",sep="/")
+error.dir=paste(working.dir,"data/errors to check",sep="/")
 
 # Import unchecked data from staging folder----
-# setwd(staging.dir)
+ #setwd(staging.dir)
 
 # Import metadata ---
 metadata<-read.csv("data/staging/PtCloates/PtCloates_BOSS_metadata.csv")
@@ -56,6 +64,9 @@ length<-read_csv(("data/staging/PtCloates/PtCloates_BOSS_length3dpoints.csv"),na
   mutate(species=tolower(species))%>%
   mutate(genus=str_replace_all(.$genus,c("NA"="Unknown")))%>%
   glimpse()
+  
+unique(length$length) %>%
+  sort()
 
 # BASIC checks----
 # Check if we have 3d points (Number) in addition to length----
@@ -67,14 +78,15 @@ three.d.points<-length%>%
 
 # Check if we have more than one fish associated with single length measurement----
 
-schools<-length%>%
+schools<-length %>%
   filter(number>1)%>%
   glimpse() # Do we have schools? 
 
 
+
 # Plot to visualise length data ----
 # Add justification and units to x
-setwd(plots.dir)
+# setwd(plots.dir)
 
 theme_ga<-theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                 panel.background = element_blank(), axis.line = element_line(colour = "black"))
@@ -119,6 +131,8 @@ out.of.range<-filter(length,range>10000)%>% # 10 m = 10000 mm
 
 # SERIOUS data checks using the life.history googlesheet ----
 # Checks on fish length vs their max.length in the life.history sheet will be done below
+
+master <- CheckEM::aus_life_history
 url <- "https://docs.google.com/spreadsheets/d/1SMLvR9t8_F-gXapR2EemQMEPSw_bUbPLcXd3lJ5g5Bo/edit?ts=5e6f36e2#gid=825736197"
 
 master<-googlesheets4::read_sheet(url)%>%ga.clean.names()%>%
@@ -270,6 +284,11 @@ dir()
 write.csv(metadata, file=paste(study,"checked.metadata.csv",sep = "."), row.names=FALSE)
 write.csv(maxn, file=paste(study,"checked.maxn.csv",sep = "."), row.names=FALSE)
 write.csv(length, file=paste(study,"checked.length.csv",sep = "."), row.names=FALSE)
+
+# write.csv(metadata, file=paste("data/tidy/PtCloates/", study, ".checked.metadata.csv",sep = ""), row.names=FALSE)
+# write.csv(maxn, file=paste(study,"checked.maxn.csv",sep = "."), row.names=FALSE)
+# write.csv(length, file=paste(study,"checked.length.csv",sep = "."), row.names=FALSE)
+
 
 # Go to FORMAT script (3) 
 setwd(working.dir)

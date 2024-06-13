@@ -1,3 +1,4 @@
 "campaignid","sample","family","genus","species","maxn","stereo.maxn","difference","percent.difference"
 "2021-05_PtCloates_BOSS",18,"Nemipteridae","Unknown","na",0,3,3,Inf
 "2021-05_PtCloates_BOSS",21,"Mullidae","Unknown","na",0,1,1,Inf
+"2022-05_PtCloates_Naked-BOSS",262,"Chaetodontidae","Heniochus","acuminatus",1,2,1,100

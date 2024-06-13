@@ -8,7 +8,7 @@ install_github("UWAMEGFisheries/GlobalArchive") #to check for updates
 library(GlobalArchive)
 # To connect to life.history
 library(httpuv)
-library(googlesheets)
+library(googlesheets4)
 # To tidy data
 library(tidyr)
 library(plyr)
@@ -25,21 +25,21 @@ study<-"PtCloates_BOSS"
 working.dir<-getwd()
 
 ## Save these directory names to use later---- 
-tidy.dir<-paste(working.dir,"data/tidy",sep="/")
+tidy.dir<-paste(working.dir,"data/tidy/PtCloates",sep="/")
 plots.dir=paste(working.dir,"plots/format",sep="/")
-error.dir=paste(working.dir,"data/raw/errors to check",sep="/")
+error.dir=paste(working.dir,"data/errors to check",sep="/")
 
 # Read in the data----
-setwd(tidy.dir)
-dir()
+# setwd(tidy.dir)
+# dir()
 
 # Read in metadata----
-metadata<-read_csv(file=paste(study,"checked.metadata.csv",sep = "."),na = c("", " "))%>%
+metadata<-read_csv("data/tidy/PtCloates/PtCloates_BOSS.checked.metadata.csv") %>%
   dplyr::mutate(id=paste(campaignid,sample,sep="."))%>%
   glimpse()
 
 # Make complete.maxn: fill in 0s and join in factors----
-dat<-read_csv(file=paste(study,"checked.maxn.csv",sep = "."),na = c("", " "))%>%
+dat<-read_csv("data/tidy/PtCloates/PtCloates_BOSS.checked.maxn.csv")%>%
   dplyr::mutate(id=paste(campaignid,sample,sep="."),
                 sample=as.character(sample))%>%
   full_join(metadata)%>%
@@ -55,7 +55,7 @@ dat<-read_csv(file=paste(study,"checked.maxn.csv",sep = "."),na = c("", " "))%>%
   glimpse()
 
 # Make family, genus and species names to merge back in after data is complete ---
-maxn.families<-read_csv(file=paste(study,"checked.maxn.csv",sep = "."),na = c("", " "))%>%
+maxn.families<-read_csv("data/tidy/PtCloates/PtCloates_BOSS.checked.maxn.csv")%>%
   mutate(scientific=paste(family,genus,species,sep=" "))%>%
   filter(!(family=="Unknown"))%>%
   dplyr::select(c(family,genus,species,scientific))%>%
@@ -73,13 +73,13 @@ unique(dat$sample)
 unique(complete.maxn$sample)
 
 # Make complete.length.number.mass: fill in 0s and join in factors----
-length.families<-read_csv(file=paste(study,"checked.length.csv",sep = "."),na = c("", " "))%>%
+length.families<-read_csv("data/tidy/PtCloates/PtCloates_BOSS.checked.length.csv")%>%
   filter(!(family=="Unknown"))%>%
   select(family,genus,species)%>%
   distinct()%>% #to join back in after complete
   glimpse()
 
-complete.length.number<-read_csv(file=paste(study,"checked.length.csv",sep = "."))%>% #na = c("", " "))
+complete.length.number<-read_csv("data/tidy/PtCloates/PtCloates_BOSS.checked.length.csv")%>% #na = c("", " "))
   filter(!family=="Unknown")%>%
   dplyr::mutate(id=paste(campaignid,sample,sep="."),
                 sample=as.character(sample))%>%
@@ -103,13 +103,13 @@ expanded.length<-complete.length.number%>%
   uncount(number)%>%
   glimpse()
 
-setwd(plots.dir)
+# setwd(plots.dir)
 ggplot(data=expanded.length, aes(as.numeric(length))) +
   geom_histogram(aes(y =..density..),
                  col="red",
                  fill="blue",
                  alpha = .2)
-ggsave(file=paste(study,"checkhisto.length.png",sep = "_"))
+ggsave("plots/PtCloates/checkhisto.length.png")
 
 ggplot(data=expanded.length, aes(y=as.numeric(length))) +
   geom_boxplot(col="red",
@@ -231,15 +231,15 @@ write.csv(check.mass,file=paste(study,"check.mass.csv",sep = "_"), row.names=FAL
 
 
 # WRITE FINAL complete and expanded data----
-setwd(tidy.dir)
-dir()
+# setwd(tidy.dir)
+# dir()
 
-write.csv(complete.maxn, file=paste(study,"complete.maxn.csv",sep = "."), row.names=FALSE)
+write.csv(complete.maxn, "data/tidy/PtCloates/PtCloates_BOSS.complete.maxn.csv", row.names=FALSE)
 
-write.csv(complete.length.number, file=paste(study,"complete.length.csv",sep = "."), row.names=FALSE)
+write.csv(complete.length.number, "data/tidy/PtCloates/PtCloates_BOSS.complete.length.csv", row.names=FALSE)
 
-write.csv(expanded.length, file=paste(study,"expanded.length.csv",sep = "."), row.names=FALSE)
+write.csv(expanded.length, "data/tidy/PtCloates/PtCloates_BOSS.expanded.length.csv", row.names=FALSE)
 
-write.csv(complete.length.number.mass, file=paste(study,"complete.mass.csv",sep = "."), row.names=FALSE)
+write.csv(complete.length.number.mass, "data/tidy/PtCloates/PtCloates_BOSS.complete.mass.csv", row.names=FALSE)
 
-setwd(working.dir)
+

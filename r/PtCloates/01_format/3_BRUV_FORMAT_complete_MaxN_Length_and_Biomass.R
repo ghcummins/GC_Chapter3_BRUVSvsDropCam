@@ -45,12 +45,14 @@ dir()
 
 # Read in metadata----
 metadata<-read_csv(file=paste(study,"checked.metadata.csv",sep = "."),na = c("", " "))%>%
-  dplyr::mutate(unique_id=paste0(campaignid,sep="_",sample))%>%
+  dplyr::mutate(unique_id=paste0(campaignid,sep="_",sample),
+        sample=as.character(sample))%>%
   glimpse()
 
 # Make complete.maxn: fill in 0s and join in factors----
 dat<-read_csv(file=paste(study,"checked.maxn.csv",sep = "."),na = c("", " "))%>%
-  dplyr::mutate(id=paste(campaignid,sample,sep="."))%>%
+  dplyr::mutate(id=paste(campaignid,sample,sep="."),
+                sample=as.character(sample))%>%
   full_join(metadata)%>%
   dplyr::select(c(id,campaignid,sample,family,genus,species,maxn))%>%
   tidyr::complete(nesting(id,campaignid,sample),nesting(family,genus,species)) %>%
@@ -60,7 +62,7 @@ dat<-read_csv(file=paste(study,"checked.maxn.csv",sep = "."),na = c("", " "))%>%
   dplyr::summarise(maxn=sum(maxn))%>%
   ungroup()%>% #always a good idea to ungroup() after you have finished using the group_by()!
   mutate(scientific=paste(family,genus,species,sep=" "))%>%
-  dplyr::select(unique_id,scientific,maxn)%>%
+  dplyr::select(unique_id, scientific,maxn)%>%
   spread(scientific,maxn, fill = 0)%>% #why do we need this?
   glimpse()
 
@@ -79,8 +81,8 @@ complete.maxn<-dat%>%
   full_join(metadata, by=c("unique_id"))%>% # Joining metadata will use a lot of memory - # out if you need too
   glimpse()
 
-unique(dat$sample)
-unique(complete.maxn$sample)
+unique(dat$unique_id)
+unique(complete.maxn$unique_id)
 
 # Make complete.length.number.mass: fill in 0s and join in factors----
 length.families<-read_csv(file=paste(study,"checked.length.csv",sep = "."),na = c("", " "))%>%
@@ -91,10 +93,11 @@ length.families<-read_csv(file=paste(study,"checked.length.csv",sep = "."),na = 
 
 complete.length.number<-read_csv(file=paste(study,"checked.length.csv",sep = "."))%>% #na = c("", " "))
   filter(!family=="Unknown")%>%
-  dplyr::mutate(id=paste(campaignid,sample,sep="."))%>%
-  dplyr::right_join(metadata ,by = c("id","campaignid", "sample"))%>% # add in all samples
-  dplyr::select(id,campaignid,sample,family,genus,species,length,number,range)%>%
-  tidyr::complete(nesting(id,campaignid,sample),nesting(family,genus,species)) %>%
+  mutate(sample=as.character(sample))%>%
+  dplyr::mutate(unique_id=paste(campaignid,sample,sep="_"))%>%
+  dplyr::right_join(metadata ,by = c("unique_id","campaignid", "sample"))%>% # add in all samples
+  dplyr::select(unique_id,campaignid,sample,family,genus,species,length,number,range)%>%
+  tidyr::complete(nesting(unique_id,campaignid,sample),nesting(family,genus,species)) %>%
   replace_na(list(number = 0))%>% #we add in zeros - in case we want to calulate abundance of species based on a length rule (e.g. greater than legal size)
   ungroup()%>%
   filter(!is.na(number))%>% # this should not do anything
@@ -102,8 +105,8 @@ complete.length.number<-read_csv(file=paste(study,"checked.length.csv",sep = "."
   left_join(.,metadata)%>%
   glimpse()
 
-length(unique(metadata$id)) # 50
-length(unique(complete.length.number$id)) # 50
+length(unique(metadata$unique_id)) # 50
+length(unique(complete.length.number$unique_id)) # 50
 
 # Make the expanded length data----
 # For use in length analyses - i.e KDE or histograms
