@@ -44,6 +44,7 @@ library(metR)
 library(vegan)
 library(ggstance)
 library(metR)
+library(stringr)
 
 ## Setup ----
 # set your working directory (manually, once for the whole R project)
@@ -100,7 +101,7 @@ sfboss_inds_n <- sfboss %>%
 sfboss_allnames <- separate(sfboss_inds_n, scientific, into = c("family", "genus", "species"), sep = " ")
 
 #save
-write.csv(sfboss_allnames, file = "outputs/PtCloates/PtCloatesBOSS_fishlist.csv", row.names = FALSE)
+write.csv(sfboss_allnames, file = "outputs/PtCloates/PtCloatesBOSS_fishlist_final.csv", row.names = FALSE)
 
 
 #to get each MAXN sample on BOSS
@@ -148,13 +149,36 @@ sfbruv_inds_n <- sfbruv %>%
 sfbruv_allnames <- separate(sfbruv_inds_n, scientific, into = c("family", "genus", "species"), sep = " ")
 
 #save
-write.csv(sfbruv_allnames, file = "outputs/PtCloates/PtCloatesBRUVS_fishlist.csv", row.names = FALSE)
+write.csv(sfbruv_allnames, file = "outputs/PtCloates/PtCloatesBRUVS_fishlist_final.csv", row.names = FALSE)
 
+#genera
+genusbruv <- sfbruv_allnames%>%
+  mutate(famgenus = str_c(family, genus, sep = "_"))%>%
+  filter(species !="sus")%>%
+  filter(genus !="Unknown")
+
+genusboss <- sfboss_allnames%>%
+  mutate(famgenus = str_c(family, genus, sep = "_"))%>%
+  filter(species !="sus")%>%
+  filter(genus !="Unknown")
+
+
+genera_BOSS <- unique(genusboss$famgenus)
+genera_BOSS 
+genera_BRUV <- unique(genusbruv$famgenus)
+genera_BRUV
+
+g_BOSS <- genusboss %>% distinct(famgenus)
+g_BRUV <- genusbruv %>% distinct(famgenus)
+
+only_in_bruv <- anti_join(unique_scientific_BRUV, unique_scientific_BOSS)
 
 
 #to get each MAXN sample on BRUVS
 samplemaxnBRUV <- bruv.maxn %>%
   filter(maxn>0) 
+
+BRUV.individual.fish <- sum(sfbruv_inds_n$totalfish)
 
 #Total number of individual fish seen on BRUVS
 totalfishBRUV <- bruv.maxn %>%
@@ -177,9 +201,15 @@ overallmaxnBRUV <- bruv.maxn %>%
   group_by(scientific) %>%
   dplyr::summarise(summaxn = sum(maxn))
 
-allfishbruv <- sum(overallmaxnBRUV$summaxn, na.rm = TRUE)
+overallmaxnBOSS <- boss.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific) %>%
+  dplyr::summarise(summaxn = sum(maxn))
 
+allfishbruv <- sum(overallmaxnBRUV$summaxn, na.rm = TRUE)
+allfishbruv
 allfishboss <-sum(overallmaxnBOSS$summaxn, na.rm = TRUE)
+allfishboss
 
 #calculating species unique to BOSS vs BRUV ###NEEDS CHECKING AND FIXING
 # Remove row with "SUS SUS sus" from samplefishBOSS
