@@ -45,6 +45,9 @@ library(vegan)
 library(ggstance)
 library(metR)
 library(stringr)
+library(VennDiagram)
+library(ggVennDiagram)
+library(ggvenn)
 
 ## Setup ----
 # set your working directory (manually, once for the whole R project)
@@ -162,7 +165,7 @@ genusboss <- sfboss_allnames%>%
   filter(species !="sus")%>%
   filter(genus !="Unknown")
 
-
+#unique genera
 genera_BOSS <- unique(genusboss$famgenus)
 genera_BOSS 
 genera_BRUV <- unique(genusbruv$famgenus)
@@ -171,7 +174,35 @@ genera_BRUV
 g_BOSS <- genusboss %>% distinct(famgenus)
 g_BRUV <- genusbruv %>% distinct(famgenus)
 
-only_in_bruv <- anti_join(unique_scientific_BRUV, unique_scientific_BOSS)
+only_in_g_boss <- anti_join(g_BOSS, g_BRUV)
+only_in_g_bruv <- anti_join(g_BRUV, g_BOSS)
+
+#unique families process to get
+familiesboss <- fishfamiliesboss %>%
+  filter(family !="SUS")
+
+familiesbruv <- fishfamiliesbruv %>%
+  filter(family !="SUS")
+
+f_BOSS <- familiesboss%>% distinct(family)
+f_BRUV <- familiesbruv %>% distinct(family)
+  
+only_families_in_boss <- anti_join(f_BOSS, f_BRUV)
+only_families_in_bruv <- anti_join(f_BRUV, f_BOSS)
+
+#VENNDIAGRAMS
+# Create Venn diagram
+data <- list(
+  BRUV = f_BRUV$family,
+  BOSS = f_BOSS$family
+)
+
+# Create Venn diagram ##only done venn diagram for families... do for genera and species.
+venn_plot <-ggvenn(data, 
+       c("BRUV", "BOSS"), 
+       fill_color =c("#56B4E9", "#F0E442"),
+        fill_alpha = 1.0)
+venn_plot
 
 
 #to get each MAXN sample on BRUVS
