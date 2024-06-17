@@ -165,14 +165,14 @@ abrbruvs <- read.csv("data/tidy/habitat/2021-05_Abrolhos_BRUVs_random-points_bro
 
 
 swc <- read.csv("data/tidy/habitat/2020-2021_south-west_BOSS-BRUV.Habitat.csv") %>%
-  dplyr::select(sample, longitude, latitude, method) %>%
+  dplyr::select(campaignid, sample, longitude, latitude, method) %>%
   glimpse()
 swcbruvsboss <- split(swc, swc$method)
 swcboss <- swcbruvsboss$BOSS %>%
-  dplyr::select(sample, longitude, latitude) %>%
+  dplyr::select(campaignid, sample, longitude, latitude) %>%
   glimpse()
 swcbruvs <- swcbruvsboss$BRUV %>%
-  dplyr::select(sample, longitude, latitude) %>%
+  dplyr::select(campaignid, sample, longitude, latitude) %>%
   glimpse()
 
 # Make plots
@@ -267,6 +267,12 @@ swcbruvs_sf <- st_as_sf(swcbruvs, coords = c("longitude", "latitude"), crs = 432
 swcbruvs_df <- st_drop_geometry(swcbruvs_sf)
 
 swcboss_df <- st_drop_geometry(swcboss_sf)
+
+#Save swc BOSS and BRUV dataframes for use in other scripts
+#save
+write.csv(swcboss_df, file = "outputs/SwC/swcBOSS_samplelist.csv", row.names = FALSE)
+
+write.csv(swcbruvs_df, file = "outputs/SwC/swcBRUV_samplelist.csv", row.names = FALSE)
 
 # # Define the bounding box coordinates
 # bbox <- st_bbox(c(xmin = 114.72, xmax = 114.95, ymin = -34.15, ymax = -34.05), crs = st_crs(4326))

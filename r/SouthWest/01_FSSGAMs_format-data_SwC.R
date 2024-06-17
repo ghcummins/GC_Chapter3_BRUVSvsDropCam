@@ -31,36 +31,47 @@ library(ggplot2)
 # set your working directory (manually, once for the whole R project)
 # use the 'files' tab to set wd in '~/parks-abrolhos' manually (your relative path) then run this line (if we need it?)
 working.dir <- getwd()
-setwd(working.dir)
+#setwd(working.dir)
 name <- "Southwest"   # set study name ##
 
 # load and join datasets
 #MaxN
-boss.maxn   <- read.csv("data/staging/SwC_BOSS_maxn.csv")%>%
+boss.maxn   <- read.csv("data/staging/SwC/2020-2021_south-west_BOSS.complete.maxn.csv")%>%
   dplyr::mutate(method = "BOSS",
                 sample=as.character(sample))%>%
     glimpse()
-bruv.maxn <- read.csv("data/staging/Southwest/2020_south-west_stereo-BRUVs.complete.maxn.csv")%>%
+bruv.maxn <- read.csv("data/staging/SwC/2020_south-west_stereo-BRUVs.complete.maxn.csv")%>%
   dplyr::mutate(method = "BRUV",
                 sample=as.character(sample))%>%
   glimpse()
+
 #join
 maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
     glimpse()
 
-#length
-boss.length <- read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.length.csv")%>%
-  dplyr::mutate(method = "BOSS")%>%
-  glimpse()
-bruv.length <- read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.length.csv")%>%
-  dplyr::mutate(method = "BRUV",
-                sample=as.character(sample))%>%
-  glimpse()
-#join
-length <- bind_rows(boss.length,bruv.length)%>%
-  dplyr::mutate(scientific = paste(family,genus,species, sep = " "))%>%
-  glimpse()
+swc_boss.maxn <- boss.maxn %>%
+  filter(longitude >= 114.72 & longitude <= 114.95 &
+           latitude >= -34.15 & latitude <= -34.05)
 
+BOSS_swc_maxn <- swc_boss.maxn %>%
+  filter(maxn>0)
+
+BOSS_samples <- unique(BOSS_swc_maxn$id)
+BOSS_samples_df <- data.frame(boss_s = BOSS_samples)
+
+fish <- filtered_maxn %>%
+  filter(maxn>0) 
+  
+  # group_by(scientific) %>%
+  # dplyr::summarise(n = n()) 
+
+samples <- unique(fish$id)
+print(samples)
+# Convert the vector to a dataframe
+samples_df <- data.frame(sample_id = samples)
+
+# Print the dataframe
+print(samples_df)
 
 
 #habitat
@@ -74,10 +85,6 @@ allhab <- readRDS("data/staging/habitat/PtCloates_habitat-bathy-derivatives.rds"
   mutate(campaignid = ifelse(campaignid == "2021-05_PtCloates_stereo-BRUVS", "2021-05_PtCloates_BRUVS", campaignid))%>%
     glimpse()
 
-# npz6hab <- readRDS("data/staging/Abrolhos/Abrolhos_habitat-bathy-derivatives.rds")%>%
-#   #dplyr::select(-status) %>%
-#   ga.clean.names()%>%
-#   glimpse()
 
 allhab <- allhab %>%
   #transform(kelps = kelps / broad.total.points.annotated) %>%

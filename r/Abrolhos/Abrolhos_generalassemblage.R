@@ -93,6 +93,24 @@ SBboss_allnames <- separate(SBboss_maxn_n, scientific, into = c("family", "genus
 #save
 write.csv(SBboss_allnames, file = "outputs/Abrolhos/ShallowBankBOSS_fishlist.csv", row.names = FALSE)
 
+total_indi_fish_BOSS <- SBboss_allnames%>%
+  dplyr::summarise(totalfish = sum(totalfish))
+
+sfboss_inds <- boss.maxn %>%
+  filter(maxn>0) %>%
+  dplyr::mutate(name = paste(genus, species))%>%
+  group_by(scientific) %>%  
+  dplyr::summarise(totalfish = sum(maxn))
+
+fishfamiliesboss <- boss.maxn %>%
+  filter(maxn>0) %>%
+  group_by(family) %>%
+  dplyr::summarise(totalfish = sum(maxn)) 
+
+famBOSS <- unique(fishfamiliesboss$family)
+famBOSS
+
+
 #BRUV fish species seen on how many samples
 samplefishbruv <- bruv.maxn %>%
   filter(maxn>0) %>%
@@ -104,6 +122,17 @@ totalfishbruv <- bruv.maxn %>%
   filter(maxn>0) %>%
   group_by(scientific, name) %>%
   dplyr::summarise(totalfish = sum(maxn))
+
+total_indi_fish_BRUV <- SBbruv_allnames%>%
+  dplyr::summarise(totalfish = sum(totalfish))
+
+fishfamiliesbruv <- bruv.maxn %>%
+  filter(maxn>0) %>%
+  group_by(family) %>%
+  dplyr::summarise(totalfish = sum(maxn)) 
+
+famBRUV <- unique(fishfamiliesbruv$family)
+famBRUV
 
 #Shallow Bank BRUV maxn column (total fish) and n (no. of drops)
 SBbruv_maxn_n <- samplefishbruv %>%
