@@ -175,6 +175,8 @@ swcbruvs <- swcbruvsboss$BRUV %>%
   dplyr::select(campaignid, sample, longitude, latitude) %>%
   glimpse()
 
+#NOTE BOSS HABITAT DROPS ARE NOT FISH DROPS SO ABOVE DOESNT WORK FOR BOSS
+
 # Make plots
 # Inset 1 - Ningaloo
 i1 <- ggplot() +
@@ -258,21 +260,25 @@ i2 <- ggplot() +
 i2
 
 
-swcboss_sf <- st_as_sf(swcboss, coords = c("longitude", "latitude"), crs = 4326, remove = F) %>%
-  st_crop(xmin = 114.72, xmax = 114.95, ymin = -34.15, ymax = -34.05)
+# swcboss_sf <- st_as_sf(swcboss, coords = c("longitude", "latitude"), crs = 4326, remove = F) %>%
+#   st_crop(xmin = 114.72, xmax = 114.95, ymin = -34.15, ymax = -34.05)
 
 swcbruvs_sf <- st_as_sf(swcbruvs, coords = c("longitude", "latitude"), crs = 4326, remove =F) %>%
   st_crop(xmin = 114.72, xmax = 114.95, ymin = -34.15, ymax = -34.05)
 
 swcbruvs_df <- st_drop_geometry(swcbruvs_sf)
 
-swcboss_df <- st_drop_geometry(swcboss_sf)
+# swcboss_df <- st_drop_geometry(swcboss_sf)
+#BOSS FISH DROPS IMPORTED SEPERATELY
+#TOTAL BOSS SITES IN MY BOX IS 215
+swcboss_df <- readRDS("data/staging/SwC/swcBOSS_uniquedeployments_campaignid.rds")
+
 
 #Save swc BOSS and BRUV dataframes for use in other scripts
 #save
-write.csv(swcboss_df, file = "outputs/SwC/swcBOSS_samplelist.csv", row.names = FALSE)
-
-write.csv(swcbruvs_df, file = "outputs/SwC/swcBRUV_samplelist.csv", row.names = FALSE)
+# write.csv(swcboss_df, file = "outputs/SwC/swcBOSS_samplelist_campaignid.csv", row.names = FALSE)
+# 
+# write.csv(swcbruvs_df, file = "outputs/SwC/swcBRUV_samplelist_campaignid.csv", row.names = FALSE)
 
 # # Define the bounding box coordinates
 # bbox <- st_bbox(c(xmin = 114.72, xmax = 114.95, ymin = -34.15, ymax = -34.05), crs = st_crs(4326))
@@ -308,9 +314,9 @@ i3 <- ggplot() +
   geom_sf(data = cwatr, colour = "firebrick", alpha = 4/5, size = 0.2) +
   # geom_sf(data = swcboss_sf, fill = "BOSS", 
   #         colour = "grey3", shape = 21, size = 1)  +
-   geom_point(data = swcboss_sf, aes(longitude, latitude, fill = "BOSS"),
+   geom_point(data = swcboss_df, aes(longitude, latitude, fill = "BOSS"),
            colour = "grey3", shape = 21, size = 1) +
-  geom_point(data = swcbruvs_sf, aes(longitude, latitude, fill = "BRUV"),
+  geom_point(data = swcbruvs_df, aes(longitude, latitude, fill = "BRUV"),
              colour = "grey3", shape = 21, size = 1) +
   coord_sf(xlim = c(114.7, 115.05),
            ylim = c(-34.0, -34.2)) +
@@ -379,6 +385,6 @@ layout
 # layout <- i1 + i2  +i3 + inset1 + guide_area() + plot_layout(design = design, guides = "collect")
 # layout
 
-ggsave("plots/Overall-fish6-sampling-locations.png", dpi = 300, width = 6, height = 8)
+ggsave("plots/Overall-fish7-sampling-locations.png", dpi = 300, width = 6, height = 8)
 
 

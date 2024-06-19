@@ -39,40 +39,92 @@ name <- "Southwest"   # set study name ##
 boss.maxn   <- read.csv("data/staging/SwC/2020-2021_south-west_BOSS.complete.maxn.csv")%>%
   dplyr::mutate(method = "BOSS",
                 sample=as.character(sample))%>%
+  dplyr::mutate(unique_id = paste(campaignid,sample, sep ="_"))%>%
+  dplyr::mutate(name = paste(genus, species))%>%
     glimpse()
+
+ 
 bruv.maxn <- read.csv("data/staging/SwC/2020_south-west_stereo-BRUVs.complete.maxn.csv")%>%
   dplyr::mutate(method = "BRUV",
                 sample=as.character(sample))%>%
+  plyr::mutate(unique_id = paste(campaignid,sample, sep ="_"))%>%
+  dplyr::mutate(name = paste(genus, species))%>%
   glimpse()
+
+unique(boss.maxn$id)
 
 #join
 maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
     glimpse()
 
+#figuring out BOSS samples and BOSS samples within wanted box dimensions
+# BOSS.maxn <- boss.maxn %>%
+#   filter(maxn>0)
+# 
+# unique(BOSS.maxn$id)
+
 swc_boss.maxn <- boss.maxn %>%
   filter(longitude >= 114.72 & longitude <= 114.95 &
            latitude >= -34.15 & latitude <= -34.05)
 
-BOSS_swc_maxn <- swc_boss.maxn %>%
-  filter(maxn>0)
+# BOSS_swc_maxn <- swc_boss.maxn %>%
+#   filter(maxn>0)
+# 
+# unique(BOSS_swc_maxn$id)
+# BOSS_samples  <- unique(BOSS_swc_maxn$id)
 
-BOSS_samples <- unique(BOSS_swc_maxn$id)
-BOSS_samples_df <- data.frame(boss_s = BOSS_samples)
+unique(swc_boss.maxn$id)
+#samples sites of BOSS
+unique_swc_boss <- swc_boss.maxn %>%
+  select(id, sample, latitude, longitude) %>%
+  distinct(id, .keep_all = TRUE)
 
-fish <- filtered_maxn %>%
-  filter(maxn>0) 
+#save sites this is BOSS sites in SWC in my campaign box
+#ONLY SAVED OUT ONCE so hashed out
+# write.csv(unique_swc_boss, file = "outputs/SwC/swcBOSS_uniquedeployments_campaignid.csv", row.names = FALSE)
+# write.csv(unique_swc_boss, file = "data/staging/SwC/swcBOSS_uniquedeployments_campaignid.csv", row.names = FALSE)
+# saveRDS(unique_swc_boss, "data/staging/SwC/swcBOSS_uniquedeployments_campaignid.rds")
   
-  # group_by(scientific) %>%
-  # dplyr::summarise(n = n()) 
+ 
+# #BOSS fish species seen on how many samples ie number of drops
+samplefishboss <- swc_boss.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific, name) %>%
+  dplyr::summarise(n = n()) 
 
-samples <- unique(fish$id)
-print(samples)
-# Convert the vector to a dataframe
-samples_df <- data.frame(sample_id = samples)
+#BOSS individual fish ie sum of MAXNs for that individual fish
+totalfishboss <- swc_boss.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific, name) %>%
+  dplyr::summarise(totalfish = sum(maxn))
 
-# Print the dataframe
-print(samples_df)
+SwCBOSS_maxn_n <- samplefishboss %>%
+  left_join(totalfishboss %>% select(scientific, totalfish), by = "scientific")
 
+#change columns so we have Family genus and species seperated - to be consistent w Pt CLoates list
+SwCBOSS_allnames <- separate(SwCBOSS_maxn_n, scientific, into = c("family", "genus", "species"), sep = " ")
+
+#save
+write.csv(SwCBOSS_allnames, file = "outputs/SwC/SWCBOSS_fishlist.csv", row.names = FALSE)
+
+total_indi_fish_BOSS <- SwCBOSS_allnames%>%
+  dplyr::summarise(totalfish = sum(totalfish))
+
+sfboss_inds <- swc_boss.maxn %>%
+  filter(maxn>0) %>%
+  dplyr::mutate(name = paste(genus, species))%>%
+  group_by(scientific) %>%  
+  dplyr::summarise(totalfish = sum(maxn))
+
+
+
+fishfamiliesboss <- swc_boss.maxn %>%
+  filter(maxn>0) %>%
+  group_by(family) %>%
+  dplyr::summarise(totalfish = sum(maxn)) 
+
+famBOSS <- unique(fishfamiliesboss$family)
+famBOSS
 
 #habitat
 allhab <- readRDS("data/staging/habitat/PtCloates_habitat-bathy-derivatives.rds")%>%
