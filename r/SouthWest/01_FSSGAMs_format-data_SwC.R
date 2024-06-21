@@ -107,6 +107,7 @@ SwCBOSS_allnames <- separate(SwCBOSS_maxn_n, scientific, into = c("family", "gen
 #save
 write.csv(SwCBOSS_allnames, file = "outputs/SwC/SWCBOSS_fishlist.csv", row.names = FALSE)
 
+#BOSS summary stats
 total_indi_fish_BOSS <- SwCBOSS_allnames%>%
   dplyr::summarise(totalfish = sum(totalfish))
 
@@ -116,8 +117,6 @@ sfboss_inds <- swc_boss.maxn %>%
   group_by(scientific) %>%  
   dplyr::summarise(totalfish = sum(maxn))
 
-
-
 fishfamiliesboss <- swc_boss.maxn %>%
   filter(maxn>0) %>%
   group_by(family) %>%
@@ -125,6 +124,84 @@ fishfamiliesboss <- swc_boss.maxn %>%
 
 famBOSS <- unique(fishfamiliesboss$family)
 famBOSS
+
+#BRUV summary stats
+swc_bruv.maxn <- bruv.maxn %>%
+  filter(longitude >= 114.72 & longitude <= 114.95 &
+           latitude >= -34.15 & latitude <= -34.05)
+#BRUV fish species seen on how many samples
+samplefishbruv <- swc_bruv.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific, name) %>%
+  dplyr::summarise(n = n()) 
+
+#BRUV individual fish ie MaxN
+totalfishbruv <- swc_bruv.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific, name) %>%
+  dplyr::summarise(totalfish = sum(maxn))
+
+fishfamiliesbruv <- swc_bruv.maxn %>%
+  filter(maxn>0) %>%
+  group_by(family) %>%
+  dplyr::summarise(totalfish = sum(maxn)) 
+
+famBRUV <- unique(fishfamiliesbruv$family)
+famBRUV
+
+#Shallow Bank BRUV maxn column (total fish) and n (no. of drops)
+swcbruv_maxn_n <- samplefishbruv %>%
+  left_join(totalfishbruv %>% select(scientific, totalfish), by = "scientific")
+
+#change columns so we have Family genus and species seperated - to be consistent w Pt CLoates list
+swcbruv_allnames <- separate(swcbruv_maxn_n, scientific, into = c("family", "genus", "species"), sep = " ")
+
+
+total_indi_fish_BRUV <- swcbruv_allnames%>%
+  dplyr::summarise(totalfish = sum(totalfish))
+#save
+write.csv(swcbruv_allnames, file = "outputs/SwC/SWCBRUV_fishlist.csv", row.names = FALSE)
+
+#Species unique to BOSS and BRUV
+ speciesBOSS<- SwCBOSS_allnames %>%
+  filter(name != "SUS sus")%>%
+   filter(genus !="Unknown")
+ 
+ speciesBRUV <-swcbruv_allnames %>%
+   filter(name != "SUS sus")%>%
+   filter(genus !="Unknown")
+ 
+sp_BOSS <- speciesBOSS%>%distinct(name)
+sp_BRUV <- speciesBRUV%>%distinct(name)
+ 
+ only_species_BOSS <- anti_join(sp_BOSS, sp_BRUV)
+ only_species_BRUV <- anti_join(sp_BRUV, sp_BOSS)
+
+#Genera unique to BOSS and BRUV
+generaBOSS <- unique(speciesBOSS$genus)
+generaBOSS
+
+generaBRUV <-unique(speciesBRUV$genus)
+generaBRUV
+
+g_BOSS <-data.frame(genus = generaBOSS)
+g_BRUV <-data.frame(genus = generaBRUV)
+ 
+only_in_g_BOSS <- anti_join(g_BOSS, g_BRUV)
+only_in_g_bruv <- anti_join(g_BRUV, g_BOSS)
+
+#Families unique to BOSS and BRUV
+familiesboss <- fishfamiliesboss %>%
+  filter(family !="SUS")
+
+familiesbruv <- fishfamiliesbruv %>%
+  filter(family !="SUS")
+
+f_BOSS <- familiesboss%>% distinct(family)
+f_BRUV <- familiesbruv %>% distinct(family)
+
+only_families_in_boss <- anti_join(f_BOSS, f_BRUV)
+only_families_in_bruv <- anti_join(f_BRUV, f_BOSS)
 
 #habitat
 allhab <- readRDS("data/staging/habitat/PtCloates_habitat-bathy-derivatives.rds")%>%
