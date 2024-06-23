@@ -29,7 +29,7 @@ name <- "PtCloates"  # set study name
 # read in
 dat1 <- readRDS("data/staging/PtCloates/PtCloates.fish.dat.maxn.rds")%>%
   #dplyr::mutate(reef =rock+inverts)%>%
-  mutate(z = abs(z), scientific = paste(method,scientific,sep=".")) %>%
+  mutate(z = abs(z), name = scientific, scientific = paste(method,scientific,sep=".")) %>%
   #mutate(status = ifelse(is.na(status), "No-take", status)) %>%
   glimpse()
   
@@ -98,10 +98,10 @@ dat1$method <- as.factor(dat1$method)
 
 #adding in fish images
 l.min <- readPNG("data/images/Lethrinus miniatus.png")
-l.min_grob <- rasterGrob(l.min, width = unit(2, "cm"), height = unit(1.0, "cm"), interpolate = TRUE)
+l.min_grob <- rasterGrob(l.min, width = unit(3, "cm"), height = unit(1.5, "cm"), interpolate = TRUE)
 
 p.neb <- readPNG("data/images/Parapercis nebulosa.png")
-p.neb_grob <- rasterGrob(p.neb, width = unit(1, "cm"), height = unit(0.5, "cm"), interpolate = TRUE)
+p.neb_grob <- rasterGrob(p.neb, width = unit(1.5, "cm"), height = unit(0.75, "cm"), interpolate = TRUE)
 
 
 ## Parapercis nebulosa BOSS BRUV
@@ -126,6 +126,9 @@ predicts_pn_z <- testdata_pn %>%
   group_by(z, method) %>%
   summarise(number = mean(fit), se.fit = mean(se.fit))  %>%
   ungroup() 
+
+predicts_pn_z <- predicts_pn_z %>%
+  mutate(method = factor(method, levels = c("BRUV", "BOSS")))
 
 testdata1_pn <- expand.grid(method = c("BOSS", "BRUV"), 
                             z = mean(Parapercis_nebulosa_BOSSBRUV$model$z),
@@ -155,23 +158,35 @@ predicts_pn_reef <- testdata2_pn %>%
   summarise(number = mean(fit), se.fit = mean(se.fit)) %>%
   ungroup()
 
+predicts_pn_reef <- predicts_pn_reef %>%
+  mutate(method = factor(method, levels = c("BRUV", "BOSS")))
+
+#add custom text for fish name on plot
+p.neb_text <- textGrob(label = expression(italic("P. nebulosa")), x = 0, y = 0, 
+                       just = "left", gp = gpar(col = "#000000", fontsize = 11))
+#add rug data ie raw data
+pneb.dat <- dat1 %>%
+  filter(name == "Pinguipedidae Parapercis nebulosa")
+
 #Plot P nebulosa residual abundance by depth (z)
 gg_P_nebulosa_z <- ggplot() + 
   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-  geom_ribbon(data = predicts_pn_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
+  geom_ribbon(data = predicts_pn_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
   geom_line(data = predicts_pn_z, aes(x = z, y = number, group=method, colour=method))+
   geom_line(data = predicts_pn_z, aes(x = z, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
   geom_line(data = predicts_pn_z, aes(x = z, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_rug(data = pneb.dat, aes(x = z, colour = method), sides = "b", alpha = 0.5) +  # Rug plot on the bottom
   # geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
   theme_classic() +
-  annotation_custom(p.neb_grob, xmin = -15, xmax = -5, ymin = -Inf, ymax = Inf) +
+  annotation_custom(p.neb_grob, xmin = -10, xmax = 0, ymin = -Inf, ymax = Inf) +
+  annotation_custom(p.neb_text, xmin = -20, xmax = -10, ymin = 0.8, ymax = 0.8) + # Text annotation outside the plot
   theme_void() +
   coord_cartesian(clip = "off") +
   theme(plot.margin = margin(0.5, 0.5, 0.5, 2.0, "cm" ))+
   #ylim(0,50)+
-  labs(x = "Depth", y = "Abundance (residual)") +
-  scale_colour_manual(values = c("BRUV" = "#666666", "BOSS" = "black")) +
-  scale_fill_manual(values = c("BRUV" = "grey74", "BOSS" = "ghostwhite"))+
+  labs(x = "Depth", y = "Relative abundance", colour = "Method", fill = "Method") +
+  scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
+  scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
     axis.line = element_line(colour = "black", linewidth = 0.5),
     axis.ticks = element_line(),
@@ -187,16 +202,17 @@ gg_P_nebulosa_z
 
 ##Plot P nebulosa residual abundance by reef
 gg_P_nebulosa_reef <- ggplot() + 
-  geom_ribbon(data = predicts_pn_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
+  geom_ribbon(data = predicts_pn_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
   geom_line(data = predicts_pn_reef, aes(x = reef, y = number, group=method, colour=method))+
   geom_line(data = predicts_pn_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
   geom_line(data = predicts_pn_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_rug(data = pneb.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) +  # Rug plot on the bottom
   theme_classic() +
   #ylim(0,50)+
-  labs(x = "Reef", y = "Abundance (residual)") +
-  scale_colour_manual(values = c("BRUV" = "#666666", "BOSS" = "black")) +
-  scale_fill_manual(values = c("BRUV" = "grey74", "BOSS" = "ghostwhite"))+
+  labs(x = "Reef", y = "Relative abundance", colour = "Method", fill = "Method") +
+  scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
+  scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
     axis.title.x = element_text(size = 11),  # X axis title size
     axis.title.y = element_text(size = 11),  # Y axis title size
@@ -230,6 +246,9 @@ predicts_total_z <- testdata %>%
   summarise(number = mean(fit), se.fit = mean(se.fit))  %>%
   ungroup()
 
+predicts_total_z <- predicts_total_z %>%
+  mutate(method = factor(method, levels = c("BRUV", "BOSS")))
+
 testdata1 <- expand.grid(method = c("BOSS", "BRUV"), 
                          z = mean(Lethrinus_miniatus_BOSSBRUV$model$z),
                          reef = mean(Lethrinus_miniatus_BOSSBRUV$model$reef)) %>%
@@ -258,25 +277,36 @@ predicts_total_reef <- testdata2 %>%
   summarise(number = mean(fit), se.fit = mean(se.fit)) %>%
   ungroup()
 
+predicts_total_reef <- predicts_total_reef %>%
+  mutate(method = factor(method, levels = c("BRUV", "BOSS")))
+
+l.min_text <- textGrob(label = expression(italic("L. miniatus")), x = 0, y = 0, 
+                       just = "left", gp = gpar(col = "#000000", fontsize = 11))
+
+lmin.dat <- dat1 %>%
+  filter(name == "Lethrinidae Lethrinus miniatus")
+
 #Plot L.miniatus residual abundance by depth (z)
 gg_L_miniatus_z <- ggplot() + 
   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-  geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
+  geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
   geom_line(data = predicts_total_z, aes(x = z, y = number, group=method, colour=method))+
   geom_line(data = predicts_total_z, aes(x = z, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
   geom_line(data = predicts_total_z, aes(x = z, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_rug(data = lmin.dat, aes(x = z, colour = method), sides = "b", alpha = 0.5) +  # Rug plot on the bottom
   # geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
-  theme_classic() +
-  # annotate("text", x = -55, y = 2, label = expression(italic("L. miniatus")),
-  #           hjust = 0, size = 2.5, colour = "#000000") +
-  annotation_custom(l.min_grob, xmin = -30, xmax = -20, ymin = -Inf, ymax = Inf) +
-  theme_void() +
+   theme_classic() +
+    # annotate("text", x = -17, y = 0.5, label = expression(italic("L. miniatus")),
+    #         hjust = 0, size = 3, colour = "#000000") +
+  annotation_custom(l.min_grob, xmin = -10, xmax = 0, ymin = -Inf, ymax = Inf) +
+  annotation_custom(l.min_text, xmin = -21, xmax = -11, ymin = 1, ymax = 1) + # Text annotation outside the plot
+   theme_void() +
   coord_cartesian(clip = "off") +
   theme(plot.margin = margin(0.5, 0.5, 0.5, 3.3, "cm" ))+
   #ylim(0,50)+
-  labs(x = "Depth", y = "Abundance (residual)") +
-  scale_colour_manual(values = c("BRUV" = "#666666", "BOSS" = "black")) +
-  scale_fill_manual(values = c("BRUV" = "grey74", "BOSS" = "ghostwhite"))+
+  labs(x = "Depth", y = "Relative abundance", colour = "Method", fill = "Method") +
+  scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
+  scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
     axis.line = element_line(colour = "black", linewidth = 0.5),
     axis.ticks = element_line(),
@@ -301,16 +331,17 @@ gg_L_miniatus_z
 
 #Plot L.miniatus residual abundance by reef
 gg_L_miniatus_reef <- ggplot() + 
-  geom_ribbon(data = predicts_total_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
+  geom_ribbon(data = predicts_total_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
   geom_line(data = predicts_total_reef, aes(x = reef, y = number, group=method, colour=method))+
   geom_line(data = predicts_total_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
   geom_line(data = predicts_total_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_rug(data = lmin.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) +  # Rug plot on the bottom
   theme_classic() +
   #ylim(0,50)+
-  labs(x = "Reef", y = "Abundance (residual)") +
-  scale_colour_manual(values = c("BRUV" = "#666666", "BOSS" = "black")) +
-  scale_fill_manual(values = c("BRUV" = "grey74", "BOSS" = "ghostwhite"))+
+  labs(x = "Reef", y = "Relative abundance", colour = "Method", fill = "Method") +
+  scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
+  scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
     axis.title.x = element_text(size = 11),  # X axis title size
     axis.title.y = element_text(size = 11),  # Y axis title size
@@ -322,12 +353,12 @@ gg_L_miniatus_reef <- ggplot() +
 gg_L_miniatus_reef
 
 p_PtCloates <- gg_P_nebulosa_z + gg_P_nebulosa_reef + gg_L_miniatus_z + gg_L_miniatus_reef + (plot_layout(ncol=2))+
-  theme(plot.margin = margin(1, 1, 1, 7, "cm" ))
+  theme(plot.margin = margin(1, 3, 1, 5, "cm" ))
 p_PtCloates
 
-ggsave(filename = "plots/PtCloates/BOSSBRUV_PtCloates_residualplots.png", 
+ggsave(filename = "plots/PtCloates/Residual_plots/BOSSBRUV_PtCloates_effectsplot_rugs.png", 
        plot = p_PtCloates, 
-       width = 14, 
+       width = 15, 
        height = 10, 
        dpi = 600, 
        units = "in")
@@ -350,7 +381,7 @@ predicted_fish <- cbind(preddf_new,
                 #"p_L_miniatus_BOSS" = predict(Lethrinus_miniatus_BOSS, preddf, type = "response", se.fit = T))
                 
 # # reduce prediction area to within sampled range
-# preddf <- preddf %>%
+# preddf <- preddf %>
 #   filter(z >= 215, z <= 71)
 
 # prasts <- rast(preddf %>% dplyr::select(x, y, starts_with("p_")),

@@ -91,7 +91,7 @@ SBboss_maxn_n <- samplefishboss %>%
 SBboss_allnames <- separate(SBboss_maxn_n, scientific, into = c("family", "genus", "species"), sep = " ")
 
 #save
-write.csv(SBboss_allnames, file = "outputs/Abrolhos/ShallowBankBOSS_fishlist.csv", row.names = FALSE)
+# write.csv(SBboss_allnames, file = "outputs/Abrolhos/ShallowBankBOSS_fishlist.csv", row.names = FALSE)
 
 total_indi_fish_BOSS <- SBboss_allnames%>%
   dplyr::summarise(totalfish = sum(totalfish))
@@ -142,4 +142,46 @@ SBbruv_maxn_n <- samplefishbruv %>%
 SBbruv_allnames <- separate(SBbruv_maxn_n, scientific, into = c("family", "genus", "species"), sep = " ")
 
 #save
-write.csv(SBbruv_allnames, file = "outputs/Abrolhos/ShallowBankBRUV_fishlist.csv", row.names = FALSE)
+# write.csv(SBbruv_allnames, file = "outputs/Abrolhos/ShallowBankBRUV_fishlist.csv", row.names = FALSE)
+
+#Species unique to BOSS and BRUV
+speciesBOSS<- SBboss_allnames %>%
+  filter(name != "SUS sus")
+  # filter(species != "spp")
+
+speciesBRUV <-SBbruv_allnames %>%
+  filter(name != "SUS sus")
+
+ sp_BOSS <- speciesBOSS%>%distinct(name)
+ sp_BRUV <- speciesBRUV%>%distinct(name)
+
+only_species_BOSS <- anti_join(sp_BOSS, sp_BRUV)
+only_species_BRUV <- anti_join(sp_BRUV, sp_BOSS)
+
+#genera unique to BOSS and BRUV
+generaBOSS <- unique(speciesBOSS$genus)
+generaBOSS
+
+generaBRUV <-unique(speciesBRUV$genus)
+generaBRUV
+
+g_BOSS <-data.frame(genus = generaBOSS)%>%
+  filter(genus !="Unknown")
+g_BRUV <-data.frame(genus = generaBRUV)%>%
+  filter(genus !="Unknown")
+
+only_in_g_BOSS <- anti_join(g_BOSS, g_BRUV)
+only_in_g_bruv <- anti_join(g_BRUV, g_BOSS)
+
+#Families unique to BOSS and BRUV
+familiesboss <- fishfamiliesboss %>%
+  filter(family !="SUS")
+
+familiesbruv <- fishfamiliesbruv %>%
+  filter(family !="SUS")
+
+f_BOSS <- familiesboss%>% distinct(family)
+f_BRUV <- familiesbruv %>% distinct(family)
+
+only_families_in_boss <- anti_join(f_BOSS, f_BRUV)
+only_families_in_bruv <- anti_join(f_BRUV, f_BOSS)
