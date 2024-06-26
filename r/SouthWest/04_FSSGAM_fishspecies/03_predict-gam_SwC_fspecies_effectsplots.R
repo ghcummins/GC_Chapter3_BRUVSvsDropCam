@@ -43,8 +43,17 @@ unique(dat1$scientific)
 dat1$method <- as.factor(dat1$method)
 
 ##Neeed to add fish pics here once found
+p.bis <- readJPEG("data/images/swc/Pseudolabrus biserialis-3cm.jpg")
+p.bis_grob <- rasterGrob(p.bis, width = unit(2.5, "cm"), height = unit(1.0, "cm"), interpolate = TRUE)
 
+o.lin <- readJPEG("data/images/swc/Opthalmolepis lineolatus-3cm.jpg")
+o.lin_grob <- rasterGrob(o.lin, width = unit(2.5, "cm"), height = unit(1.0, "cm"), interpolate = TRUE)
 
+c.aur <- readJPEG("data/images/swc/Coris auricularis 3cm.jpg")
+c.aur_grob <- rasterGrob(c.aur, width = unit(3.0, "cm"), height = unit(1.0, "cm"), interpolate = TRUE)
+
+n.obl <- readJPEG("data/images/swc/Neatypus obliquus-3cmL.jpg")
+n.obl_grob <- rasterGrob(n.obl, width = unit(2.75, "cm"), height = unit(1.5, "cm"), interpolate = TRUE)
 
 ##Pseudolabrus_biserialis BOSS BRUV
 Pseudolabrus_biserialis_BOSSBRUV <- gam(number ~ s(z, k=3, bs = "cr", by = method) + s(reef, k=3, bs = "cr", by = method) + method,
@@ -106,8 +115,8 @@ predicts_pb_reef <- predicts_pb_reef %>%
 
 
 #add custom text for fish name on plot
-# p.neb_text <- textGrob(label = expression(italic("P. nebulosa")), x = 0, y = 0, 
-#                        just = "left", gp = gpar(col = "#000000", fontsize = 11))
+p.bis_text <- textGrob(label = expression(italic("P. biserialis")), x = 0, y = 0, 
+                     just = "left", gp = gpar(col = "#000000", fontsize = 11))
 
 # #add rug data ie raw data
 pbis.dat <- dat1 %>%
@@ -124,11 +133,11 @@ gg_P_biserialis_z <- ggplot() +
   # geom_point(data = pbis.dat, x = )
   # geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
    theme_classic() +
-  # annotation_custom(p.neb_grob, xmin = -10, xmax = 0, ymin = -Inf, ymax = Inf) +
-  # annotation_custom(p.neb_text, xmin = -20, xmax = -10, ymin = 0.8, ymax = 0.8) + # Text annotation outside the plot
-  # theme_void() +
-  # coord_cartesian(clip = "off") +
-  # theme(plot.margin = margin(0.5, 0.5, 0.5, 2.0, "cm" ))+
+  annotation_custom(p.bis_grob, xmin = -10, xmax = 0, ymin = -Inf, ymax = Inf) +
+  annotation_custom(p.bis_text, xmin = -16, xmax = -6, ymin = 2, ymax = 2) + # Text annotation outside the plot
+  theme_void() +
+  coord_cartesian(clip = "off") +
+  theme(plot.margin = margin(0.5, 0.5, 0.5, 2.0, "cm" ))+
   #ylim(0,50)+
   labs(x = "Depth", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
@@ -235,8 +244,8 @@ predicts_ol_reef <- predicts_ol_reef %>%
   mutate(method = factor(method, levels = c("BRUV", "BOSS")))
 
 #add custom text for fish name
-# c.rub_text <- textGrob(label = expression(italic("C. rubescens")), x = 0, y = 0, 
-#                        just = "left", gp = gpar(col = "#000000", fontsize = 11))
+ o.lin_text <- textGrob(label = expression(italic("O. lineolatus")), x = 0, y = 0, 
+                        just = "left", gp = gpar(col = "#000000", fontsize = 11))
 
 #add rug data ie raw data
 olin.dat <- dat1 %>%
@@ -252,11 +261,11 @@ gg_O_lineolatus_z <- ggplot() +
   geom_rug(data = olin.dat, aes(x = z, colour = method), sides = "b", alpha = 0.5) + 
   # geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
   theme_classic() +
-  # annotation_custom(c.rub_grob, xmin = -50, xmax = -40, ymin = -Inf, ymax = Inf) +
-  # annotation_custom(c.rub_text, xmin = -65, xmax = -55, ymin = 6, ymax = 6) + 
-  # theme_void() +
-  # coord_cartesian(clip = "off") +
-  # theme(plot.margin = margin(0.5, 0.5, 0.5, 3.5, "cm" ))+
+  annotation_custom(o.lin_grob, xmin = -10, xmax = 0, ymin = -Inf, ymax = Inf) +
+  annotation_custom(o.lin_text, xmin = -17, xmax = -7, ymin = 2.5, ymax = 2.5) +
+  theme_void() +
+  coord_cartesian(clip = "off") +
+  theme(plot.margin = margin(0.5, 0.5, 0.5, 3.5, "cm" ))+
   #ylim(0,50)+
   labs(x = "Depth", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
@@ -273,7 +282,6 @@ gg_O_lineolatus_z <- ggplot() +
     legend.text = element_text(size = 9) # Legend text size
   )
 gg_O_lineolatus_z
-
 
 #Plot Ophthalmolepis lineolatus residual abundance by reef
 gg_O_lineolatus_reef <- ggplot() + 
@@ -362,8 +370,8 @@ predicts_ca_reef <- predicts_ca_reef %>%
   mutate(method = factor(method, levels = c("BRUV", "BOSS")))
 
 # #add custom text for fish name
-# c.aur_text <- textGrob(label = expression(italic("C. auricularis")), x = 0, y = 0, 
-#                        just = "left", gp = gpar(col = "#000000", fontsize = 11))
+c.aur_text <- textGrob(label = expression(italic("C. auricularis")), x = 0, y = 0, 
+                        just = "left", gp = gpar(col = "#000000", fontsize = 11))
 
 #add rug data ie raw data
 caur.dat <- dat1 %>%
@@ -379,13 +387,13 @@ gg_C_auricularis_z <- ggplot() +
   geom_rug(data = caur.dat, aes(x = z, colour = method), sides = "b", alpha = 0.5) +
   # geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
   theme_classic() +
-  # annotation_custom(c.aur_grob, xmin = -55, xmax = -45, ymin = -Inf, ymax = Inf) +
-  # annotation_custom(c.aur_text, xmin = -65, xmax = -55, ymin = 7, ymax = 7) +
-  # theme_void() +
-  # coord_cartesian(clip = "off") +
-  # theme(plot.margin = margin(0.5, 0.5, 0.5, 3.5, "cm" ))+
+  annotation_custom(c.aur_grob, xmin = -17, xmax = 7, ymin = -Inf, ymax = Inf) +
+  annotation_custom(c.aur_text, xmin = -20, xmax = -10, ymin = 7, ymax = 7) +
+  theme_void() +
+  coord_cartesian(clip = "off") +
+  theme(plot.margin = margin(0.5, 0.5, 0.5, 3.5, "cm" ))+
   #ylim(0,50)+
-  labs(x = "Depth", y = "Relative abundance", colour = "Method", fill = "Method") +
+  labs(x = "Depth", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -419,7 +427,7 @@ gg_C_auricularis_reef <- ggplot() +
   geom_rug(data = caur.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) +
   theme_classic() +
   #ylim(0,50)+
-  labs(x = "Reef", y = "Relative abundance", colour = "Method", fill = "Method") +
+  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -505,8 +513,8 @@ predicts_no_reef <- predicts_no_reef %>%
   mutate(method = factor(method, levels = c("BRUV", "BOSS")))
 
 #add custom text for fish name
-# c.rub_text <- textGrob(label = expression(italic("C. rubescens")), x = 0, y = 0, 
-#                        just = "left", gp = gpar(col = "#000000", fontsize = 11))
+ n.obl_text <- textGrob(label = expression(italic("N. obliquus")), x = 0, y = 0, 
+                       just = "left", gp = gpar(col = "#000000", fontsize = 11))
 
 #add rug data ie raw data
 nobl.dat <- dat1 %>%
@@ -522,11 +530,11 @@ gg_N_obliquus_z <- ggplot() +
   geom_rug(data = nobl.dat, aes(x = z, colour = method), sides = "b", alpha = 0.5) + 
   # geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
   theme_classic() +
-  # annotation_custom(c.rub_grob, xmin = -50, xmax = -40, ymin = -Inf, ymax = Inf) +
-  # annotation_custom(c.rub_text, xmin = -65, xmax = -55, ymin = 6, ymax = 6) + 
-  # theme_void() +
-  # coord_cartesian(clip = "off") +
-  # theme(plot.margin = margin(0.5, 0.5, 0.5, 3.5, "cm" ))+
+  annotation_custom(n.obl_grob, xmin = -13, xmax = -3, ymin = -Inf, ymax = Inf) +
+  annotation_custom(n.obl_text, xmin = -20, xmax = -10, ymin = 3.5, ymax = 3.5) +
+  theme_void() +
+  coord_cartesian(clip = "off") +
+  theme(plot.margin = margin(0.5, 0.5, 0.5, 3.5, "cm" ))+
   #ylim(0,50)+
   labs(x = "Depth", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
@@ -571,3 +579,16 @@ gg_N_obliquus_reef <- ggplot() +
     legend.text = element_text(size = 9) # Legend text size
   )
 gg_N_obliquus_reef
+
+#join altogether
+p_swc <- gg_P_biserialis_z + gg_P_biserialis_reef + gg_O_lineolatus_z + gg_O_lineolatus_reef + gg_C_auricularis_z  + gg_C_auricularis_reef + gg_N_obliquus_z + gg_N_obliquus_reef + plot_layout(ncol = 2)
+p_swc
+
+#save
+ggsave(filename = "plots/SwC/BOSSBRUV_Southwest_effectsplots4.png", 
+       plot = p_swc, 
+       width = 12, 
+       height = 16, 
+       dpi = 600, 
+       units = "in")
+

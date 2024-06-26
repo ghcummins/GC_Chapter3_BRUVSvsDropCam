@@ -223,7 +223,7 @@ gg_total_z <- ggplot() +
   coord_cartesian(clip = "off") +
   theme(plot.margin = margin(0.5, 0.5, 0.5, 3.0, "cm" ))+
   #ylim(0,50)+
-  labs(x = "Depth", y = "Relative abundance", colour = "Method", fill = "Method") +
+  labs(x = "Depth", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
    theme(
@@ -258,7 +258,7 @@ gg_total_reef <- ggplot() +
   geom_rug(data = lmin.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) +  
   theme_classic() +
   #ylim(0,50)+
-  labs(x = "Reef", y = "Relative abundance", colour = "Method", fill = "Method") +
+  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -365,7 +365,7 @@ gg_C_rubescens_z <- ggplot() +
   coord_cartesian(clip = "off") +
   theme(plot.margin = margin(0.5, 0.5, 0.5, 3.5, "cm" ))+
   #ylim(0,50)+
-  labs(x = "Depth", y = "Relative abundance", colour = "Method", fill = "Method") +
+  labs(x = "Depth", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -399,7 +399,7 @@ gg_C_rubescens_reef <- ggplot() +
   geom_rug(data = crub.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) + 
   theme_classic() +
   #ylim(0,50)+
-  labs(x = "Reef", y = "Relative abundance", colour = "Method", fill = "Method") +
+  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -506,7 +506,7 @@ gg_C_auricularis_z <- ggplot() +
   coord_cartesian(clip = "off") +
   theme(plot.margin = margin(0.5, 0.5, 0.5, 3.5, "cm" ))+
   #ylim(0,50)+
-  labs(x = "Depth", y = "Relative abundance", colour = "Method", fill = "Method") +
+  labs(x = "Depth", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -540,7 +540,7 @@ gg_C_auricularis_reef <- ggplot() +
   geom_rug(data = caur.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) +
   theme_classic() +
   #ylim(0,50)+
-  labs(x = "Reef", y = "Relative abundance", colour = "Method", fill = "Method") +
+  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -646,7 +646,7 @@ gg_S_cyanolaemus_z <- ggplot() +
   coord_cartesian(clip = "off") +
   theme(plot.margin = margin(0.5, 0.5, 0.5, 2.7, "cm" ))+
   #ylim(0,50)+
-  labs(x = "Depth", y = "Relative abundance", colour = "Method", fill = "Method") +
+  labs(x = "Depth", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -680,7 +680,7 @@ gg_S_cyanolaemus_reef <- ggplot() +
   geom_rug(data = caur.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) +
   theme_classic() +
   #ylim(0,50)+
-  labs(x = "Reef", y = "Relative abundance", colour = "Method", fill = "Method") +
+  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -707,7 +707,7 @@ gg_S_cyanolaemus_reef
 p_Abrolhos <- gg_total_z + gg_total_reef + gg_C_rubescens_z + gg_C_rubescens_reef + gg_C_auricularis_z + gg_C_auricularis_reef + gg_S_cyanolaemus_z + gg_S_cyanolaemus_reef + plot_layout(ncol =2)
 p_Abrolhos
 
-ggsave(filename = "plots/Abrolhos/BOSSBRUV_Abrolhos_effectsplots_wgrubs2.png", 
+ggsave(filename = "plots/Abrolhos/BOSSBRUV_Abrolhos_effectsplots_wgrubs_final.png", 
        plot = p_Abrolhos, 
        width = 14, 
        height = 16, 

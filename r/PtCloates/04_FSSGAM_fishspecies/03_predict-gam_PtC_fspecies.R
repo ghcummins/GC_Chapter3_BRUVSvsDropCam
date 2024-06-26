@@ -184,7 +184,7 @@ gg_P_nebulosa_z <- ggplot() +
   coord_cartesian(clip = "off") +
   theme(plot.margin = margin(0.5, 0.5, 0.5, 2.0, "cm" ))+
   #ylim(0,50)+
-  labs(x = "Depth", y = "Relative abundance", colour = "Method", fill = "Method") +
+  labs(x = "Depth", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -210,7 +210,7 @@ gg_P_nebulosa_reef <- ggplot() +
   geom_rug(data = pneb.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) +  # Rug plot on the bottom
   theme_classic() +
   #ylim(0,50)+
-  labs(x = "Reef", y = "Relative abundance", colour = "Method", fill = "Method") +
+  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -304,7 +304,7 @@ gg_L_miniatus_z <- ggplot() +
   coord_cartesian(clip = "off") +
   theme(plot.margin = margin(0.5, 0.5, 0.5, 3.3, "cm" ))+
   #ylim(0,50)+
-  labs(x = "Depth", y = "Relative abundance", colour = "Method", fill = "Method") +
+  labs(x = "Depth", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -339,7 +339,7 @@ gg_L_miniatus_reef <- ggplot() +
   geom_rug(data = lmin.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) +  # Rug plot on the bottom
   theme_classic() +
   #ylim(0,50)+
-  labs(x = "Reef", y = "Relative abundance", colour = "Method", fill = "Method") +
+  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -356,7 +356,7 @@ p_PtCloates <- gg_P_nebulosa_z + gg_P_nebulosa_reef + gg_L_miniatus_z + gg_L_min
   theme(plot.margin = margin(1, 3, 1, 5, "cm" ))
 p_PtCloates
 
-ggsave(filename = "plots/PtCloates/Residual_plots/BOSSBRUV_PtCloates_effectsplot_rugs.png", 
+ggsave(filename = "plots/PtCloates/Residual_plots/hi.png", 
        plot = p_PtCloates, 
        width = 15, 
        height = 10, 
