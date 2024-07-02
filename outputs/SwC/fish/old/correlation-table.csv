@@ -1,0 +1,14 @@
+"","z","sand","rock","inverts","macroalgae","seagrasses","mean.relief","sd.relief","reef","aspect","tpi","roughness","detrended"
+"z",1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"sand",NA,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"rock",NA,NA,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"inverts",NA,NA,NA,1,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"macroalgae",NA,NA,NA,NA,1,NA,NA,NA,NA,NA,NA,NA,NA
+"seagrasses",NA,NA,NA,NA,NA,1,NA,NA,NA,NA,NA,NA,NA
+"mean.relief",NA,NA,NA,NA,NA,NA,1,NA,NA,NA,NA,NA,NA
+"sd.relief",NA,NA,NA,NA,NA,NA,NA,1,NA,NA,NA,NA,NA
+"reef",NA,NA,NA,NA,NA,NA,NA,NA,1,NA,NA,NA,NA
+"aspect",NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,NA,NA
+"tpi",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA,NA
+"roughness",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,NA
+"detrended",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1

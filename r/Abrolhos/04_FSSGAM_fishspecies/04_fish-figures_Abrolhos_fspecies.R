@@ -489,10 +489,10 @@ png(filename = "plots/Abrolhos/Abrolhos_BRUV_S_cyanolaemus.png",
 p4.5# Change the dimensions here as necessary
 dev.off()
 
-fish_Abrolhos <- p3 + p3.5 + p1 + p1.5 + p2 + p2.5 + p4 + p4.5 + plot_layout(ncol =2)
+fish_Abrolhos <- p3.5 + p3 + p1.5 + p1 + p2.5 + p2 + p4.5 + p4 + plot_layout(ncol =2)
 fish_Abrolhos
 
-ggsave(filename = "plots/Abrolhos/BOSSBRUV_Abrolhos_spatialplots.png", 
+ggsave(filename = "plots/Abrolhos/spatialplots/BRUVBOSS_Abrolhos_spatialplots.png", 
        plot = fish_Abrolhos, 
        width = 14, 
        height = 16, 

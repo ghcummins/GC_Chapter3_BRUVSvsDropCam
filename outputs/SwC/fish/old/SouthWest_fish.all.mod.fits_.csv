@@ -1,0 +1,16 @@
+"","modname","AICc","BIC","r2.vals","r2.vals.unique","edf","edf.less.1","delta.AICc","delta.BIC","wi.AICc","wi.BIC","z","reef","tpi","aspect","roughness","detrended","cumsum.wi"
+"Labridae Coris auricularis_BRUV.tpi+z","tpi+z",707.144332372156,725.62472615568,0.11132,NA,4.77,0,0,3.556,0.338,0.072,1,0,1,0,0,0,0.338
+"Labridae Coris auricularis_BRUV.aspect+tpi+z","aspect+tpi+z",707.146200071279,725.62933062621,0.11133,NA,5.77,1,0.002,3.56,0.338,0.072,1,0,1,1,0,0,0.676
+"Labridae Coris auricularis_BRUV.z","z",708.614553397356,722.068879327168,0.10175,NA,2.97,0,1.47,0,0.162,0.428,1,0,0,0,0,0,0.838
+"Labridae Coris auricularis_BRUV.aspect+z","aspect+z",708.614811058393,722.069510227439,0.10175,NA,3.97,1,1.47,0.001,0.162,0.428,1,0,0,1,0,0,1
+"Labridae Ophthalmolepis lineolatus_BRUV","aspect+tpi+z",342.854605624908,362.46093795328,0.2452,NA,4.91,0,0,0,1,1,1,0,1,1,0,0,1
+"Labridae Pseudolabrus biserialis_BRUV.z","z",460.29435509996,473.70809014459,0.1936,NA,2.87,0,0,0,0.377,0.459,1,0,0,0,0,0,0.377
+"Labridae Pseudolabrus biserialis_BRUV.aspect+z","aspect+z",460.297475788731,473.717920742396,0.1936,NA,3.87,1,0.003,0.01,0.377,0.457,1,0,0,1,0,0,0.754
+"Scorpididae Neatypus obliquus_BRUV.tpi+z","tpi+z",484.28296416345,502.81189644191,0.07581,NA,4.82,0,0,0,0.499,0.481,1,0,1,0,0,0,0.499
+"Scorpididae Neatypus obliquus_BRUV.aspect+tpi+z","aspect+tpi+z",484.283456571733,502.813025175841,0.07581,NA,5.82,1,0,0.001,0.498,0.481,1,0,1,1,0,0,0.997
+"Labridae Coris auricularis_BOSS.aspect+tpi+z","aspect+tpi+z",813.697140971011,839.3524874637,0.03278,NA,5.33,0,0,5.144,0.473,0.039,1,0,1,1,0,0,0.473
+"Labridae Coris auricularis_BOSS.aspect+z","aspect+z",814.057283493728,836.704251363833,0.02886,NA,4.43,0,0.36,2.496,0.395,0.148,1,0,0,1,0,0,0.868
+"Labridae Ophthalmolepis lineolatus_BOSS","aspect+detrended+tpi",370.040187027119,389.849970372822,0.21852,NA,4.94,1,0,0,1,1,0,0,1,1,0,1,1
+"Labridae Pseudolabrus biserialis_BOSS.z","z",741.893375870685,758.447216453481,0.17176,NA,2.94,0,0,0,0.417,0.854,1,0,0,0,0,0,0.417
+"Labridae Pseudolabrus biserialis_BOSS.aspect+z","aspect+z",742.441027071155,762.293144019752,0.17158,NA,3.94,0,0.548,3.846,0.317,0.125,1,0,0,1,0,0,0.734
+"Scorpididae Neatypus obliquus_BOSS","aspect+detrended+tpi",803.857414212887,832.682048481321,0.04694,NA,6.24,0,0,4.07,0.72,0.026,0,0,1,1,0,1,0.72

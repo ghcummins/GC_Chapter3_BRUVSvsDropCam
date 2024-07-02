@@ -109,16 +109,16 @@ dat.maxn <- dat.response %>%
   # dplyr::mutate(reef =rock+inverts+macroalgae)
 
 # # Specify the columns you want to include in corr.pred.vars
-# pred.vars <- c("z", "sand", "rock", "inverts", "macroalgae", "seagrasses",
-#                "mean.relief", "sd.relief", "reef", "aspect",
-#                "tpi", "roughness", "detrended")
-# 
-# # Create the new data frame corr.pred.vars
-# corrtable <- as.data.frame(round(cor(dat.maxn[ , pred.vars]), 2))
+pred.vars <- c("z", "sand", "rock", "inverts", "macroalgae", "seagrasses",
+               "mean.relief", "sd.relief", "reef", "aspect",
+               "tpi", "roughness", "detrended")
+
+# Create the new data frame corr.pred.vars
+corrtable <- as.data.frame(round(cor(dat.maxn[ , pred.vars]), 2))
 ##take out slope
 ## reef and mean.relief are too correlated. Which should I choose?
 
-# write.csv(corrtable, file = "outputs/SwC/fish/correlation-table.csv")
+ write.csv(corrtable, file = "outputs/SwC/fish/correlation-table.csv")
 
 # Plot of likely transformations - thanks to Anna Cresswell for this loop!
 # par(mfrow = c(3, 2))

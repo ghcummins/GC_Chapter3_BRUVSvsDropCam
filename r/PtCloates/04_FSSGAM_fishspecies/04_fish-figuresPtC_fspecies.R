@@ -68,11 +68,11 @@ npz_cols <- scale_colour_manual(values = c("National Park Zone" = "#7bbc63"),
 
 
 p.neb <- readPNG("data/images/Parapercis nebulosa.png")
-p.neb_grob <- rasterGrob(p.neb, width = unit(1, "cm"), height = unit(0.5, "cm"), interpolate = TRUE)
+p.neb_grob <- rasterGrob(p.neb, width = unit(1.0, "cm"), height = unit(0.5, "cm"), interpolate = TRUE)
 
 #Build elements for plot 1; BOSS P.nebulosa
 p1 <- ggplot() +
-  geom_tile(data = bossdat %>% filter(z >= 71 & z <=215), aes(x, y, fill = p_P_nebulosa.fit)) +
+  geom_tile(data = bossdat%>% filter(z >= 71 & z <=215), aes(x, y, fill = p_P_nebulosa.fit)) +
   scale_fill_viridis(direction =-1)+
   geom_contour(data = bathdf, aes(x = x, y = y, z = Z),                         # Contour lines
                breaks = c(- 30, -70, - 200),                                 # Contour breaks - change to binwidth for regular contours
@@ -86,13 +86,22 @@ p1 <- ggplot() +
            ylim = c(-22.81, -22.66)) +
   labs(x = NULL, y = NULL, fill = "BOSS\nrelative\nabundance",                                    # Labels  
        colour = NULL) +
-  annotate("text", x = c(113.65, 113.57, 113.51),          # Add contour labels manually
+  annotate("text", x = c(113.64, 113.56, 113.475),          # Add contour labels manually
            y = c(-22.75, -22.75, -22.75), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
-  annotate("text", x = 113.4, y = -22.67, label = expression(italic("P. nebulosa")),
+  annotate("text", x = 113.4, y = -22.68, label = expression(italic("P. nebulosa")),
            hjust = 0, size = 2.5, colour = "#000000") + # Add italicized text at top left
-  annotation_custom(p.neb_grob, xmin = 113.39, xmax = 113.45, ymin = -22.70, ymax = -22.68) +
+  annotation_custom(p.neb_grob, xmin = 113.40, xmax = 113.43, ymin = -22.68, ymax = -22.66) +
+  ggspatial::annotation_north_arrow(
+    location = "tr", which_north = "true",
+    pad_x = unit(0, "in"), pad_y = unit(0.1, "in"),
+    style = ggspatial::north_arrow_nautical(
+      fill = c("grey40", "white"),
+      line_col = "grey20"),
+    # text_family = "ArcherPro Book"),
+    height = unit(1, "cm"),
+    width = unit(1, "cm"))+
   theme_minimal() +
   theme(
     panel.grid.major = element_blank(),
@@ -131,13 +140,22 @@ p2 <- ggplot() +
            ylim = c(-22.81, -22.66)) +
   labs(x = NULL, y = NULL, fill = "BRUV\nrelative\nabundance",                                    # Labels  
        colour = NULL) +
-  annotate("text", x = c(113.65, 113.57, 113.51),          # Add contour labels manually
+  annotate("text", x = c(113.64, 113.56, 113.475),          # Add contour labels manually
            y = c(-22.75, -22.75, -22.75), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
-  annotate("text", x = 113.4, y = -22.67, label = expression(italic("P. nebulosa")),
+  annotate("text", x = 113.4, y = -22.68, label = expression(italic("P. nebulosa")),
            hjust = 0, size = 2.5, colour = "#000000") +
-  annotation_custom(p.neb_grob, xmin = 113.39, xmax = 113.45, ymin = -22.70, ymax = -22.68) +
+  annotation_custom(p.neb_grob, xmin = 113.40, xmax = 113.43, ymin = -22.68, ymax = -22.66) +
+  ggspatial::annotation_north_arrow(
+    location = "tr", which_north = "true",
+    pad_x = unit(0, "in"), pad_y = unit(0.1, "in"),
+    style = ggspatial::north_arrow_nautical(
+      fill = c("grey40", "white"),
+      line_col = "grey20"),
+    # text_family = "ArcherPro Book"),
+    height = unit(1, "cm"),
+    width = unit(1, "cm"))+
   theme_minimal() +
   theme(
     panel.grid.major = element_blank(),
@@ -239,7 +257,7 @@ dev.off()
 
 
 l.min <- readPNG("data/images/Lethrinus miniatus.png")
-l.min_grob <- rasterGrob(l.min, width = unit(1.5, "cm"), height = unit(0.75, "cm"), interpolate = TRUE)
+l.min_grob <- rasterGrob(l.min, width = unit(2.0, "cm"), height = unit(1.0, "cm"), interpolate = TRUE)
   
 #Build elements for plot 3; BOSS L. miniatis. fit
 p3 <- ggplot() +
@@ -257,13 +275,22 @@ p3 <- ggplot() +
            ylim = c(-22.81, -22.66)) +
   labs(x = NULL, y = NULL, fill = "BOSS\nrelative\nabundance",                                    # Labels  
        colour = NULL) +
-  annotate("text", x = c(113.63, 113.57, 113.51),          # Add contour labels manually
-           y = c(-22.7, -22.7, -22.7), 
+  annotate("text", x = c(113.64, 113.56, 113.475),          # Add contour labels manually
+           y = c(-22.75, -22.75, -22.75), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
-  annotate("text", x = 113.4, y = -22.66, label = expression(italic("L. miniatus")),
+  annotate("text", x = 113.4, y = -22.69, label = expression(italic("L. miniatus")),
            hjust = 0, size = 2.5, colour = "#000000") +
-  annotation_custom(l.min_grob, xmin = 113.4, xmax = 113.45, ymin = -22.705, ymax = -22.665) +
+  annotation_custom(l.min_grob, xmin = 113.385, xmax = 113.45, ymin = -22.68, ymax = -22.665) +
+  ggspatial::annotation_north_arrow(
+    location = "tr", which_north = "true",
+    pad_x = unit(0, "in"), pad_y = unit(0.1, "in"),
+    style = ggspatial::north_arrow_nautical(
+      fill = c("grey40", "white"),
+      line_col = "grey20"),
+    # text_family = "ArcherPro Book"),
+    height = unit(1, "cm"),
+    width = unit(1, "cm"))+
   theme_minimal() +
   theme(
     panel.grid.major = element_blank(),
@@ -277,10 +304,11 @@ p3 <- ggplot() +
     axis.ticks = element_line(colour = "black")
   )
 print(p3)
-png(filename = "plots/PtCloates/PtCloates_BOSS_L_miniatus.png", 
+png(filename = "plots/PtCloates/PtCloates_BOSS_L_miniatus_depth_reef.png", 
     
     
     width = 8, height = 4, res = 600, units = "in")                             # Change the dimensions here as necessary
+p3
 dev.off()  
 
 
@@ -300,13 +328,22 @@ p4 <- ggplot() +
            ylim = c(-22.81, -22.66)) +
     labs(x = NULL, y = NULL, fill = "BRUV\nrelative\nabundance",                                    # Labels  
        colour = NULL) +
-  annotate("text", x = c(113.65, 113.57, 113.51),          # Add contour labels manually
+  annotate("text", x = c(113.64, 113.56, 113.476),          # Add contour labels manually
            y = c(-22.75, -22.75, -22.75), 
            label = c("30m", "70m", "200m"),
            size = 2, colour = "#000000") +
-  annotate("text", x = 113.4, y = -22.66, label = expression(italic("L. miniatus")),
+  annotate("text", x = 113.4, y = -22.69, label = expression(italic("L. miniatus")),
            hjust = 0, size = 2.5, colour = "#000000") +
-  annotation_custom(l.min_grob, xmin = 113.4, xmax = 113.45, ymin = -22.705, ymax = -22.665) +
+  annotation_custom(l.min_grob, xmin = 113.385, xmax = 113.45, ymin = -22.68, ymax = -22.665) +
+  ggspatial::annotation_north_arrow(
+    location = "tr", which_north = "true",
+    pad_x = unit(0, "in"), pad_y = unit(0.1, "in"),
+    style = ggspatial::north_arrow_nautical(
+      fill = c("grey40", "white"),
+      line_col = "grey20"),
+    # text_family = "ArcherPro Book"),
+    height = unit(1, "cm"),
+    width = unit(1, "cm"))+
   theme_minimal() +
   theme(
     panel.grid.major = element_blank(),
@@ -320,14 +357,23 @@ p4 <- ggplot() +
     axis.ticks = element_line(colour = "black")
   )
 print(p4)
-png(filename = "plots/PtCloates/PtCloates_BRUV_L_miniatus.png", 
+png(filename = "plots/PtCloates/PtCloates_BRUV_L_miniatus_reef_depth.png", 
     
     
-    width = 8, height = 4, res = 300, units = "in")                             # Change the dimensions here as necessary
+    width = 8, height = 4, res = 600, units = "in")                             # Change the dimensions here as necessary
+p4
 dev.off()  
 
 
+fish_Ningaloo <- p2 + p1 + p4 + p3 + plot_layout(ncol = 2)
+fish_Ningaloo
 
+ggsave(filename = "plots/PtCloates/BRUVBOSS_Ningaloo_spatialplots.png",
+       plot = fish_Ningaloo,
+       width = 14,
+       height = 10,
+       dpi = 800,
+       units = "in")
 
 
 
