@@ -24,7 +24,7 @@ library(png)
 library(jpeg)
 library(grid)
 
-name <- "Southwest"  # set study name
+name <- "SouthWest"  # set study name
 
 # read in
 dat1 <- readRDS("data/staging/SwC/Southwest.fish.dat.maxn.rds")%>%
@@ -35,7 +35,7 @@ dat1 <- readRDS("data/staging/SwC/Southwest.fish.dat.maxn.rds")%>%
 
 test1 <- dat1 %>%
   group_by(method)%>%
-  summarise(z=mean(z), reef = mean(reef))
+  summarise(z=mean(z), tpi = mean(tpi))
 
 unique(dat1$scientific)
 
@@ -56,7 +56,7 @@ n.obl <- readJPEG("data/images/swc/Neatypus obliquus-3cmL.jpg")
 n.obl_grob <- rasterGrob(n.obl, width = unit(2.75, "cm"), height = unit(1.5, "cm"), interpolate = TRUE)
 
 ##Pseudolabrus_biserialis BOSS BRUV
-Pseudolabrus_biserialis_BOSSBRUV <- gam(number ~ s(z, k=3, bs = "cr", by = method) + s(reef, k=3, bs = "cr", by = method) + method,
+Pseudolabrus_biserialis_BOSSBRUV <- gam(number ~ s(z, k=3, bs = "cr", by = method) + s(tpi, k=3, bs = "cr", by = method) + method,
                                     data = dat1 %>% dplyr::filter(scientific %in% c("BOSS.Labridae Pseudolabrus biserialis","BRUV.Labridae Pseudolabrus biserialis")),
                                     family = tw())
 summary(Pseudolabrus_biserialis_BOSSBRUV)
@@ -66,7 +66,7 @@ dat_total_pb <- dat1 %>%
   dplyr::filter(scientific %in% c("BOSS.Labridae Pseudolabrus biserialis","BRUV.Labridae Pseudolabrus biserialis"))
 
 testdata_pb <- expand.grid(z = seq(min(dat_total_pb$z), max(dat_total_pb$z), length.out = 20),
-                           reef = mean(Pseudolabrus_biserialis_BOSSBRUV$model$reef),
+                           tpi = mean(Pseudolabrus_biserialis_BOSSBRUV$model$tpi),
                            method = c("BOSS", "BRUV")) %>%
   distinct() %>%
   glimpse
@@ -84,7 +84,7 @@ predicts_pb_z <- predicts_pb_z %>%
 
 testdata1_pb <- expand.grid(method = c("BOSS", "BRUV"), 
                             z = mean(Pseudolabrus_biserialis_BOSSBRUV$model$z),
-                            reef = mean(Pseudolabrus_biserialis_BOSSBRUV$model$reef)) %>%
+                            tpi = mean(Pseudolabrus_biserialis_BOSSBRUV$model$tpi)) %>%
   distinct() %>%
   glimpse() 
 
@@ -96,7 +96,7 @@ predicts_pb_method <- testdata1_pb %>%
   summarise(number = mean(fit), se.fit = mean(se.fit)) %>%
   ungroup()
 
-testdata2_pb <- expand.grid(reef = seq(min(dat_total_pb$reef), max(dat_total_pb$reef), length.out = 20),
+testdata2_pb <- expand.grid(tpi = seq(min(dat_total_pb$tpi), max(dat_total_pb$tpi), length.out = 20),
                             method = c("BOSS", "BRUV"),
                             z = mean(Pseudolabrus_biserialis_BOSSBRUV$model$z)) %>%
   distinct() %>%
@@ -104,13 +104,13 @@ testdata2_pb <- expand.grid(reef = seq(min(dat_total_pb$reef), max(dat_total_pb$
 
 P.b.fits2 <- predict.gam(Pseudolabrus_biserialis_BOSSBRUV, newdata = testdata2_pb, type = 'response', se.fit = T)
 
-predicts_pb_reef <- testdata2_pb %>%
+predicts_pb_tpi <- testdata2_pb %>%
   data.frame(P.b.fits2) %>%
-  group_by(reef, method) %>%
+  group_by(tpi, method) %>%
   summarise(number = mean(fit), se.fit = mean(se.fit)) %>%
   ungroup()
 
-predicts_pb_reef <- predicts_pb_reef %>%
+predicts_pb_tpi <- predicts_pb_tpi %>%
   mutate(method = factor(method, levels = c("BRUV", "BOSS")))
 
 
@@ -156,17 +156,17 @@ gg_P_biserialis_z <- ggplot() +
 gg_P_biserialis_z
 
 ##Plot P nebulosa residual abundance by reef
-gg_P_biserialis_reef <- ggplot() + 
-  geom_ribbon(data = predicts_pb_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
+gg_P_biserialis_tpi <- ggplot() + 
+  geom_ribbon(data = predicts_pb_tpi, aes(x = tpi, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-  geom_line(data = predicts_pb_reef, aes(x = reef, y = number, group=method, colour=method))+
-  geom_line(data = predicts_pb_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_line(data = predicts_pb_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_rug(data = pbis.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) +  # Rug plot on the bottom
+  geom_line(data = predicts_pb_tpi, aes(x = tpi, y = number, group=method, colour=method))+
+  geom_line(data = predicts_pb_tpi, aes(x = tpi, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_line(data = predicts_pb_tpi, aes(x = tpi, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_rug(data = pbis.dat, aes(x = tpi, colour = method), sides = "b", alpha = 0.5) +  # Rug plot on the bottom
   # geom_point(data = pbis.dat, aes(x = reef, y = number))+
   theme_classic() +
   #ylim(0,50)+
-  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
+  labs(x = "TPI", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -177,13 +177,13 @@ gg_P_biserialis_reef <- ggplot() +
     legend.title = element_text(size = 11),  # Legend title size
     legend.text = element_text(size = 9)    # Legend text size
   )
-gg_P_biserialis_reef
+gg_P_biserialis_tpi
 
-test <- dat1 %>% dplyr::filter(scientific %in% c("BOSS.Labridae Ophthalmolepis lineolatus","BRUV.Labridae Ophthalmolepis lineolatus"))
-hist(test$number)
+# test <- dat1 %>% dplyr::filter(scientific %in% c("BOSS.Labridae Ophthalmolepis lineolatus","BRUV.Labridae Ophthalmolepis lineolatus"))
+# hist(test$number)
 
 ## Same as above but for Opthalmolepsis lineolatus
-Opthalmolepsis_lineolatus_BOSSBRUV <- gam(number ~ s(z, k=3, bs = "cr", by = method) + s(reef, k=3, bs = "cr", by = method) + method,
+Opthalmolepsis_lineolatus_BOSSBRUV <- gam(number ~ s(z, k=3, bs = "cr", by = method) + s(tpi, k=3, bs = "cr", by = method) + method,
                                     data = dat1 %>% dplyr::filter(scientific %in% c("BOSS.Labridae Ophthalmolepis lineolatus","BRUV.Labridae Ophthalmolepis lineolatus")),
                                     family = tw())
 summary(Opthalmolepsis_lineolatus_BOSSBRUV)
@@ -194,7 +194,7 @@ dat_total_ol <- dat1 %>%
   dplyr::filter(scientific %in% c("BOSS.Labridae Ophthalmolepis lineolatus", "BRUV.Labridae Ophthalmolepis lineolatus"))
 
 testdata_ol <- expand.grid(z = seq(min(dat_total_ol$z), max(dat_total_ol$z), length.out = 20),
-                           reef = mean(Opthalmolepsis_lineolatus_BOSSBRUV$model$reef),
+                           tpi = mean(Opthalmolepsis_lineolatus_BOSSBRUV$model$tpi),
                            method = c("BOSS", "BRUV")) %>%
   distinct() %>%
   glimpse
@@ -225,7 +225,7 @@ predicts_ol_z <- predicts_ol_z %>%
 #   summarise(number = mean(fit), se.fit = mean(se.fit)) %>%
 #   ungroup()
 
-testdata2_ol <- expand.grid(reef = seq(min(dat_total_ol$reef), max(dat_total_ol$reef), length.out = 20),
+testdata2_ol <- expand.grid(tpi = seq(min(dat_total_ol$tpi), max(dat_total_ol$tpi), length.out = 20),
                             method = c("BOSS", "BRUV"),
                             z = mean(Opthalmolepsis_lineolatus_BOSSBRUV$model$z)) %>%
   distinct() %>%
@@ -233,14 +233,14 @@ testdata2_ol <- expand.grid(reef = seq(min(dat_total_ol$reef), max(dat_total_ol$
 
 O.l.fits2 <- predict.gam(Opthalmolepsis_lineolatus_BOSSBRUV, newdata = testdata2_ol, type = 'response', se.fit = T)
 
-predicts_ol_reef <- testdata2_ol %>%
+predicts_ol_tpi <- testdata2_ol %>%
   data.frame(O.l.fits2) %>%
-  group_by(reef, method) %>%
+  group_by(tpi, method) %>%
   summarise(number = mean(fit), se.fit = mean(se.fit)) %>%
   ungroup()
 
 #swap so BRUV is on top of the legend
-predicts_ol_reef <- predicts_ol_reef %>%
+predicts_ol_tpi <- predicts_ol_tpi %>%
   mutate(method = factor(method, levels = c("BRUV", "BOSS")))
 
 #add custom text for fish name
@@ -284,17 +284,17 @@ gg_O_lineolatus_z <- ggplot() +
 gg_O_lineolatus_z
 
 #Plot Ophthalmolepis lineolatus residual abundance by reef
-gg_O_lineolatus_reef <- ggplot() + 
-  geom_ribbon(data = predicts_ol_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
+gg_O_lineolatus_tpi <- ggplot() + 
+  geom_ribbon(data = predicts_ol_tpi, aes(x = tpi, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-  geom_line(data = predicts_ol_reef, aes(x = reef, y = number, group=method, colour=method))+
-  geom_line(data = predicts_ol_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_line(data = predicts_ol_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_rug(data = olin.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) + 
+  geom_line(data = predicts_ol_tpi, aes(x = tpi, y = number, group=method, colour=method))+
+  geom_line(data = predicts_ol_tpi, aes(x = tpi, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_line(data = predicts_ol_tpi, aes(x = tpi, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_rug(data = olin.dat, aes(x = tpi, colour = method), sides = "b", alpha = 0.5) + 
   # geom_point(data = olin.dat, aes(x = reef, y = number))+
   theme_classic() +
     ylim(0,1)+
-  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
+  labs(x = "TPI", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -308,10 +308,10 @@ gg_O_lineolatus_reef <- ggplot() +
     legend.title = element_text(size = 11),  # Legend title size
     legend.text = element_text(size = 9) # Legend text size
   )
-gg_O_lineolatus_reef
+gg_O_lineolatus_tpi
 
 ## Same as above but for Coris auricularis
-Coris_auricularis_BOSSBRUV <- gam(number ~ s(z, k=3, bs = "cr", by = method) + s(reef, k=3, bs = "cr", by = method) + method,
+Coris_auricularis_BOSSBRUV <- gam(number ~ s(z, k=3, bs = "cr", by = method) + s(tpi, k=3, bs = "cr", by = method) + method,
                                   data = dat1 %>% dplyr::filter(scientific %in% c("BOSS.Labridae Coris auricularis","BRUV.Labridae Coris auricularis")),
                                   family = tw())
 summary(Coris_auricularis_BOSSBRUV)
@@ -320,7 +320,7 @@ dat_total_ca <- dat1 %>%
   dplyr::filter(scientific %in% c("BOSS.Labridae Coris auricularis", "BRUV.Labridae Coris auricularis"))
 
 testdata_ca <- expand.grid(z = seq(min(dat_total_ca$z), max(dat_total_ca$z), length.out = 20),
-                           reef = mean(Coris_auricularis_BOSSBRUV$model$reef),
+                           tpi = mean(Coris_auricularis_BOSSBRUV$model$tpi),
                            method = c("BOSS", "BRUV")) %>%
   distinct() %>%
   glimpse
@@ -339,7 +339,7 @@ predicts_ca_z <- predicts_ca_z %>%
 
 testdata1_ca <- expand.grid(method = c("BOSS", "BRUV"), 
                             z = mean(Coris_auricularis_BOSSBRUV$model$z),
-                            reef = mean(Coris_auricularis_BOSSBRUV$model$reef)) %>%
+                            tpi = mean(Coris_auricularis_BOSSBRUV$model$tpi)) %>%
   distinct() %>%
   glimpse() 
 
@@ -351,7 +351,7 @@ predicts_ca_method <- testdata1_ca %>%
   summarise(number = mean(fit), se.fit = mean(se.fit)) %>%
   ungroup()
 
-testdata2_ca <- expand.grid(reef = seq(min(dat_total_ca$reef), max(dat_total_ca$reef), length.out = 20),
+testdata2_ca <- expand.grid(tpi = seq(min(dat_total_ca$tpi), max(dat_total_ca$tpi), length.out = 20),
                             method = c("BOSS", "BRUV"),
                             z = mean(Coris_auricularis_BOSSBRUV$model$z)) %>%
   distinct() %>%
@@ -359,14 +359,14 @@ testdata2_ca <- expand.grid(reef = seq(min(dat_total_ca$reef), max(dat_total_ca$
 
 C.a.fits2 <- predict.gam(Coris_auricularis_BOSSBRUV, newdata = testdata2_ca, type = 'response', se.fit = T)
 
-predicts_ca_reef <- testdata2_ca %>%
+predicts_ca_tpi <- testdata2_ca %>%
   data.frame(C.a.fits2) %>%
-  group_by(reef, method) %>%
+  group_by(tpi, method) %>%
   summarise(number = mean(fit), se.fit = mean(se.fit)) %>%
   ungroup()
 
 #swap so BRUV is on top of the legend
-predicts_ca_reef <- predicts_ca_reef %>%
+predicts_ca_tpi <- predicts_ca_tpi %>%
   mutate(method = factor(method, levels = c("BRUV", "BOSS")))
 
 # #add custom text for fish name
@@ -418,16 +418,16 @@ gg_C_auricularis_z
 #        units = "in")
 
 #Plot C.auricularis residual abundance by reef
-gg_C_auricularis_reef <- ggplot() + 
-  geom_ribbon(data = predicts_ca_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
+gg_C_auricularis_tpi <- ggplot() + 
+  geom_ribbon(data = predicts_ca_tpi, aes(x = tpi, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-  geom_line(data = predicts_ca_reef, aes(x = reef, y = number, group=method, colour=method))+
-  geom_line(data = predicts_ca_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_line(data = predicts_ca_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_rug(data = caur.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) +
+  geom_line(data = predicts_ca_tpi, aes(x = tpi, y = number, group=method, colour=method))+
+  geom_line(data = predicts_ca_tpi, aes(x = tpi, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_line(data = predicts_ca_tpi, aes(x = tpi, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_rug(data = caur.dat, aes(x = tpi, colour = method), sides = "b", alpha = 0.5) +
   theme_classic() +
   #ylim(0,50)+
-  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
+  labs(x = "TPI", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -441,7 +441,7 @@ gg_C_auricularis_reef <- ggplot() +
     legend.title = element_text(size = 11),  # Legend title size
     legend.text = element_text(size = 9) # Legend text size
   )
-gg_C_auricularis_reef
+gg_C_auricularis_tpi
 
 # # Save gg_total_reef as a PNG file
 # ggsave(filename = "plots/Abrolhos/BOSSBRUV_Cauricularis_reef_residualplot.png", 
@@ -452,7 +452,7 @@ gg_C_auricularis_reef
 #        units = "in")
 
 ## Same as above but for Neatypus obliquus 
-Neatypus_obliquus_BOSSBRUV <- gam(number ~ s(z, k=3, bs = "cr", by = method) + s(reef, k=3, bs = "cr", by = method) + method,
+Neatypus_obliquus_BOSSBRUV <- gam(number ~ s(z, k=3, bs = "cr", by = method) + s(tpi, k=3, bs = "cr", by = method) + method,
                                           data = dat1 %>% dplyr::filter(scientific %in% c("BOSS.Scorpididae Neatypus obliquus","BRUV.Scorpididae Neatypus obliquus")),
                                           family = tw())
 summary(Neatypus_obliquus_BOSSBRUV)
@@ -463,7 +463,7 @@ dat_total_no <- dat1 %>%
   dplyr::filter(scientific %in% c("BOSS.Scorpididae Neatypus obliquus","BRUV.Scorpididae Neatypus obliquus"))
 
 testdata_no <- expand.grid(z = seq(min(dat_total_no$z), max(dat_total_no$z), length.out = 20),
-                           reef = mean(Opthalmolepsis_lineolatus_BOSSBRUV$model$reef),
+                           tpi = mean(Opthalmolepsis_lineolatus_BOSSBRUV$model$tpi),
                            method = c("BOSS", "BRUV")) %>%
   distinct() %>%
   glimpse
@@ -494,7 +494,7 @@ predicts_no_z <- predicts_no_z %>%
 #   summarise(number = mean(fit), se.fit = mean(se.fit)) %>%
 #   ungroup()
 
-testdata2_no <- expand.grid(reef = seq(min(dat_total_no$reef), max(dat_total_no$reef), length.out = 20),
+testdata2_no <- expand.grid(tpi = seq(min(dat_total_no$tpi), max(dat_total_no$tpi), length.out = 20),
                             method = c("BOSS", "BRUV"),
                             z = mean(Neatypus_obliquus_BOSSBRUV$model$z)) %>%
   distinct() %>%
@@ -502,14 +502,14 @@ testdata2_no <- expand.grid(reef = seq(min(dat_total_no$reef), max(dat_total_no$
 
 N.o.fits2 <- predict.gam(Neatypus_obliquus_BOSSBRUV, newdata = testdata2_no, type = 'response', se.fit = T)
 
-predicts_no_reef <- testdata2_no %>%
+predicts_no_tpi <- testdata2_no %>%
   data.frame(N.o.fits2) %>%
-  group_by(reef, method) %>%
+  group_by(tpi, method) %>%
   summarise(number = mean(fit), se.fit = mean(se.fit)) %>%
   ungroup()
 
 #swap so BRUV is on top of the legend
-predicts_no_reef <- predicts_no_reef %>%
+predicts_no_tpi <- predicts_no_tpi %>%
   mutate(method = factor(method, levels = c("BRUV", "BOSS")))
 
 #add custom text for fish name
@@ -553,18 +553,18 @@ gg_N_obliquus_z <- ggplot() +
 gg_N_obliquus_z
 
 
-#Plot Ophthalmolepis lineolatus residual abundance by reef
-gg_N_obliquus_reef <- ggplot() + 
-  geom_ribbon(data = predicts_no_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
+#Plot Ophthalmolepis lineolatus residual abundance by TPI
+gg_N_obliquus_tpi <- ggplot() + 
+  geom_ribbon(data = predicts_no_tpi, aes(x = tpi, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-  geom_line(data = predicts_no_reef, aes(x = reef, y = number, group=method, colour=method))+
-  geom_line(data = predicts_no_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_line(data = predicts_no_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_rug(data = nobl.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) + 
+  geom_line(data = predicts_no_tpi, aes(x = tpi, y = number, group=method, colour=method))+
+  geom_line(data = predicts_no_tpi, aes(x = tpi, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_line(data = predicts_no_tpi, aes(x = tpi, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_rug(data = nobl.dat, aes(x = tpi, colour = method), sides = "b", alpha = 0.5) + 
   # geom_point(data = olin.dat, aes(x = reef, y = number))+
   theme_classic() +
   # ylim(0,1)+
-  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
+  labs(x = "TPI", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -578,17 +578,70 @@ gg_N_obliquus_reef <- ggplot() +
     legend.title = element_text(size = 11),  # Legend title size
     legend.text = element_text(size = 9) # Legend text size
   )
-gg_N_obliquus_reef
+gg_N_obliquus_tpi
 
 #join altogether
-p_swc <- gg_P_biserialis_z + gg_P_biserialis_reef + gg_O_lineolatus_z + gg_O_lineolatus_reef + gg_C_auricularis_z  + gg_C_auricularis_reef + gg_N_obliquus_z + gg_N_obliquus_reef + plot_layout(ncol = 2)
+p_swc <- gg_P_biserialis_z + gg_P_biserialis_tpi + gg_O_lineolatus_z + gg_O_lineolatus_tpi + gg_C_auricularis_z  + gg_C_auricularis_tpi + gg_N_obliquus_z + gg_N_obliquus_tpi + plot_layout(ncol = 2)
 p_swc
 
 #save
-ggsave(filename = "plots/SwC/BOSSBRUV_Southwest_effectsplots4.png", 
+ggsave(filename = "plots/SwC/BOSSBRUV_Southwest_effectsplots_TPI.png", 
        plot = p_swc, 
        width = 12, 
        height = 16, 
        dpi = 600, 
        units = "in")
 
+#depth only
+depth_swc <- gg_P_biserialis_z + gg_O_lineolatus_z + gg_C_auricularis_z + gg_N_obliquus_z + plot_layout(ncol = 1)
+depth_swc
+
+#save
+ggsave(filename = "plots/SwC/BOSSBRUV_Southwest_effectsplots_depthonly.png", 
+       plot = depth_swc, 
+       width = 7, 
+       height = 16, 
+       dpi = 600, 
+       units = "in")
+
+#Note below file taken from output of Ch2
+preddf <- readRDS("data/spatial/rasters/raw bathymetry/SouthWest_spatial_habitat_predictions.rds") %>%
+  # dplyr::rename(reef = pinverts.fit + pmacroal)%>% ###DONT NEED
+  ga.clean.names()%>%
+  mutate(z =abs(z))
+
+#creating boss and bruv dfs
+preddf_boss <- preddf %>%
+  dplyr::mutate(method = "BOSS")
+
+preddf_bruv <- preddf %>%
+  dplyr::mutate(method = "BRUV")
+
+preddf_new <- bind_rows(preddf_boss, preddf_bruv)
+
+# predict, rasterise and plot ### CHANGE TO se.fit = TRUE fo individual fish species!
+predicted_fish <- cbind(preddf_new, 
+                        "p_P_biserialis" = predict(Pseudolabrus_biserialis_BOSSBRUV, preddf_new, type = "response", se.fit = T),
+                        "p_O_lineolatus" = predict(Opthalmolepsis_lineolatus_BOSSBRUV, preddf_new, type = "response", se.fit = T),
+                        "p_C_auricularis" = predict(Coris_auricularis_BOSSBRUV, preddf_new, type = "response", se.fit = T),
+                        "p_N_obliquus" = predict(Neatypus_obliquus_BOSSBRUV, preddf_new, type = "response", se.fit = T))
+
+prasts_boss <- predicted_fish %>%
+  dplyr::filter(method %in% "BOSS") %>%
+  dplyr::select(x, y, z, starts_with("p_")) %>%
+  rast(crs = "epsg:4326")
+plot(prasts_boss)
+
+boss_fish <- as.data.frame(prasts_boss, xy = T)
+
+prasts_bruv <- predicted_fish %>%
+  dplyr::filter(method %in% "BRUV") %>%
+  dplyr::select(x, y, z, starts_with("p_")) %>%
+  rast(crs = "epsg:4326")
+plot(prasts_bruv)
+
+bruv_fish <- as.data.frame(prasts_bruv, xy = T)
+
+saveRDS(boss_fish, paste0("outputs/SwC/fish/", name, "_BOSS_predicted-fish.RDS"))
+
+saveRDS(bruv_fish, paste0("outputs/SwC/fish/", name, "_BRUV_predicted-fish.RDS"))

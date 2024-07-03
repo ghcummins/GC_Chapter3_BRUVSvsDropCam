@@ -23,7 +23,7 @@ dat.taxa <- read.csv(paste("outputs/Abrolhos/fish/Abrolhos_fish.all.var.imp.csv"
   dplyr::filter(X != "Mullidae Parupeneus spilurus_BRUV") %>%
   dplyr::rename(resp.var= X) %>%
   gather(key=predictor,value=importance,2:ncol(.)) %>%
-  dplyr::mutate(importance = ifelse(predictor %in% c("detrended"), importance * -1, importance)) %>%
+  #dplyr::mutate(importance = ifelse(predictor %in% c("detrended"), importance * -1, importance)) %>%
   glimpse()
 
 
@@ -88,5 +88,5 @@ imp.full
 gg.importance <- imp.full 
 
 #save output - changed dimensions for larger text in report
-save_plot(paste0("plots/Abrolhos/", name, "_importance-scores.png"), 
+save_plot(paste0("plots/Abrolhos/", name, "_importance-scores_final.png"), 
           gg.importance,base_height = 4,base_width = 6.275)

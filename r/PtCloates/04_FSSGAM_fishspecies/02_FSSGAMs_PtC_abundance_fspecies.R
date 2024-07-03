@@ -47,7 +47,6 @@ pred.vars <- c("z", "reef", "tpi", "aspect",
                "roughness","detrended") 
 
 
-
 # # Check to make sure Response vector has not more than 80% zeros----
 unique.vars <- unique(as.character(dat$response))
 

@@ -39,7 +39,7 @@ dat <- readRDS("data/staging/SwC/Southwest.fish.dat.maxn.rds")%>%
   glimpse()
 
 # # Re-set the predictors for modeling----
-pred.vars <- c("z", "reef", "tpi", "aspect", "mean.relief",
+pred.vars <- c("z", "reef", "tpi", "aspect", 
                "roughness","detrended") 
 
 # # Check to make sure Response vector has not more than 80% zeros----

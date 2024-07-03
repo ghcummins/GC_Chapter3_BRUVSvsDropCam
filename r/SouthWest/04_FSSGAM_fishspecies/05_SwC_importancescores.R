@@ -22,7 +22,7 @@ name <- "SouthWest"
 dat.taxa <- read.csv(paste("outputs/SwC/fish/SouthWest_fish.all.var.imp.csv")) %>% 
   dplyr::rename(resp.var= X) %>%
   gather(key=predictor,value=importance,2:ncol(.)) %>%
-  dplyr::mutate(importance = ifelse(predictor %in% c("detrended"), importance * 0, importance)) %>%
+  #dplyr::mutate(importance = ifelse(predictor %in% c("detrended"), importance * 0, importance)) %>%
   glimpse()
 
 #Below creates X's for top model variables in importance score table
@@ -71,7 +71,7 @@ imp.full <- ggplot(dat.taxa, #dplyr::filter(resp.var%in%c("total.abundance", "sp
   scale_fill_gradientn(legend_title, colours=c(re), na.value = "grey98",
                        limits = c(0, 1))+
   # scale_y_discrete(labels=c("Species richness","Total abundance"))+
-  # labs(x = NULL, y = NULL, title = "Whole assemblage") +
+   labs(x = "Predictor", y = "Response Variable", title = "Capes Region") +
   theme_classic()+
   Theme1
   # geom_text(aes(label=label)) +

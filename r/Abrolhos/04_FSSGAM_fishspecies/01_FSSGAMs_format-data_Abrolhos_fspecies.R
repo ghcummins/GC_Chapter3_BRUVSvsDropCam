@@ -57,7 +57,7 @@ maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
 
 #Format data
 dat.response <- maxn %>%
-  filter(str_detect(scientific, "Labridae Coris auricularis|Lethrinidae Lethrinus miniatus|Mullidae Parupeneus spilurus|Labridae Choerodon rubescens|Labridae Suezichthys cyanolaemus"))%>%
+  filter(str_detect(scientific, "Labridae Coris auricularis|Lethrinidae Lethrinus miniatus|Labridae Choerodon rubescens|Labridae Suezichthys cyanolaemus"))%>%
   select(-id)%>%
   group_by(sample,scientific,campaignid,latitude,longitude,method,unique_id) %>%
   summarise(number = sum(maxn))%>%
@@ -65,7 +65,8 @@ dat.response <- maxn %>%
   mutate(response = paste(scientific, method, sep = "_")) %>%
   glimpse()
 
-
+unique_names <- unique(dat.response[["response"]])
+print(unique_names)
 
 # #length
 # boss.length <- read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.length.csv")%>%

@@ -110,7 +110,7 @@ dat.maxn <- dat.response %>%
 
 # # Specify the columns you want to include in corr.pred.vars
 pred.vars <- c("z", "sand", "rock", "inverts", "macroalgae", "seagrasses",
-               "mean.relief", "sd.relief", "reef", "aspect",
+                "sd.relief", "reef", "aspect",
                "tpi", "roughness", "detrended")
 
 # Create the new data frame corr.pred.vars
