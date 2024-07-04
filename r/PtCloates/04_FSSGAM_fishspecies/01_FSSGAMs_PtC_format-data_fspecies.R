@@ -57,7 +57,7 @@ maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
 #Format data
 dat.response <- maxn %>%
   filter(str_detect(scientific, "Pinguipedidae Parapercis nebulosa|Lethrinidae Lethrinus miniatus|Lethrinidae Gymnocranius sp1|Nemipteridae Pentapodus nagasakiensis"))%>%
-  select(-id)%>%
+  dplyr::select(-id)%>%
   group_by(sample,scientific,campaignid,latitude,longitude,method,unique_id) %>%
   summarise(number = sum(maxn))%>%
   ungroup()%>%
@@ -211,7 +211,7 @@ pred.vars = c("z",
               #"inverts",
               "reef",
               "aspect",
-              "lineartrend",
+              #"lineartrend",
               #"mean.relief",
               #"sd.relief",
               #"slope",
@@ -229,7 +229,7 @@ selected_cols <- c("z", "reef",
 
 # Create the new data frame corr.pred.vars
 corr.pred.vars <- dat.maxn %>%
-  select(all_of(selected_cols))
+  dplyr::select(all_of(selected_cols))
 ##take out slope and sand and put rock and inverts as reef
 
 # Check for correlation of predictor variables- remove anything highly correlated (>0.95)---

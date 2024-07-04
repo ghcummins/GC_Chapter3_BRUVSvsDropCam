@@ -139,7 +139,7 @@ s.cya_grob <- rasterGrob(s.cya, width = unit(1.5, "cm"), height = unit(0.75, "cm
 dat1$method <- as.factor(dat1$method)
 
 ##Lethrinus miniatus
-Lethrinus_miniatus_BOSSBRUV <- gam(number ~ s(z, k=3, bs = "cr", by = method) + method,
+Lethrinus_miniatus_BOSSBRUV <- gam(number ~ s(reef, k=3, bs = "cr", by = method) + method,
                                    data = dat1 %>% dplyr::filter(scientific %in% c("BOSS.Lethrinidae Lethrinus miniatus","BRUV.Lethrinidae Lethrinus miniatus")),
                                    family = tw())
 summary(Lethrinus_miniatus_BOSSBRUV)
@@ -147,7 +147,7 @@ summary(Lethrinus_miniatus_BOSSBRUV)
 dat_total <- dat1 %>%
   dplyr::filter(scientific %in% c("BOSS.Lethrinidae Lethrinus miniatus", "BRUV.Lethrinidae Lethrinus miniatus"))
 
-testdata <- expand.grid(z = seq(min(dat_total$z), max(dat_total$z), length.out = 20),
+testdata <- expand.grid(reef = seq(min(dat_total$reef), max(dat_total$reef), length.out = 20),
               # reef = mean(Lethrinus_miniatus_BOSSBRUV$model$reef),
               method = c("BOSS", "BRUV")) %>%
   distinct() %>%
@@ -155,14 +155,14 @@ testdata <- expand.grid(z = seq(min(dat_total$z), max(dat_total$z), length.out =
 
 L.miniatus.fits <- predict.gam(Lethrinus_miniatus_BOSSBRUV, newdata = testdata, type = 'response', se.fit = T)
 
-predicts_total_z <- testdata %>%
+predicts_total_reef <- testdata %>%
   data.frame(L.miniatus.fits) %>%
-  group_by(z, method) %>%
+  group_by(reef, method) %>%
   summarise(number = mean(fit), se.fit = mean(se.fit))  %>%
   ungroup()
 
 testdata1 <- expand.grid(method = c("BOSS", "BRUV"), 
-                         z = mean(Lethrinus_miniatus_BOSSBRUV$model$z))%>%
+                         reef = mean(Lethrinus_miniatus_BOSSBRUV$model$reef))%>%
                          # reef = mean(Lethrinus_miniatus_BOSSBRUV$model$reef)) %>%
   distinct() %>%
   glimpse() 
@@ -197,25 +197,25 @@ l.min_text <- textGrob(label = expression(italic("L. miniatus")), x = 0, y = 0,
 lmin.dat <- dat1 %>%
   filter(name == "Lethrinidae Lethrinus miniatus")
 
-#Plot L.miniatus residual abundance by depth (z)
-gg_total_z <- ggplot() + 
+#Plot L.miniatus residual abundance by reef
+gg_total_reef <- ggplot() + 
   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-  geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
-  geom_line(data = predicts_total_z, aes(x = z, y = number, group=method, colour=method))+
-  geom_line(data = predicts_total_z, aes(x = z, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_line(data = predicts_total_z, aes(x = z, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_rug(data = lmin.dat, aes(x = z, colour = method), sides = "b", alpha = 0.5) +  
+  geom_ribbon(data = predicts_total_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
+  geom_line(data = predicts_total_reef, aes(x = reef, y = number, group=method, colour=method))+
+  geom_line(data = predicts_total_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_line(data = predicts_total_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_rug(data = lmin.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) +  
   # geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
   theme_classic() +
   # annotate("text", x = -55, y = 2, label = expression(italic("L. miniatus")),
   #           hjust = 0, size = 2.5, colour = "#000000") +
-  annotation_custom(l.min_grob, xmin = -50, xmax = -40, ymin = -Inf, ymax = Inf) +
-  annotation_custom(l.min_text, xmin = -60, xmax = -50, ymin = 4, ymax = 4) +
+  annotation_custom(l.min_grob, xmin = -0.25, xmax = -0.35, ymin = -Inf, ymax = Inf) +
+  annotation_custom(l.min_text, xmin = -0.28, xmax = -0.38, ymin = 2, ymax = 2) +
   theme_void() +
   coord_cartesian(clip = "off") +
   theme(plot.margin = margin(0.5, 0.5, 0.5, 3.0, "cm" ))+
   #ylim(0,50)+
-  labs(x = "Depth", y = "Abundance", colour = "Method", fill = "Method") +
+  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
    theme(
@@ -229,19 +229,9 @@ gg_total_z <- ggplot() +
     legend.title = element_text(size = 11),  # Legend title size
     legend.text = element_text(size = 9) # Legend text size
     )
-gg_total_z
+gg_total_reef
 
-# 
-# # Save gg_total_z as a PNG file
-# ggsave(filename = "plots/Abrolhos/BOSSBRUV_Lminiatus_depth_residualplot_fish.png", 
-#        plot = gg_total_z, 
-#        width = 6, 
-#        height = 4, 
-#        dpi = 600, 
-#        units = "in")
-  
 
-  
 # # Save gg_total_reef as a PNG file
 # ggsave(filename = "plots/Abrolhos/BOSSBRUV_Lminiatus_reef_residualplot.png", 
 #        plot = gg_total_reef, 
@@ -251,7 +241,7 @@ gg_total_z
 #        units = "in")
 
 ## Same as above but for Choerdon rubescens
-Choerodon_rubescens_BOSSBRUV <- gam(number ~ s(z, k=3, bs = "cr", by = method)  + method,
+Choerodon_rubescens_BOSSBRUV <- gam(number ~ s(reef, k=3, bs = "cr", by = method)  + method,
                                    data = dat1 %>% dplyr::filter(scientific %in% c("BOSS.Labridae Choerodon rubescens","BRUV.Labridae Choerodon rubescens")),
                                    family = tw())
 summary(Choerodon_rubescens_BOSSBRUV)
@@ -259,7 +249,7 @@ summary(Choerodon_rubescens_BOSSBRUV)
 dat_total_cr <- dat1 %>%
   dplyr::filter(scientific %in% c("BOSS.Labridae Choerodon rubescens", "BRUV.Labridae Choerodon rubescens"))
 
-testdata_cr <- expand.grid(z = seq(min(dat_total_cr$z), max(dat_total_cr$z), length.out = 20),
+testdata_cr <- expand.grid(reef = seq(min(dat_total_cr$reef), max(dat_total_cr$reef), length.out = 20),
                         # reef = mean(Choerodon_rubescens_BOSSBRUV$model$reef),
                         method = c("BOSS", "BRUV")) %>%
   distinct() %>%
@@ -267,14 +257,14 @@ testdata_cr <- expand.grid(z = seq(min(dat_total_cr$z), max(dat_total_cr$z), len
 
 C.rubescens.fits <- predict.gam(Choerodon_rubescens_BOSSBRUV, newdata = testdata_cr, type = 'response', se.fit = T)
 
-predicts_cr_z <- testdata_cr %>%
+predicts_cr_reef <- testdata_cr %>%
   data.frame(C.rubescens.fits) %>%
-  group_by(z, method) %>%
+  group_by(reef, method) %>%
   summarise(number = mean(fit), se.fit = mean(se.fit))  %>%
   ungroup() 
 
 testdata1_cr <- expand.grid(method = c("BOSS", "BRUV"), 
-                         z = mean(Choerodon_rubescens_BOSSBRUV$model$z))%>%
+                         reef = mean(Choerodon_rubescens_BOSSBRUV$model$reef))%>%
                          # reef = mean(Choerodon_rubescens_BOSSBRUV$model$reef)) %>%
   distinct() %>%
   glimpse() 
@@ -310,25 +300,25 @@ crub.dat <- dat1 %>%
 #   summarise(number = mean(fit), se.fit = mean(se.fit)) %>%
 #   ungroup()
 
-#Plot C rubescens residual abundance by depth (z)
-gg_C_rubescens_z <- ggplot() + 
+#Plot C rubescens residual abundance by reef
+gg_C_rubescens_reef <- ggplot() + 
   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-  geom_ribbon(data = predicts_cr_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
-  geom_line(data = predicts_cr_z, aes(x = z, y = number, group=method, colour=method))+
-  geom_line(data = predicts_cr_z, aes(x = z, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_line(data = predicts_cr_z, aes(x = z, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_rug(data = crub.dat, aes(x = z, colour = method), sides = "b", alpha = 0.5) +  
+  geom_ribbon(data = predicts_cr_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
+  geom_line(data = predicts_cr_reef, aes(x = reef, y = number, group=method, colour=method))+
+  geom_line(data = predicts_cr_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_line(data = predicts_cr_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_rug(data = crub.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) +  
   # geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
   theme_classic() +
   # annotate("text", x = -55, y = 2, label = expression(italic("L. miniatus")),
   #           hjust = 0, size = 2.5, colour = "#000000") +
-  annotation_custom(c.rub_grob, xmin = -50, xmax = -40, ymin = -Inf, ymax = Inf) +
-  annotation_custom(c.rub_text, xmin = -60, xmax = -50, ymin = 1.1, ymax = 1.1) + 
+  annotation_custom(c.rub_grob, xmin = -0.25, xmax = -0.35, ymin = -Inf, ymax = Inf) +
+  annotation_custom(c.rub_text, xmin = -0.30, xmax = -0.40, ymin = 0.9, ymax = 0.9) + 
   theme_void() +
   coord_cartesian(clip = "off") +
   theme(plot.margin = margin(0.5, 0.5, 0.5, 3.0, "cm" ))+
   #ylim(0,50)+
-  labs(x = "Depth", y = "Abundance", colour = "Method", fill = "Method") +
+  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -342,37 +332,8 @@ gg_C_rubescens_z <- ggplot() +
     legend.title = element_text(size = 11),  # Legend title size
     legend.text = element_text(size = 9) # Legend text size
   )
-gg_C_rubescens_z
+gg_C_rubescens_reef
 
-# # Save gg_total_z as a PNG file
-# ggsave(filename = "plots/Abrolhos/BOSSBRUV_Crubescens_depth_residualplot.png", 
-#        plot = gg_C_rubescens_z, 
-#        width = 6, 
-#        height = 4, 
-#        dpi = 600, 
-#        units = "in")
-
-#Plot C.rubescens residual abundance by reef
-# gg_C_rubescens_reef <- ggplot() + 
-#   geom_ribbon(data = predicts_cr_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
-#   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-#   geom_line(data = predicts_cr_reef, aes(x = reef, y = number, group=method, colour=method))+
-#   geom_line(data = predicts_cr_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
-#   geom_line(data = predicts_cr_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
-#   theme_classic() +
-#   #ylim(0,50)+
-#   labs(x = "Reef", y = "Abundance (residual)") +
-#   scale_colour_manual(values = c("BRUV" = "#666666", "BOSS" = "black")) +
-#   scale_fill_manual(values = c("BRUV" = "grey74", "BOSS" = "ghostwhite"))+
-#   theme(
-#     axis.title.x = element_text(size = 11),  # X axis title size
-#     axis.title.y = element_text(size = 11),  # Y axis title size
-#     axis.text.x = element_text(size = 10),   # X axis text size
-#     axis.text.y = element_text(size = 10),   # Y axis text size
-#     legend.title = element_text(size = 11),  # Legend title size
-#     legend.text = element_text(size = 9)    # Legend text size
-#   )
-# gg_C_rubescens_reef
 
 # # Save gg_total_reef as a PNG file
 # ggsave(filename = "plots/Abrolhos/BOSSBRUV_Crubescens_reef_residualplot.png", 
@@ -383,7 +344,7 @@ gg_C_rubescens_z
 #        units = "in")
 
 ## Same as above but for Coris auricularis
-Coris_auricularis_BOSSBRUV <- gam(number ~ s(z, k=3, bs = "cr", by = method)  + method,
+Coris_auricularis_BOSSBRUV <- gam(number ~ s(reef, k=3, bs = "cr", by = method)  + method,
                                     data = dat1 %>% dplyr::filter(scientific %in% c("BOSS.Labridae Coris auricularis","BRUV.Labridae Coris auricularis")),
                                     family = tw())
 summary(Coris_auricularis_BOSSBRUV)
@@ -391,22 +352,21 @@ summary(Coris_auricularis_BOSSBRUV)
 dat_total_ca <- dat1 %>%
   dplyr::filter(scientific %in% c("BOSS.Labridae Coris auricularis", "BRUV.Labridae Coris auricularis"))
 
-testdata_ca <- expand.grid(z = seq(min(dat_total_ca$z), max(dat_total_ca$z), length.out = 20),
-                           # reef = mean(Coris_auricularis_BOSSBRUV$model$reef),
-                           method = c("BOSS", "BRUV")) %>%
+testdata_ca <- expand.grid(reef = seq(min(dat_total_ca$reef), max(dat_total_ca$reef), length.out = 20),
+                                  method = c("BOSS", "BRUV")) %>%
   distinct() %>%
   glimpse
 
 C.auricularis.fits <- predict.gam(Coris_auricularis_BOSSBRUV, newdata = testdata_ca, type = 'response', se.fit = T)
 
-predicts_ca_z <- testdata_ca %>%
+predicts_ca_reef <- testdata_ca %>%
   data.frame(C.auricularis.fits) %>%
-  group_by(z, method) %>%
+  group_by(reef, method) %>%
   summarise(number = mean(fit), se.fit = mean(se.fit))  %>%
   ungroup() 
 
 testdata1_ca <- expand.grid(method = c("BOSS", "BRUV"), 
-                            z = mean(Coris_auricularis_BOSSBRUV$model$z))%>%
+                            reef = mean(Coris_auricularis_BOSSBRUV$model$reef))%>%
                             # reef = mean(Coris_auricularis_BOSSBRUV$model$reef)) %>%
   distinct() %>%
   glimpse() 
@@ -427,23 +387,23 @@ c.aur_text <- textGrob(label = expression(italic("C. auricularis")), x = 0, y = 
 caur.dat <- dat1 %>%
   filter(name == "Labridae Coris auricularis")
 
-#Plot C auricularis residual abundance by depth (z)
-gg_C_auricularis_z <- ggplot() + 
+#Plot C auricularis residual abundance by reef
+gg_C_auricularis_reef <- ggplot() + 
   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-  geom_ribbon(data = predicts_ca_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha=0.2) +
-  geom_line(data = predicts_ca_z, aes(x = z, y = number, group=method, colour=method))+
-  geom_line(data = predicts_ca_z, aes(x = z, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_line(data = predicts_ca_z, aes(x = z, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_rug(data = caur.dat, aes(x = z, colour = method), sides = "b", alpha = 0.5) +
+  geom_ribbon(data = predicts_ca_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha=0.2) +
+  geom_line(data = predicts_ca_reef, aes(x = reef, y = number, group=method, colour=method))+
+  geom_line(data = predicts_ca_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_line(data = predicts_ca_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_rug(data = caur.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) +
   # geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
   theme_classic() +
-  annotation_custom(c.aur_grob, xmin = -55, xmax = -45, ymin = -Inf, ymax = Inf) +
-  annotation_custom(c.aur_text, xmin = -65, xmax = -55, ymin = 30, ymax = 30) +
+  annotation_custom(c.aur_grob, xmin = -0.25, xmax = -0.35, ymin = -Inf, ymax = Inf) +
+  annotation_custom(c.aur_text, xmin = -0.28, xmax = -0.38, ymin = 30, ymax = 30) +
   theme_void() +
   coord_cartesian(clip = "off") +
   theme(plot.margin = margin(0.5, 0.5, 0.5, 3.5, "cm" ))+
   #ylim(0,50)+
-  labs(x = "Depth", y = "Abundance", colour = "Method", fill = "Method") +
+  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -457,37 +417,7 @@ gg_C_auricularis_z <- ggplot() +
     legend.title = element_text(size = 11),  # Legend title size
     legend.text = element_text(size = 9) # Legend text size
   )
-gg_C_auricularis_z
-
-# # Save gg_total_z as a PNG file
-# ggsave(filename = "plots/Abrolhos/BOSSBRUV_Cauricularis_depth_residualplot.png", 
-#        plot = gg_C_auricularis_z, 
-#        width = 6, 
-#        height = 4, 
-#        dpi = 600, 
-#        units = "in")
-
-#Plot C.auricularis residual abundance by reef
-# gg_C_auricularis_reef <- ggplot() + 
-#   geom_ribbon(data = predicts_ca_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
-#   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-#   geom_line(data = predicts_ca_reef, aes(x = reef, y = number, group=method, colour=method))+
-#   geom_line(data = predicts_ca_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
-#   geom_line(data = predicts_ca_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
-#   theme_classic() +
-#   #ylim(0,50)+
-#   labs(x = "Reef", y = "Abundance (residual)") +
-#   scale_colour_manual(values = c("BRUV" = "#666666", "BOSS" = "black")) +
-#   scale_fill_manual(values = c("BRUV" = "grey74", "BOSS" = "ghostwhite"))+
-#   theme(
-#     axis.title.x = element_text(size = 11),  # X axis title size
-#     axis.title.y = element_text(size = 11),  # Y axis title size
-#     axis.text.x = element_text(size = 10),   # X axis text size
-#     axis.text.y = element_text(size = 10),   # Y axis text size
-#     legend.title = element_text(size = 11),  # Legend title size
-#     legend.text = element_text(size = 9)    # Legend text size
-#   )
-# gg_C_auricularis_reef
+gg_C_auricularis_reef
 
 # # Save gg_total_reef as a PNG file
 # ggsave(filename = "plots/Abrolhos/BOSSBRUV_Cauricularis_reef_residualplot.png", 
@@ -498,7 +428,7 @@ gg_C_auricularis_z
 #        units = "in")
 
 ## Same as above but for Suezichthys cyanolaemus	
-Suezichthys_cyanolaemus_BOSSBRUV <- gam(number ~ s(z, k=3, bs = "cr", by = method)  + method,
+Suezichthys_cyanolaemus_BOSSBRUV <- gam(number ~ s(reef, k=3, bs = "cr", by = method)  + method,
                                     data = dat1 %>% dplyr::filter(scientific %in% c("BOSS.Labridae Suezichthys cyanolaemus","BRUV.Labridae Suezichthys cyanolaemus")),
                                     family = tw())
 summary(Suezichthys_cyanolaemus_BOSSBRUV)
@@ -506,7 +436,7 @@ summary(Suezichthys_cyanolaemus_BOSSBRUV)
 dat_total_sc <- dat1 %>%
   dplyr::filter(scientific %in% c("BOSS.Labridae Suezichthys cyanolaemus","BRUV.Labridae Suezichthys cyanolaemus"))
 
-testdata_sc <- expand.grid(z = seq(min(dat_total_sc$z), max(dat_total_sc$z), length.out = 20),
+testdata_sc <- expand.grid(reef = seq(min(dat_total_sc$reef), max(dat_total_sc$reef), length.out = 20),
                            # reef = mean(Suezichthys_cyanolaemus_BOSSBRUV$model$reef),
                            method = c("BOSS", "BRUV")) %>%
   distinct() %>%
@@ -514,14 +444,14 @@ testdata_sc <- expand.grid(z = seq(min(dat_total_sc$z), max(dat_total_sc$z), len
 
 S.cyanolaemus.fits <- predict.gam(Suezichthys_cyanolaemus_BOSSBRUV, newdata = testdata_sc, type = 'response', se.fit = T)
 
-predicts_sc_z <- testdata_sc %>%
+predicts_sc_reef <- testdata_sc %>%
   data.frame(S.cyanolaemus.fits) %>%
-  group_by(z, method) %>%
+  group_by(reef, method) %>%
   summarise(number = mean(fit), se.fit = mean(se.fit))  %>%
   ungroup() 
 
 testdata1_sc <- expand.grid(method = c("BOSS", "BRUV"), 
-                            z = mean(Suezichthys_cyanolaemus_BOSSBRUV$model$z))%>%
+                            reef = mean(Suezichthys_cyanolaemus_BOSSBRUV$model$reef))%>%
                             # reef = mean(Suezichthys_cyanolaemus_BOSSBRUV$model$reef)) %>%
   distinct() %>%
   glimpse() 
@@ -542,23 +472,23 @@ s.cya_text <- textGrob(label = expression(italic("S. cyanolaemus")), x = 0, y = 
 scya.dat <- dat1 %>%
   filter(name == "Labridae Suezichthys cyanolaemus")
 
-#Plot S cyanolaemus residual abundance by depth (z)
-gg_S_cyanolaemus_z <- ggplot() + 
+#Plot S cyanolaemus residual abundance by reef
+gg_S_cyanolaemus_reef <- ggplot() + 
   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-  geom_ribbon(data = predicts_sc_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
-  geom_line(data = predicts_sc_z, aes(x = z, y = number, group=method, colour=method))+
-  geom_line(data = predicts_sc_z, aes(x = z, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_line(data = predicts_sc_z, aes(x = z, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
-  geom_rug(data = scya.dat, aes(x = z, colour = method), sides = "b", alpha = 0.5) +
+  geom_ribbon(data = predicts_sc_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method), alpha = 0.2) +
+  geom_line(data = predicts_sc_reef, aes(x = reef, y = number, group=method, colour=method))+
+  geom_line(data = predicts_sc_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_line(data = predicts_sc_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
+  geom_rug(data = scya.dat, aes(x = reef, colour = method), sides = "b", alpha = 0.5) +
   # geom_ribbon(data = predicts_total_z, aes(x = z, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
   theme_classic() +
-  annotation_custom(s.cya_grob, xmin = -55, xmax = -45, ymin = -Inf, ymax = Inf) +
-  annotation_custom(s.cya_text, xmin = -70, xmax = -60, ymin = 0.8, ymax = 0.8) +
+  annotation_custom(s.cya_grob, xmin = -0.25, xmax = -0.35, ymin = -Inf, ymax = Inf) +
+  annotation_custom(s.cya_text, xmin = -0.30, xmax = -0.40, ymin = 0.8, ymax = 0.8) +
   theme_void() +
   coord_cartesian(clip = "off") +
   theme(plot.margin = margin(0.5, 0.5, 0.5, 2.7, "cm" ))+
   #ylim(0,50)+
-  labs(x = "Depth", y = "Abundance", colour = "Method", fill = "Method") +
+  labs(x = "Reef", y = "Abundance", colour = "Method", fill = "Method") +
   scale_colour_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00")) +
   scale_fill_manual(values = c("BRUV" = "#56B4E9", "BOSS" = "#E69F00"))+
   theme(
@@ -572,37 +502,7 @@ gg_S_cyanolaemus_z <- ggplot() +
     legend.title = element_text(size = 11),  # Legend title size
     legend.text = element_text(size = 9) # Legend text size
   )
-gg_S_cyanolaemus_z
-
-# # Save gg_total_z as a PNG file
-# ggsave(filename = "plots/Abrolhos/BOSSBRUV_Scyanolaemus_depth_residualplot.png", 
-#        plot = gg_S_cyanolaemus_z, 
-#        width = 6, 
-#        height = 4, 
-#        dpi = 600, 
-#        units = "in")
-
-#Plot S.cyanolaemus residual abundance by reef
-# gg_S_cyanolaemus_reef <- ggplot() + 
-#   geom_ribbon(data = predicts_sc_reef, aes(x = reef, ymin = number - se.fit, ymax = number + se.fit, fill = method, group = method)) +
-#   # geom_point(data = dat1, aes(x = z, y = number, group=method, fill=method), alpha = 0.2, size = 1, show.legend = T) +
-#   geom_line(data = predicts_sc_reef, aes(x = reef, y = number, group=method, colour=method))+
-#   geom_line(data = predicts_sc_reef, aes(x = reef, y = number - se.fit, group=method, colour=method), linetype = "dashed") +
-#   geom_line(data = predicts_sc_reef, aes(x = reef, y = number + se.fit, group=method, colour=method), linetype = "dashed") +
-#   theme_classic() +
-#   #ylim(0,50)+
-#   labs(x = "Reef", y = "Abundance (residual)") +
-#   scale_colour_manual(values = c("BRUV" = "#666666", "BOSS" = "black")) +
-#   scale_fill_manual(values = c("BRUV" = "grey74", "BOSS" = "ghostwhite"))+
-#   theme(
-#     axis.title.x = element_text(size = 11),  # X axis title size
-#     axis.title.y = element_text(size = 11),  # Y axis title size
-#     axis.text.x = element_text(size = 10),   # X axis text size
-#     axis.text.y = element_text(size = 10),   # Y axis text size
-#     legend.title = element_text(size = 11),  # Legend title size
-#     legend.text = element_text(size = 9)    # Legend text size
-#   )
-# gg_S_cyanolaemus_reef
+gg_S_cyanolaemus_reef
 
 # # Save gg_total_reef as a PNG file
 # ggsave(filename = "plots/Abrolhos/BOSSBRUV_Scyanolaemus_reef_residualplot.png", 
@@ -612,12 +512,12 @@ gg_S_cyanolaemus_z
 #        dpi = 600, 
 #        units = "in")
 
-p_Abrolhos_depthonly <- gg_total_z  + gg_C_rubescens_z  + gg_C_auricularis_z  + gg_S_cyanolaemus_z + (plot_layout(ncol=1))
-p_Abrolhos_depthonly
+p_Abrolhos_reefonly <- gg_total_reef  + gg_C_rubescens_reef  + gg_C_auricularis_reef  + gg_S_cyanolaemus_reef + (plot_layout(ncol=1))
+p_Abrolhos_reefonly
 
-ggsave(filename = "plots/Abrolhos/Effects_depth/BOSSBRUV_Abrolhos_depthonlyplots.png", 
-       plot = p_Abrolhos_depthonly, 
-       width = 7.5, 
+ggsave(filename = "plots/Abrolhos/Effects_reef/BOSSBRUV_Abrolhos_reefonlyplots3.png", 
+       plot = p_Abrolhos_reefonly, 
+       width = 8.5, 
        height = 16, 
        dpi = 600, 
        units = "in")
