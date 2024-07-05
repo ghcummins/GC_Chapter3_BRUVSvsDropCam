@@ -29,7 +29,7 @@ name <- "Abrolhos"  # set study name
 # read in
 dat1 <- readRDS("data/staging/Abrolhos/Abrolhos.fish.dat.maxn.rds")%>%
   # dplyr::mutate(reef =rock+inverts)%>%
-  mutate(z = abs(z), scientific = paste(method,scientific,sep=".")) %>%
+  mutate(z = abs(z), name = scientific,  scientific = paste(method,scientific,sep=".")) %>%
   # mutate(reef = if_else(reef>1, 1, reef)) %>%
   #mutate(status = ifelse(is.na(status), "No-take", status)) %>%
   glimpse()

@@ -23,7 +23,7 @@ name <- "Pt Cloates"
 
 
 #read in data - negative values manually added
-dat.taxa <- read.csv(paste("outputs/PtCloates/fish/PtCloates_fish.all.var.imp.csv")) %>% 
+dat <- read.csv(paste("outputs/PtCloates/fish/PtCloates_fish.all.var.imp.csv")) %>% 
   dplyr::filter(X != "Nemipteridae Pentapodus nagasakiensis_BRUV")%>%
   dplyr::filter(X != "Lethrinidae Gymnocranius sp1_BRUV") %>%
   dplyr::rename(resp.var= X) %>%
@@ -34,17 +34,17 @@ dat.taxa <- read.csv(paste("outputs/PtCloates/fish/PtCloates_fish.all.var.imp.cs
    glimpse()
 
 #Below creates X's for top model variables in importance score table
-# dat.taxa <- dat %>%
-#   mutate(label=NA)%>%
-#   mutate(resp.var=factor(resp.var, levels = c("smaller than legal size","greater than legal size","species.richness","total.abundance")))%>%
-#   mutate(label=ifelse(predictor=="macroalgae"&resp.var=="total.abundance","X",label))%>%
-#   mutate(label=ifelse(predictor=="inverts"&resp.var=="species.richness","X",label))%>%
-#   mutate(label=ifelse(predictor=="macroalgae"&resp.var=="species.richness","X",label))%>%
-#   mutate(label=ifelse(predictor=="detrended"&resp.var=="greater than legal size","X",label))%>%
-#   mutate(label=ifelse(predictor=="seagrass"&resp.var=="greater than legal size","X",label))%>%
-#   mutate(label=ifelse(predictor=="detrended"&resp.var=="smaller than legal size","X",label))%>%
-#   mutate(label=ifelse(predictor=="Z"&resp.var=="smaller than legal size","X",label))%>%
-#   glimpse()
+dat.taxa <- dat %>%
+  mutate(label=NA)%>%
+  # mutate(resp.var=factor(resp.var, levels = c("smaller than legal size","greater than legal size","species.richness","total.abundance")))%>%
+  mutate(label=ifelse(predictor=="depth" &resp.var=="Pinguipedidae Parapercis nebulosa_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="reef"&resp.var=="Pinguipedidae Parapercis nebulosa_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="detrended"&resp.var=="Pinguipedidae Parapercis nebulosa_BOSS","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Lethrinidae Lethrinus miniatus_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="reef"&resp.var=="Lethrinidae Lethrinus miniatus_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="detrended"&resp.var=="Lethrinidae Lethrinus miniatus_BOSS","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Lethrinidae Lethrinus miniatus_BOSS","X",label))%>%
+  glimpse()
 
 # Theme-makes it pretty?!
 Theme1 <-
@@ -83,13 +83,13 @@ imp.full <- ggplot(dat.taxa, #dplyr::filter(resp.var%in%c("total.abundance", "sp
   theme_classic()+
   Theme1 +
   theme(
-    plot.title = element_text(hjust = -0.25, face = "bold")) 
-# geom_text(aes(label=label)) +
-# theme(axis.title.x=element_blank(),
-#       axis.text.x=element_blank(),
-#       axis.ticks.x=element_blank(), 
-#       axis.line.x = element_blank(),
-#       plot.title = element_text(hjust = -0.45, vjust = -15)) # Looks crap here but title comes back in exported version
+    plot.title = element_text(hjust = -0.25, face = "bold")) +
+ geom_text(aes(label=label)) +
+theme(axis.title.x=element_blank(),
+      axis.text.x=element_blank(),
+      axis.ticks.x=element_blank(),
+      axis.line.x = element_blank(),
+      plot.title = element_text(hjust = -0.45, vjust = -15)) # Looks crap here but title comes back in exported version
 imp.full
 
 
@@ -101,7 +101,7 @@ gg.importance <- imp.full
 
 ##ABROLHOS
 #read in data - negative values manually added
-dat.taxa.abrolhos <- read.csv(paste("outputs/Abrolhos/fish/Abrolhos_fish.all.var.imp.csv")) %>% 
+dat.abrolhos <- read.csv(paste("outputs/Abrolhos/fish/Abrolhos_fish.all.var.imp.csv")) %>% 
   #dplyr::filter(X != "Mullidae Parupeneus spilurus_BRUV") %>%
   dplyr::rename(resp.var= X) %>%
   gather(key=predictor,value=importance,2:ncol(.)) %>%
@@ -109,6 +109,22 @@ dat.taxa.abrolhos <- read.csv(paste("outputs/Abrolhos/fish/Abrolhos_fish.all.var
     #importance = ifelse(predictor %in% c("detrended"), importance * -1, importance), 
   predictor = ifelse(predictor == "z", "depth", predictor)) %>%  # Rename 'z' to 'depth'
   glimpse()
+
+#Below creates X's for top model variables in importance score table
+dat.taxa.abrolhos <- dat.abrolhos %>%
+  mutate(label=NA)%>%
+  # mutate(resp.var=factor(resp.var, levels = c("smaller than legal size","greater than legal size","species.richness","total.abundance")))%>%
+  mutate(label=ifelse(predictor=="depth" &resp.var=="Lethrinidae Lethrinus miniatus_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Lethrinidae Lethrinus miniatus_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="aspect"&resp.var=="Labridae Suezichthys cyanolaemus_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="roughness"&resp.var=="Labridae Suezichthys cyanolaemus_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Labridae Suezichthys cyanolaemus_BOSS","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Labridae Coris auricularis_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Labridae Coris auricularis_BOSS","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Labridae Choerodon rubescens_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="reef"&resp.var=="Labridae Choerodon rubescens_BOSS","X",label))%>%
+  glimpse()
+
 
 # Theme-makes it pretty?!
 Theme1 <-
@@ -147,13 +163,13 @@ abrolhos.imp.full <- ggplot(dat.taxa.abrolhos, #dplyr::filter(resp.var%in%c("tot
   theme_classic()+
   Theme1+
   theme(
-    plot.title = element_text(hjust = -0.25, face = "bold"))  # Centered and bold title
-  # geom_text(aes(label=label)) +
-# theme(axis.title.x=element_blank(),
-#       axis.text.x=element_blank(),
-#       axis.ticks.x=element_blank(), 
-#       axis.line.x = element_blank(),
-#       plot.title = element_text(hjust = -0.45, vjust = -15)) # Looks crap here but title comes back in exported version
+    plot.title = element_text(hjust = -0.25, face = "bold"))+  # Centered and bold title
+geom_text(aes(label=label)) +
+theme(axis.title.x=element_blank(),
+      axis.text.x=element_blank(),
+      axis.ticks.x=element_blank(),
+      axis.line.x = element_blank(),
+      plot.title = element_text(hjust = -0.45, vjust = -15)) # Looks crap here but title comes back in exported version
 abrolhos.imp.full
 
 

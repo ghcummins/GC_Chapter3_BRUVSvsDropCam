@@ -29,7 +29,7 @@ name <- "Abrolhos"  # set study name
 # read in
 dat1 <- readRDS("data/staging/Abrolhos/Abrolhos.fish.dat.maxn.rds")%>%
   # dplyr::mutate(reef =rock+inverts)%>%
-  mutate(z = abs(z), scientific = paste(method,scientific,sep=".")) %>%
+  mutate(z = abs(z), name = scientific, scientific = paste(method,scientific,sep=".")) %>%
   # mutate(reef = if_else(reef>1, 1, reef)) %>%
   #mutate(status = ifelse(is.na(status), "No-take", status)) %>%
   glimpse()
@@ -615,7 +615,7 @@ gg_S_cyanolaemus_z
 p_Abrolhos_depthonly <- gg_total_z  + gg_C_rubescens_z  + gg_C_auricularis_z  + gg_S_cyanolaemus_z + (plot_layout(ncol=1))
 p_Abrolhos_depthonly
 
-ggsave(filename = "plots/Abrolhos/Effects_depth/BOSSBRUV_Abrolhos_depthonlyplots.png", 
+ggsave(filename = "plots/Abrolhos/Effects_depth/BOSSBRUV_Abrolhos_depthonlyplots3.png", 
        plot = p_Abrolhos_depthonly, 
        width = 7.5, 
        height = 16, 
