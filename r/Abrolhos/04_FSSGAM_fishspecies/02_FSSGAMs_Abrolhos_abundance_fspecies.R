@@ -80,6 +80,7 @@ for(i in 1:length(resp.vars)){
   model.set <- generate.model.set(use.dat = use.dat,
                                   test.fit = Model1,
                                   pred.vars.cont = pred.vars,
+                                  cyclic.vars = "aspect",
                                    # pred.vars.fact = factor.vars,
                                    # linear.vars = "depth",
                                   k = 3,

@@ -119,6 +119,12 @@ dat.maxn <- dat.response %>%
   left_join(metadata) %>%
   dplyr::mutate(reef=rock+inverts)
 
+# Sum the numbers for the specified response of Coris auricularis_BRUV
+reef.means <- dat.maxn %>%
+  filter(number>0)%>%
+  group_by(response) %>%
+  dplyr::summarise(mean=mean(reef))
+
 # look at top species ----
 # maxn.sum <- maxn %>%
 #   mutate(scientific = paste(genus, species, sep = " ")) %>%

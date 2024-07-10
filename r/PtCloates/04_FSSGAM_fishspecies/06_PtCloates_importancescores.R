@@ -79,18 +79,18 @@ imp.full <- ggplot(dat.taxa, #dplyr::filter(resp.var%in%c("total.abundance", "sp
   scale_fill_gradientn(legend_title, colours=c(re), na.value = "grey98",
                        limits = c(0, 1))+
   # scale_y_discrete(labels=c("Species richness","Total abundance"))+
-  labs(x = "Environmental Covariate", y = "Response Variable", title = "Point Cloates") +
-  theme_classic()+
-  Theme1 +
+  labs(x = "Predictor", y = "Response Variable", title = "Point Cloates") +
+    theme_classic()+
+  Theme1+
   theme(
     plot.title = element_text(hjust = -0.25, face = "bold")) +
- geom_text(aes(label=label)) +
+ geom_text(aes(label=label), colour = "white") +
 theme(axis.title.x=element_blank(),
       axis.text.x=element_blank(),
       axis.ticks.x=element_blank(),
       axis.line.x = element_blank(),
-      plot.title = element_text(hjust = -0.45, vjust = -15)) # Looks crap here but title comes back in exported version
-imp.full
+      plot.title = element_text(hjust = -0.35, vjust = -20)) # Looks crap here but title comes back in exported version
+  imp.full
 
 
 gg.importance <- imp.full 
@@ -114,15 +114,16 @@ dat.abrolhos <- read.csv(paste("outputs/Abrolhos/fish/Abrolhos_fish.all.var.imp.
 dat.taxa.abrolhos <- dat.abrolhos %>%
   mutate(label=NA)%>%
   # mutate(resp.var=factor(resp.var, levels = c("smaller than legal size","greater than legal size","species.richness","total.abundance")))%>%
-  mutate(label=ifelse(predictor=="depth" &resp.var=="Lethrinidae Lethrinus miniatus_BRUV","X",label))%>%
-  mutate(label=ifelse(predictor=="depth"&resp.var=="Lethrinidae Lethrinus miniatus_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="aspect" &resp.var=="Lethrinidae Lethrinus miniatus_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Lethrinidae Lethrinus miniatus_BOSS","X",label))%>%
   mutate(label=ifelse(predictor=="aspect"&resp.var=="Labridae Suezichthys cyanolaemus_BRUV","X",label))%>%
-  mutate(label=ifelse(predictor=="roughness"&resp.var=="Labridae Suezichthys cyanolaemus_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="reef"&resp.var=="Labridae Suezichthys cyanolaemus_BRUV","X",label))%>%
   mutate(label=ifelse(predictor=="depth"&resp.var=="Labridae Suezichthys cyanolaemus_BOSS","X",label))%>%
-  mutate(label=ifelse(predictor=="depth"&resp.var=="Labridae Coris auricularis_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="reef"&resp.var=="Labridae Coris auricularis_BRUV","X",label))%>%
   mutate(label=ifelse(predictor=="depth"&resp.var=="Labridae Coris auricularis_BOSS","X",label))%>%
   mutate(label=ifelse(predictor=="depth"&resp.var=="Labridae Choerodon rubescens_BRUV","X",label))%>%
-  mutate(label=ifelse(predictor=="reef"&resp.var=="Labridae Choerodon rubescens_BOSS","X",label))%>%
+  mutate(label=ifelse(predictor=="tpi"&resp.var=="Labridae Choerodon rubescens_BOSS","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Labridae Choerodon rubescens_BOSS","X",label))%>%
   glimpse()
 
 
@@ -159,17 +160,18 @@ abrolhos.imp.full <- ggplot(dat.taxa.abrolhos, #dplyr::filter(resp.var%in%c("tot
   scale_fill_gradientn(legend_title, colours=c(re), na.value = "grey98",
                        limits = c(0, 1))+
   # scale_y_discrete(labels=c("Species richness","Total abundance"))+
-  labs(x = "Environmental Covariate", y = "Response Variable", title = "Shallow Bank") +
-  theme_classic()+
+  labs(x = "Predictor", y = "Response Variable", title = "Shallow Bank") +
   Theme1+
-  theme(
+  theme_classic()+
+   theme(
     plot.title = element_text(hjust = -0.25, face = "bold"))+  # Centered and bold title
-geom_text(aes(label=label)) +
+geom_text(aes(label=label), colour = "white") +
 theme(axis.title.x=element_blank(),
       axis.text.x=element_blank(),
       axis.ticks.x=element_blank(),
       axis.line.x = element_blank(),
-      plot.title = element_text(hjust = -0.45, vjust = -15)) # Looks crap here but title comes back in exported version
+      plot.title = element_text(hjust = -0.35, vjust = -0))# Looks crap here but title comes back in exported version
+  
 abrolhos.imp.full
 
 
@@ -183,6 +185,28 @@ capesregion.dat.taxa <- read.csv(paste("outputs/SwC/fish/SouthWest_fish.all.var.
   dplyr::mutate(
     #importance = ifelse(predictor %in% c("detrended"), importance * 0, importance),
     predictor = ifelse(predictor == "z", "depth", predictor)) %>%  # Rename 'z' to 'depth') %>%
+  glimpse()
+
+#Below creates X's for top model variables in importance score table
+dat.taxa.capesregion <- capesregion.dat.taxa %>%
+  mutate(label=NA)%>%
+  # mutate(resp.var=factor(resp.var, levels = c("smaller than legal size","greater than legal size","species.richness","total.abundance")))%>%
+  mutate(label=ifelse(predictor=="tpi" &resp.var=="Scorpididae Neatypus obliquus_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Scorpididae Neatypus obliquus_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="aspect"&resp.var=="Scorpididae Neatypus obliquus_BOSS","X",label))%>%
+  mutate(label=ifelse(predictor=="detrended"&resp.var=="Scorpididae Neatypus obliquus_BOSS","X",label))%>%
+  mutate(label=ifelse(predictor=="tpi"&resp.var=="Scorpididae Neatypus obliquus_BOSS","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Labridae Pseudolabrus biserialis_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Labridae Pseudolabrus biserialis_BOSS","X",label))%>%
+  mutate(label=ifelse(predictor=="aspect"&resp.var=="Labridae Ophthalmolepis lineolatus_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Labridae Ophthalmolepis lineolatus_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="tpi"&resp.var=="Labridae Ophthalmolepis lineolatus_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="aspect"&resp.var=="Labridae Ophthalmolepis lineolatus_BOSS","X",label))%>%
+  mutate(label=ifelse(predictor=="detrended"&resp.var=="Labridae Ophthalmolepis lineolatus_BOSS","X",label))%>%
+  mutate(label=ifelse(predictor=="tpi"&resp.var=="Labridae Ophthalmolepis lineolatus_BOSS","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Labridae Coris auricularis_BRUV","X",label))%>%
+  mutate(label=ifelse(predictor=="depth"&resp.var=="Labridae Coris auricularis_BOSS","X",label))%>%
+  mutate(label=ifelse(predictor=="aspect"&resp.var=="Labridae Coris auricularis_BOSS","X",label))%>%
   glimpse()
 
 # Theme-makes it pretty?!
@@ -212,23 +236,23 @@ re <- colorRampPalette(c("white","blue3"))(200)
 # Labels-
 legend_title<-"Importance"
 
-capesregion.imp.full <- ggplot(capesregion.dat.taxa, #dplyr::filter(resp.var%in%c("total.abundance", "species.richness")), 
+capesregion.imp.full <- ggplot(dat.taxa.capesregion, #dplyr::filter(resp.var%in%c("total.abundance", "species.richness")), 
                    aes(x=predictor,y=resp.var,fill=importance)) +
   geom_tile(show.legend=F) +
   scale_fill_gradientn(legend_title, colours=c(re), na.value = "grey98",
                        limits = c(0, max(capesregion.dat.taxa$importance)))+
   # scale_y_discrete(labels=c("Species richness","Total abundance"))+
-  labs(x = "Environmental Covariate", y = "Response Variable", title = "Capes Region") +
+  labs(x = "Predictor", y = "Response Variable", title = "Capes Region") +
   theme_classic()+
-  Theme1+
-  theme(
-    plot.title = element_text(hjust = -0.25, face = "bold")) 
-# geom_text(aes(label=label)) +
-# theme(axis.title.x=element_blank(),
-#       axis.text.x=element_blank(),
-#       axis.ticks.x=element_blank(), 
-#       axis.line.x = element_blank(),
-#       plot.title = element_text(hjust = -0.45, vjust = -15)) # Looks crap here but title comes back in exported version
+    theme(
+    plot.title = element_text(hjust = -0.25, face = "bold")) +
+geom_text(aes(label=label), colour = "white") +
+theme(axis.title.x=element_blank(),
+      axis.text.x=element_blank(),
+      axis.ticks.x=element_blank(),
+      axis.line.x = element_blank(),
+      plot.title = element_text(hjust = -0.35, vjust = -0))+
+  Theme1# Looks crap here but title comes back in exported version
 capesregion.imp.full
 
 
@@ -239,7 +263,7 @@ all_importancescores <- gg.importance + abrolhos.gg.importance + capesregion.gg.
 all_importancescores
 
 #save
-ggsave(filename = "plots/ALLimportancescores_final_covariates.png", 
+ggsave(filename = "plots/ALLimportancescores_final_covariateswithcrosses.png", 
        plot = all_importancescores, 
        width = 12, 
        height = 16, 

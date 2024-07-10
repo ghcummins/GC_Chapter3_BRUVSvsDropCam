@@ -55,7 +55,10 @@ unique(boss.maxn$id)
 
 #join
 maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
-    glimpse()
+  filter(longitude >= 114.72 & longitude <= 114.95 &
+           latitude >= -34.15 & latitude <= -34.05) %>%
+  glimpse()
+    
 
 #figuring out BOSS samples and BOSS samples within wanted box dimensions
 # BOSS.maxn <- boss.maxn %>%
@@ -202,6 +205,83 @@ f_BRUV <- familiesbruv %>% distinct(family)
 
 only_families_in_boss <- anti_join(f_BOSS, f_BRUV)
 only_families_in_bruv <- anti_join(f_BRUV, f_BOSS)
+
+#load habitat
+allhab <- readRDS("data/staging/habitat/SouthWest_habitat-bathy-derivatives.rds")%>%
+  dplyr::select(-id) %>%
+  ga.clean.names()%>%
+  dplyr::select(-id)%>%
+  # mutate(location = ifelse(is.na(location), "Point Cloates", location))%>%
+  # mutate(campaignid = ifelse(is.na(campaignid), 
+  #                            ifelse(substr(date, 1, 4) == "2021", "2021-05_PtCloates_BOSS",
+  #                           ifelse(substr(date, 1, 4) == "2022", "2022-05_PtCloates_Naked-BOSS", NA)), campaignid))%>%
+  # mutate(campaignid = ifelse(campaignid == "2021-05_PtCloates_stereo-BRUVS", "2021-05_PtCloates_BRUVS", campaignid))%>%
+  glimpse()
+
+allhab <- allhab %>%
+  transform(seagrasses = seagrasses / broad.total.points.annotated) %>%
+  transform(macroalgae = macroalgae / broad.total.points.annotated) %>%
+  transform(sand = sand / broad.total.points.annotated) %>%
+  transform(rock = rock / broad.total.points.annotated) %>%
+  transform(inverts = inverts / broad.total.points.annotated) %>%
+  transform(reef = reef / broad.total.points.annotated) %>%
+  mutate(z = abs(z), sample = case_when(sample%in% "FHCO1"~"FHC01", sample%in% "FHCO2"~"FHC02", sample%in% "FHCO3"~"FHC03", .default = as.character(sample)))%>%
+  mutate(unique_id = paste0(campaignid, sep="_", sample)) %>% 
+  glimpse()
+
+names(allhab)
+
+metadata <- maxn %>%
+  mutate(unique_id = paste0(campaignid, sep="_", sample)) %>% 
+  mutate(date = as.character(date))%>%
+  distinct(sample, method, campaignid, latitude, longitude, date, location, status, site, 
+           depth, successful.count, successful.length, unique_id)
+
+#Format data
+dat.response <- maxn %>%
+  filter(str_detect(scientific, "Labridae Pseudolabrus biserialis|Labridae Ophthalmolepis lineolatus|Labridae Coris auricularis|Scorpididae Neatypus obliquus"))%>%
+  # select(-id)%>%
+  group_by(sample,scientific,campaignid,latitude,longitude,method,unique_id) %>%
+  summarise(number = sum(maxn))%>%
+  ungroup()%>%
+  mutate(response = paste(scientific, method, sep = "_")) %>%
+  glimpse()
+
+dat.maxn <- dat.response %>%
+  left_join(allhab) %>%
+  left_join(metadata) 
+
+# Sum the numbers for the specified response of Coris auricularis_BRUV
+sum_numbers <- dat.maxn %>%
+  filter(response == "Labridae Coris auricularis_BRUV") %>%
+  filter(number>0)%>%
+ dplyr::summarise(n=n())
+
+# Sum the numbers for the specified response of Coris auricularis_BRUV
+no_sum_numbers <- dat.maxn %>%
+  filter(response == "Scorpididae Neatypus obliquus_BRUV") %>%
+  filter(number>0)%>%
+  dplyr::summarise(n=n())
+
+##above is testing number of samples Coris auricularis is on on BRUV dpeloyments
+
+# Sum the numbers for the specified response of Coris auricularis_BRUV
+reef.c.a <- dat.maxn %>%
+  filter(response == "Labridae Coris auricularis_BRUV") %>%
+  filter(number>0)%>%
+  dplyr::summarise(mean=mean(reef))
+
+# Sum the numbers for the specified response of Coris auricularis_BRUV
+reef.means <- dat.maxn %>%
+  filter(number>0)%>%
+  group_by(response) %>%
+  dplyr::summarise(mean=mean(reef))
+
+# #BOSS fish species seen on how many samples ie number of drops
+samplefishboss <- swc_boss.maxn %>%
+  filter(maxn>0) %>%
+  group_by(scientific, name) %>%
+  dplyr::summarise(n = n()) 
 
 # #habitat
 # allhab <- readRDS("data/staging/habitat/PtCloates_habitat-bathy-derivatives.rds")%>%

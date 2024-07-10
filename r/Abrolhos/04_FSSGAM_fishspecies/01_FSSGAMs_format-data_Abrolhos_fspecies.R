@@ -120,6 +120,12 @@ dat.maxn <- dat.response %>%
   left_join(metadata) %>%
   dplyr::mutate(reef =rock+inverts+macroalgae)
 
+# Sum the numbers for the specified response_BRUV
+reef.means <- dat.maxn %>%
+  filter(number>0)%>%
+  group_by(response) %>%
+  dplyr::summarise(mean=mean(reef))
+
 # look at top species ----
 # maxn.sum <- maxn %>%
 #   mutate(scientific = paste(genus, species, sep = " ")) %>%
@@ -209,7 +215,7 @@ names(allhab)
 pred.vars = c("z", 
               "mean.relief",
               "sd.relief",
-              #"reef",
+              "reef",
               #"macroalgae",
               #"slope",
               "tpi",
