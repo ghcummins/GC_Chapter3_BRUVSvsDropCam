@@ -55,6 +55,14 @@ maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
   dplyr::filter(location %in% "NPZ6")%>%
     glimpse()
 
+#Format data for anova and levenes test
+lt.maxn <- maxn %>%
+  mutate(date = as.character(date))
+# filter(maxn>0)
+
+LT = leveneTest(maxn ~ method, lt.maxn)
+print(LT)
+
 #Format data
 dat.response <- maxn %>%
   filter(str_detect(scientific, "Labridae Coris auricularis|Lethrinidae Lethrinus miniatus|Labridae Choerodon rubescens|Labridae Suezichthys cyanolaemus"))%>%
@@ -119,6 +127,37 @@ dat.maxn <- dat.response %>%
   left_join(allhab) %>%
   left_join(metadata) %>%
   dplyr::mutate(reef =rock+inverts+macroalgae)
+
+#format data for anova
+anova.response <- lt.maxn %>%
+  #filter(str_detect(scientific, "Labridae Pseudolabrus biserialis|Labridae Ophthalmolepis lineolatus|Labridae Coris auricularis|Scorpididae Neatypus obliquus"))%>%
+  # select(-id)%>%
+  group_by(sample,scientific,campaignid,latitude,longitude,method,unique_id) %>%
+  summarise(number = sum(maxn))%>%
+  ungroup()%>%
+  mutate(response = paste(scientific, method, sep = "_")) %>%
+  glimpse()
+
+anova.maxn <- anova.response %>%
+  left_join(allhab) %>%
+  left_join(metadata)%>%
+  dplyr::mutate(reef =rock+inverts+macroalgae)
+
+# Add a colum that categorises the dominant habitat class
+anova.maxn$dom_tag <- apply(anova.maxn%>%dplyr::select(reef, sand), 1, # Set columns manually here only 12 to 14 for Pt Cloates
+                            FUN = function(x){names(which.max(x))})
+# spreddf$dom_tag <- sub('.', '', spreddf$dom_tag)                                # Removes the p but not really sure why haha
+
+#two-way ANOVA
+anova_abr <- aov(number ~ method * dom_tag, data = anova.maxn)
+summary(anova_abr)
+
+anova2 <- anova.maxn %>%
+  filter(number>0)
+
+anova2_abr <- aov(number ~ method * dom_tag, data = anova2)
+summary(anova2_abr)
+
 
 # Sum the numbers for the specified response_BRUV
 reef.means <- dat.maxn %>%

@@ -58,7 +58,13 @@ maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
   filter(longitude >= 114.72 & longitude <= 114.95 &
            latitude >= -34.15 & latitude <= -34.05) %>%
   glimpse()
-    
+   
+gab.maxn <- maxn %>%
+mutate(date = as.character(date))
+  # filter(maxn>0)
+
+LT = leveneTest(maxn ~ method, gab.maxn)
+print(LT)
 
 #figuring out BOSS samples and BOSS samples within wanted box dimensions
 # BOSS.maxn <- boss.maxn %>%
@@ -251,6 +257,36 @@ dat.maxn <- dat.response %>%
   left_join(allhab) %>%
   left_join(metadata) 
 
+#Format data
+anova.response <- gab.maxn %>%
+  #filter(str_detect(scientific, "Labridae Pseudolabrus biserialis|Labridae Ophthalmolepis lineolatus|Labridae Coris auricularis|Scorpididae Neatypus obliquus"))%>%
+  # select(-id)%>%
+  group_by(sample,scientific,campaignid,latitude,longitude,method,unique_id) %>%
+  summarise(number = sum(maxn))%>%
+  ungroup()%>%
+  mutate(response = paste(scientific, method, sep = "_")) %>%
+  glimpse()
+
+anova.maxn <- anova.response %>%
+  left_join(allhab) %>%
+  left_join(metadata)
+
+
+# Add a colum that categorises the dominant habitat class
+anova.maxn$dom_tag <- apply(anova.maxn%>%dplyr::select(reef, sand), 1, # Set columns manually here only 12 to 14 for Pt Cloates
+                         FUN = function(x){names(which.max(x))})
+# spreddf$dom_tag <- sub('.', '', spreddf$dom_tag)                                # Removes the p but not really sure why haha
+  
+#two-way ANOVA
+anova_swc <- aov(number ~ method * dom_tag, data = anova.maxn)
+summary(anova_swc)
+
+anova2 <- anova.maxn %>%
+  filter(number>0)
+
+anova2_swc <- aov(number ~ method * dom_tag, data = anova2)
+summary(anova2_swc)
+
 # Sum the numbers for the specified response of Coris auricularis_BRUV
 sum_numbers <- dat.maxn %>%
   filter(response == "Labridae Coris auricularis_BRUV") %>%
@@ -276,6 +312,26 @@ reef.means <- dat.maxn %>%
   filter(number>0)%>%
   group_by(response) %>%
   dplyr::summarise(mean=mean(reef))
+
+maxn.means <- dat.maxn %>%
+  filter(number>0)%>%
+  group_by(response) %>%
+  dplyr::summarise(
+    mean=mean(number),
+    se = sd(number) / sqrt(n()))
+
+# Create the bar plot with error bars
+ggplot(maxn.means, aes(x = response, y = mean, fill = response)) +
+  geom_bar(stat = "identity", position = position_dodge(), width = 0.7) +
+  geom_errorbar(aes(ymin = mean - se, ymax = mean + se), width = 0.2, position = position_dodge(0.7)) +
+  labs(x = "Response", y = "Mean Number", title = "Mean Number with Standard Error") +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+
 
 # #BOSS fish species seen on how many samples ie number of drops
 samplefishboss <- swc_boss.maxn %>%

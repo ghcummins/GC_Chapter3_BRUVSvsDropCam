@@ -108,6 +108,8 @@ dat.maxn <- dat.response %>%
   left_join(metadata) 
   # dplyr::mutate(reef =rock+inverts+macroalgae)
 
+
+
 # # Specify the columns you want to include in corr.pred.vars
 pred.vars <- c("z", "sand", "rock", "inverts", "macroalgae", "seagrasses",
                 "sd.relief", "reef", "aspect",

@@ -42,17 +42,29 @@ name <- "PtCloates"   # set study name ##
 boss.maxn   <- read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.maxn.csv")%>%
   dplyr::mutate(method = "BOSS",
                 sample=as.character(sample)) %>% 
-  mutate(unique_id = paste0(campaignid, sep="_", sample)) %>% 
-    glimpse()
+  dplyr::mutate(unique_id = paste0(campaignid, sep="_", sample)) %>% 
+      glimpse()
 bruv.maxn <- read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.maxn.csv")%>%
   dplyr::mutate(method = "BRUV",
                 sample=as.character(sample))%>%
-  glimpse()
+   glimpse()
 
 
 #join
 maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
+  filter(scientific !="SUS SUS sus")%>%
     glimpse()
+
+#Test for homogeneity of variance
+LT = leveneTest(maxn ~ method, maxn)
+print(LT)
+
+# Add a colum that categorises the dominant habitat class
+anova.maxn$dom_tag <- apply(anova.maxn%>%dplyr::select(reef, sand), 1, # Set columns manually here only 12 to 14 for Pt Cloates
+                            FUN = function(x){names(which.max(x))})
+# spreddf$dom_tag <- sub('.', '', spreddf$dom_tag)                                # Removes the p but not really sure why haha
+
+
 
 #Format data
 dat.response <- maxn %>%
@@ -91,6 +103,7 @@ allhab <- readRDS("data/staging/habitat/PtCloates_habitat-bathy-derivatives.rds"
                             ifelse(substr(date, 1, 4) == "2022", "2022-05_PtCloates_Naked-BOSS", NA)), campaignid))%>%
   mutate(campaignid = ifelse(campaignid == "2021-05_PtCloates_stereo-BRUVS", "2021-05_PtCloates_BRUVS", campaignid))%>%
   mutate(unique_id = paste0(campaignid, sep="_", sample)) %>% 
+  mutate(reef = rock +inverts)%>%
     glimpse()
 
 # npz6hab <- readRDS("data/staging/Abrolhos/Abrolhos_habitat-bathy-derivatives.rds")%>%
@@ -104,6 +117,7 @@ allhab <- allhab %>%
   transform(sand = sand / broad.total.points.annotated) %>%
   transform(rock = rock / broad.total.points.annotated) %>%
   transform(inverts = inverts / broad.total.points.annotated) %>%
+  transform(reef = reef / broad.total.points.annotated) %>%
   mutate(z = abs(z))%>%
   glimpse()
 
@@ -113,6 +127,34 @@ metadata <- maxn %>%
   mutate(unique_id = paste0(campaignid, sep="_", sample)) %>% 
   distinct(sample, method, campaignid, latitude, longitude, date, location, status, site, 
            depth, successful.count, successful.length, unique_id)
+
+#format data for ANOVA
+anova.response <- maxn %>%
+  group_by(sample,scientific,campaignid,latitude,longitude,method,unique_id) %>%
+  summarise(number = sum(maxn))%>%
+  ungroup()%>%
+  mutate(response = paste(scientific, method, sep = "_")) %>%
+  glimpse()
+
+anova.maxn <- anova.response %>%
+  left_join(allhab) %>%
+  left_join(metadata)
+
+# Add a colum that categorises the dominant habitat class
+anova.maxn$dom_tag <- apply(anova.maxn%>%dplyr::select(reef, sand), 1, # Set columns manually here only 12 to 14 for Pt Cloates
+                            FUN = function(x){names(which.max(x))})
+# spreddf$dom_tag <- sub('.', '', spreddf$dom_tag)               
+
+#two-way ANOVA
+anova_ptc <- aov(number ~ method * dom_tag, data = anova.maxn)
+summary(anova_ptc)
+
+anova2 <- anova.maxn %>%
+  filter(number>0)
+
+anova2_ptc <- aov(number ~ method * dom_tag, data = anova2)
+summary(anova2_ptc)
+
 
 dat.maxn <- dat.response %>%
   left_join(allhab) %>%
