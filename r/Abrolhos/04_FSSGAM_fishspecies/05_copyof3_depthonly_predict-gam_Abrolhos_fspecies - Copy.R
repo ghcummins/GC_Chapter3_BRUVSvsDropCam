@@ -678,6 +678,6 @@ bruv_fish <- as.data.frame(prasts_bruv, xy = T)
 #                         crs = "epsg:4326") 
 # plot(prasts)
 
-saveRDS(boss_fish, paste0("outputs/Abrolhos/fish/", name, "_BOSS_predicted_fish.RDS"))
+saveRDS(boss_fish, paste0("outputs/Abrolhos/fish/depth_only/", name, "_BOSS_predicted_fish_do.RDS"))
 
-saveRDS(bruv_fish, paste0("outputs/Abrolhos/fish/", name, "_BRUV_predicted_fish.RDS"))
+saveRDS(bruv_fish, paste0("outputs/Abrolhos/fish/depth_only/", name, "_BRUV_predicted_fish_do.RDS"))

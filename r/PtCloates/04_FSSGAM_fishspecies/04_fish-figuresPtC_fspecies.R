@@ -84,7 +84,7 @@ p1 <- ggplot() +
   geom_sf(data = aus, fill = "seashell2", colour = "grey80", linewidth = 0.5) +      # Add national park zones
   coord_sf(xlim = c(113.4, 113.8),                              # Set plot limits
            ylim = c(-22.81, -22.66)) +
-  labs(x = NULL, y = NULL, fill = "BOSS\nrelative\nabundance",                                    # Labels  
+  labs(x = NULL, y = NULL, fill = "BOSS\nAbundance",                                    # Labels  
        colour = NULL) +
   annotate("text", x = c(113.64, 113.56, 113.475),          # Add contour labels manually
            y = c(-22.75, -22.75, -22.75), 
@@ -138,7 +138,7 @@ p2 <- ggplot() +
   geom_sf(data = aus, fill = "seashell2", colour = "grey80", linewidth = 0.5) +      # Add national park zones
   coord_sf(xlim = c(113.4, 113.8),                              # Set plot limits
            ylim = c(-22.81, -22.66)) +
-  labs(x = NULL, y = NULL, fill = "BRUV\nrelative\nabundance",                                    # Labels  
+  labs(x = NULL, y = NULL, fill = "BRUV\nAbundance",                                    # Labels  
        colour = NULL) +
   annotate("text", x = c(113.64, 113.56, 113.475),          # Add contour labels manually
            y = c(-22.75, -22.75, -22.75), 
@@ -254,8 +254,6 @@ dev.off()
 # print(p2.6)
 # dev.off()
 
-
-
 l.min <- readPNG("data/images/Lethrinus miniatus.png")
 l.min_grob <- rasterGrob(l.min, width = unit(2.0, "cm"), height = unit(1.0, "cm"), interpolate = TRUE)
   
@@ -273,7 +271,7 @@ p3 <- ggplot() +
   geom_sf(data = aus, fill = "seashell2", colour = "grey80", linewidth = 0.5) +      # Add national park zones
   coord_sf(xlim = c(113.4, 113.8),                              # Set plot limits
            ylim = c(-22.81, -22.66)) +
-  labs(x = NULL, y = NULL, fill = "BOSS\nrelative\nabundance",                                    # Labels  
+  labs(x = NULL, y = NULL, fill = "BOSS\nAbundance",                                    # Labels  
        colour = NULL) +
   annotate("text", x = c(113.64, 113.56, 113.475),          # Add contour labels manually
            y = c(-22.75, -22.75, -22.75), 
@@ -326,7 +324,7 @@ p4 <- ggplot() +
   geom_sf(data = aus, fill = "seashell2", colour = "grey80", linewidth = 0.5) +      # Add national park zones
   coord_sf(xlim = c(113.4, 113.8),                              # Set plot limits
            ylim = c(-22.81, -22.66)) +
-    labs(x = NULL, y = NULL, fill = "BRUV\nrelative\nabundance",                                    # Labels  
+    labs(x = NULL, y = NULL, fill = "BRUV\nAbundance",                                    # Labels  
        colour = NULL) +
   annotate("text", x = c(113.64, 113.56, 113.476),          # Add contour labels manually
            y = c(-22.75, -22.75, -22.75), 
@@ -368,15 +366,32 @@ dev.off()
 fish_Ningaloo <- p2 + p1 + p4 + p3 + plot_layout(ncol = 2)
 fish_Ningaloo
 
-ggsave(filename = "plots/PtCloates/BRUVBOSS_Ningaloo_spatialplots.png",
+l_miniatus_ningaloo <- p4 + p3 + plot_layout(ncol=2)
+l_miniatus_ningaloo
+
+p_nebulosa_ningaloo <- p2 + p1 + plot_layout(ncol=2)
+p_nebulosa_ningaloo
+
+ggsave(filename = "plots/PtCloates/spatialplots/allfish_PtCloates_spatialplots.png",
        plot = fish_Ningaloo,
        width = 14,
        height = 10,
        dpi = 800,
        units = "in")
 
+ggsave(filename = "plots/PtCloates/spatialplots/L_miniatus_PtCloates_spatialplots.png",
+       plot = l_miniatus_ningaloo,
+       width = 14,
+       height = 7,
+       dpi = 800,
+       units = "in")
 
-
+ggsave(filename = "plots/PtCloates/spatialplots/P_nebulosa_Ningaloo_spatialplots.png",
+       plot = p_nebulosa_ningaloo,
+       width = 14,
+       height = 7,
+       dpi = 800,
+       units = "in")
 
 
 
