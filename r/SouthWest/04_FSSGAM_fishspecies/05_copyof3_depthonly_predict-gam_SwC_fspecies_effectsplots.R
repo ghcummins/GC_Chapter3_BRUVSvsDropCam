@@ -407,9 +407,6 @@ ggsave(filename = "plots/SwC/depthonly/BOSSBRUV_Southwest_effectsplots_depthonly
        units = "in")
 
 
-
-
-
 #######
 #Note below file taken from output of Ch2
 preddf <- readRDS("data/spatial/rasters/raw bathymetry/SouthWest_spatial_habitat_predictions.rds") %>%
@@ -449,6 +446,6 @@ plot(prasts_bruv)
 
 bruv_fish <- as.data.frame(prasts_bruv, xy = T)
 
-saveRDS(boss_fish, paste0("outputs/SwC/fish/", name, "_BOSS_predicted-fish.RDS"))
+saveRDS(boss_fish, paste0("outputs/SwC/fish/depthonly/", name, "_BOSS_predicted_fish_do.RDS"))
 
-saveRDS(bruv_fish, paste0("outputs/SwC/fish/", name, "_BRUV_predicted-fish.RDS"))
+saveRDS(bruv_fish, paste0("outputs/SwC/fish/depthonly/", name, "_BRUV_predicted_fish_do.RDS"))
