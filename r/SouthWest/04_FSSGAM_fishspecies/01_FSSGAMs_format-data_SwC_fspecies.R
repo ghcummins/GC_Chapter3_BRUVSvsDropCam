@@ -58,6 +58,7 @@ bruv.maxn <- read.csv("data/staging/SwC/2020_south-west_stereo-BRUVs.complete.ma
 bossbruvmaxn <- bind_rows(boss.maxn,bruv.maxn)%>%
   glimpse()
 
+
 maxn <- bossbruvmaxn %>%
   filter(longitude >= 114.72 & longitude <= 114.95 &
          latitude >= -34.15 & latitude <= -34.05)

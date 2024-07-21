@@ -177,6 +177,23 @@ g_BRUV <- genusbruv %>% distinct(famgenus)
 only_in_g_boss <- anti_join(g_BOSS, g_BRUV)
 only_in_g_bruv <- anti_join(g_BRUV, g_BOSS)
 
+# Replace "Apogonidae_Apogon" with "Apogonidae_Ostorhinchus"
+g_BRUV <- g_BRUV %>%
+  mutate(famgenus = if_else(famgenus == "Apogonidae_Apogon", "Apogonidae_Ostorhinchus", famgenus))
+
+data_genus <- list(
+  BRUV = g_BRUV$famgenus,
+  BOSS = g_BOSS$famgenus
+)
+
+# Create Venn diagram ##only done venn diagram for families... do for genera and species.
+venn_plot_genus <-ggvenn(data_genus, 
+                          c("BRUV", "BOSS"), 
+                          fill_color =c("#56B4E9", "#F0E442"),
+                          fill_alpha = 0.4,
+                          show_percentage = F)
+venn_plot_genus
+
 #unique families process to get
 familiesboss <- fishfamiliesboss %>%
   filter(family !="SUS")
@@ -192,17 +209,22 @@ only_families_in_bruv <- anti_join(f_BRUV, f_BOSS)
 
 #VENNDIAGRAMS
 # Create Venn diagram
-data <- list(
+data_family <- list(
   BRUV = f_BRUV$family,
   BOSS = f_BOSS$family
 )
 
 # Create Venn diagram ##only done venn diagram for families... do for genera and species.
-venn_plot <-ggvenn(data, 
+venn_plot_family <-ggvenn(data_family, 
        c("BRUV", "BOSS"), 
        fill_color =c("#56B4E9", "#F0E442"),
-        fill_alpha = 1.0)
-venn_plot
+       fill_alpha = 0.4,
+      show_percentage = F)
+venn_plot_family
+
+#create Venn diagram for Genera
+data_genus <- list 
+
 
 
 #to get each MAXN sample on BRUVS
