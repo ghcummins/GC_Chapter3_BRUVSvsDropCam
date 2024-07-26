@@ -94,19 +94,19 @@ P_nag <- dat.response %>%
   filter(str_detect(scientific, "Nemipteridae Pentapodus nagasakiensis"))
 
 #add custom text for fish name on plot
-p.neb_text <- textGrob(label = expression(italic("Parapercis nebulosa")), x = 0, y = 0, 
+p.neb_text <- textGrob(label = expression(italic("Parapercis nebulosa***")), x = 0, y = 0, 
                        just = "left", gp = gpar(col = "#000000", fontsize = 11))
 
 #add custom text for fish name on plot
-l.min_text <- textGrob(label = expression(italic("Lethrinus miniatus")), x = 0, y = 0, 
+l.min_text <- textGrob(label = expression(italic("Lethrinus miniatus***")), x = 0, y = 0, 
                        just = "left", gp = gpar(col = "#000000", fontsize = 11))
 
 #add custom text for fish name on plot
-g.sp1_text <- textGrob(label = expression(italic("Gymnocranius sp1")), x = 0, y = 0, 
+g.sp1_text <- textGrob(label = expression(italic("Gymnocranius sp1***")), x = 0, y = 0, 
                        just = "left", gp = gpar(col = "#000000", fontsize = 11))
 
 #add custom text for fish name on plot
-p.nag_text <- textGrob(label = expression(italic("Pentapodus nagasakiensis")), x = 0, y = 0, 
+p.nag_text <- textGrob(label = expression(italic("Pentapodus nagasakiensis***")), x = 0, y = 0, 
                        just = "left", gp = gpar(col = "#000000", fontsize = 11))
 
 #adding in fish images
@@ -290,7 +290,7 @@ ab.l.min_text <- textGrob(label = expression(italic("Lethrinus miniatus")), x = 
 ab.c.rub_text <- textGrob(label = expression(italic("Choerodon rubescens")), x = 0, y = 0, 
                           just = "left", gp = gpar(col = "#000000", fontsize = 11))
 
-ab.c.aur_text <- textGrob(label = expression(italic("Coris auricularis")), x = 0, y = 0, 
+ab.c.aur_text <- textGrob(label = expression(italic("Coris auricularis**")), x = 0, y = 0, 
                           just = "left", gp = gpar(col = "#000000", fontsize = 11))
 
 ab.s.cya_text <- textGrob(label = expression(italic("Suezichthys cyanolaemus")), x = 0, y = 0, 
@@ -448,13 +448,13 @@ n.obl_grob <- rasterGrob(n.obl, width = unit(2.75, "cm"), height = unit(1.5, "cm
 swc.p.bis_text <- textGrob(label = expression(italic("Pseudolabrus biserialis")), x = 0, y = 0, 
                           just = "left", gp = gpar(col = "#000000", fontsize = 11))
 
-swc.o.lin_text <- textGrob(label = expression(italic("Ophthalmolepis lineolatus")), x = 0, y = 0, 
+swc.o.lin_text <- textGrob(label = expression(italic("Ophthalmolepis lineolatus***")), x = 0, y = 0, 
                            just = "left", gp = gpar(col = "#000000", fontsize = 11))
 
-swc.c.aur_text <- textGrob(label = expression(italic("Coris auricularis")), x = 0, y = 0, 
+swc.c.aur_text <- textGrob(label = expression(italic("Coris auricularis***")), x = 0, y = 0, 
                            just = "left", gp = gpar(col = "#000000", fontsize = 11))
 
-swc.n.obl_text <- textGrob(label = expression(italic("Neatypus obliquus")), x = 0, y = 0, 
+swc.n.obl_text <- textGrob(label = expression(italic("Neatypus obliquus**")), x = 0, y = 0, 
                            just = "left", gp = gpar(col = "#000000", fontsize = 11))
 
 # Create a boxplot with jittered points and mean overlay for C rubescens
@@ -547,9 +547,89 @@ fish_box_plots <- p_neb + l_min + g_sp1 + p_nag + ab_l_min + ab_c_rub + ab_c_aur
   swc_p_bis + swc_o_lin + swc_c_aur + swc_n_obl + (plot_layout(ncol=4))
 fish_box_plots
 
-ggsave(filename = "plots/boxplots/allfish_boxplots6.png", 
+ggsave(filename = "plots/boxplots/allfish_boxplots7.png", 
        plot = fish_box_plots, 
        width = 22, 
        height = 12, 
        dpi = 600, 
        units = "in")
+
+#looking at variance
+swc_N_obliquus %>%
+  group_by(method) %>%
+  summarise(
+    mean_number = mean(number),
+    median_number = median(number)
+  )
+
+ab_C_rubescens %>%
+  group_by(method) %>%
+  summarise(
+    mean_number = mean(number),
+    median_number = median(number)
+  )
+ab_C_auricularis %>%
+  group_by(method) %>%
+  summarise(
+    mean_number = mean(number),
+    median_number = median(number)
+  )
+ab_S_cyanolaemus %>%
+  group_by(method) %>%
+  summarise(
+    mean_number = mean(number),
+    median_number = median(number)
+  )
+# Calculate variance by method
+variance_stats <- swc_N_obliquus %>%
+  group_by(method) %>%
+  summarise(
+    variance_number = var(number)
+  )
+
+# Print variance statistics
+print(variance_stats)
+
+
+###### OK Variance tends to be larger for BRUV than BOSS
+
+### NOW to test for significant of each Figure.
+library(tweedie)
+library(statmod)
+glm.p_nebulosa <- glm(number ~ method, family = tweedie(var.power = 1, link.power = 1), data = P_nebulosa)
+summary(glm.p_nebulosa)
+
+glm.l_miniatus <- glm(number ~ method, family = tweedie(var.power = 1, link.power = 1), data = L_miniatus)
+summary(glm.l_miniatus)
+
+# glm.g_sp1 <- glm(number ~ method, family = tweedie(var.power = 1, link.power = 1), data = G_sp1)
+# summary(glm.g_sp1)
+# 
+# glm.p_nag <- glm(number ~ method, family = tweedie(var.power = 1, link.power = 1), data = P_nag)
+# summary(glm.p_nag)
+
+##species at Abrolhos
+glm.ab.l_miniatus <- glm(number ~ method, family = tweedie(var.power = 1, link.power = 1), data = ab_L_miniatus)
+summary(glm.ab.l_miniatus)
+
+glm.ab.c_rubescens <- glm(number ~ method, family = tweedie(var.power = 1, link.power = 1), data = ab_C_rubescens)
+summary(glm.ab.c_rubescens)
+
+glm.ab.c_auricularis <- glm(number ~ method, family = tweedie(var.power = 1, link.power = 1), data = ab_C_auricularis)
+summary(glm.ab.c_auricularis)
+
+glm.ab.s_cyanolaemus <- glm(number ~ method, family = tweedie(var.power = 1, link.power = 1), data = ab_S_cyanolaemus)
+summary(glm.ab.s_cyanolaemus)
+
+### species at southwest
+glm.sw.p_biserialis <- glm(number ~ method, family = tweedie(var.power = 1, link.power = 1), data = swc_P_biserialis)
+summary(glm.sw.p_biserialis)
+
+glm.sw.o_lineoloatus <- glm(number ~ method, family = tweedie(var.power = 1, link.power = 1), data = swc_O_lineoloatus)
+summary(glm.sw.o_lineoloatus)
+
+glm.sw.c_auricularis <- glm(number ~ method, family = tweedie(var.power = 1, link.power = 1), data = swc_C_auricularis)
+summary(glm.sw.c_auricularis)
+
+glm.sw.n_obliquus <- glm(number ~ method, family = tweedie(var.power = 1, link.power = 1), data = swc_N_obliquus)
+summary(glm.sw.n_obliquus)
