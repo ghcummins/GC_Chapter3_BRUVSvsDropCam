@@ -27,7 +27,7 @@ library(FSSgam)
 library(GlobalArchive)
 library(ggplot2)
 
-## Setup ----
+ ## Setup ----
 # set your working directory (manually, once for the whole R project)
 # use the 'files' tab to set wd in '~/parks-abrolhos' manually (your relative path) then run this line (if we need it?)
 working.dir <- getwd()
@@ -63,8 +63,8 @@ gab.maxn <- maxn %>%
 mutate(date = as.character(date))
   # filter(maxn>0)
 
-LT = leveneTest(maxn ~ method, gab.maxn)
-print(LT)
+# LT = leveneTest(maxn ~ method, gab.maxn)
+# print(LT)
 
 #figuring out BOSS samples and BOSS samples within wanted box dimensions
 # BOSS.maxn <- boss.maxn %>%

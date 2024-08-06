@@ -247,7 +247,7 @@ abrolhos.maxn <- bind_rows(abrolhos.boss.maxn,abrolhos.bruv.maxn)%>%
 #Format data
 abrolhos.dat.response <- abrolhos.maxn %>%
   filter(str_detect(scientific, "Labridae Coris auricularis|Lethrinidae Lethrinus miniatus|Labridae Choerodon rubescens|Labridae Suezichthys cyanolaemus"))%>%
-  select(-id)%>%
+  dplyr::select(-id)%>%
   group_by(sample,scientific,campaignid,latitude,longitude,method,unique_id) %>%
   summarise(number = sum(maxn))%>%
   ungroup()%>%
@@ -410,7 +410,7 @@ swc.maxn <- swc.bossbruvmaxn %>%
 #Format data
 swc.dat.response <- swc.maxn %>%
   filter(str_detect(scientific, "Labridae Pseudolabrus biserialis|Labridae Ophthalmolepis lineolatus|Labridae Coris auricularis|Scorpididae Neatypus obliquus"))%>%
-  # select(-id)%>%
+  dplyr::select(-id)%>%
   group_by(sample,scientific,campaignid,latitude,longitude,method,unique_id) %>%
   summarise(number = sum(maxn))%>%
   ungroup()%>%
@@ -554,8 +554,22 @@ ggsave(filename = "plots/boxplots/allfish_boxplots7.png",
        dpi = 600, 
        units = "in")
 
-#looking at variance
+#looking at vabundance differences
 swc_N_obliquus %>%
+  group_by(method) %>%
+  summarise(
+    mean_number = mean(number),
+    median_number = median(number)
+  )
+
+swc_C_auricularis %>%
+  group_by(method) %>%
+  summarise(
+    mean_number = mean(number),
+    median_number = median(number)
+  )
+
+swc_O_lineoloatus %>%
   group_by(method) %>%
   summarise(
     mean_number = mean(number),
@@ -568,6 +582,7 @@ ab_C_rubescens %>%
     mean_number = mean(number),
     median_number = median(number)
   )
+
 ab_C_auricularis %>%
   group_by(method) %>%
   summarise(
@@ -590,8 +605,89 @@ variance_stats <- swc_N_obliquus %>%
 # Print variance statistics
 print(variance_stats)
 
+variance_stats <- swc_C_auricularis %>%
+  group_by(method) %>%
+  summarise(
+    variance_number = var(number)
+  )
 
-###### OK Variance tends to be larger for BRUV than BOSS
+# Print variance statistics
+print(variance_stats)
+
+variance_stats <- swc_O_lineoloatus %>%
+  group_by(method) %>%
+  summarise(
+    variance_number = var(number)
+  )
+
+# Print variance statistics
+print(variance_stats)
+
+variance_stats <- swc_P_biserialis %>%
+  group_by(method) %>%
+  summarise(
+    variance_number = var(number)
+  )
+
+# Print variance statistics
+print(variance_stats)
+
+variance_stats <- P_nebulosa %>%
+  group_by(method) %>%
+  summarise(
+    variance_number = var(number)
+  )
+
+# Print variance statistics
+print(variance_stats)
+
+variance_stats <- L_miniatus %>%
+  group_by(method) %>%
+  summarise(
+    variance_number = var(number)
+  )
+
+# Print variance statistics
+print(variance_stats)
+
+variance_stats <- ab_C_auricularis %>%
+  group_by(method) %>%
+  summarise(
+    variance_number = var(number)
+  )
+
+# Print variance statistics
+print(variance_stats)
+
+
+variance_stats <- ab_C_rubescens %>%
+  group_by(method) %>%
+  summarise(
+    variance_number = var(number)
+  )
+
+# Print variance statistics
+print(variance_stats)
+
+variance_stats <- ab_S_cyanolaemus %>%
+  group_by(method) %>%
+  summarise(
+    variance_number = var(number)
+  )
+
+# Print variance statistics
+print(variance_stats)
+
+variance_stats <- ab_L_miniatus %>%
+  group_by(method) %>%
+  summarise(
+    variance_number = var(number)
+  )
+
+# Print variance statistics
+print(variance_stats)
+
+###### OK Variance WAS ALWAYS higher for BRUV than BOSS
 
 ### NOW to test for significant of each Figure.
 library(tweedie)
