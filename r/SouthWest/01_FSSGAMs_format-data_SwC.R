@@ -59,8 +59,8 @@ maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
            latitude >= -34.15 & latitude <= -34.05) %>%
   glimpse()
    
-gab.maxn <- maxn %>%
-mutate(date = as.character(date))
+# gab.maxn <- maxn %>%
+# mutate(date = as.character(date))
   # filter(maxn>0)
 
 # LT = leveneTest(maxn ~ method, gab.maxn)
@@ -114,7 +114,7 @@ SwCBOSS_maxn_n <- samplefishboss %>%
 SwCBOSS_allnames <- separate(SwCBOSS_maxn_n, scientific, into = c("family", "genus", "species"), sep = " ")
 
 #save
-write.csv(SwCBOSS_allnames, file = "outputs/SwC/SWCBOSS_fishlist.csv", row.names = FALSE)
+#write.csv(SwCBOSS_allnames, file = "outputs/SwC/SWCBOSS_fishlist.csv", row.names = FALSE)
 
 #BOSS summary stats
 total_indi_fish_BOSS <- SwCBOSS_allnames%>%
@@ -214,10 +214,23 @@ only_families_in_bruv <- anti_join(f_BRUV, f_BOSS)
 
 #load habitat
 allhab <- readRDS("data/staging/habitat/SouthWest_habitat-bathy-derivatives.rds")%>%
-  dplyr::select(-id) %>%
   ga.clean.names()%>%
-  dplyr::select(-id)%>%
-  # mutate(location = ifelse(is.na(location), "Point Cloates", location))%>%
+  dplyr::select(-id) %>%
+  #dplyr::select(-sample) %>%
+  dplyr::select(-planned.or.exploratory)%>%
+  dplyr::select(-date)%>%
+  dplyr::select(-time)%>%
+  dplyr::select(-location)%>%
+  dplyr::select(-site)%>%
+  dplyr::select(-depth)%>%
+  dplyr::select(-successful.count)%>%
+  dplyr::select(-successful.length)%>%
+  dplyr::select(-commonwealth.zone)%>%
+  dplyr::select(-state.zone)%>%
+  dplyr::select(-status)%>%
+  filter(longitude >= 114.72 & longitude <= 114.95 &
+           latitude >= -34.15 & latitude <= -34.05) %>%
+    # mutate(location = ifelse(is.na(location), "Point Cloates", location))%>%
   # mutate(campaignid = ifelse(is.na(campaignid), 
   #                            ifelse(substr(date, 1, 4) == "2021", "2021-05_PtCloates_BOSS",
   #                           ifelse(substr(date, 1, 4) == "2022", "2022-05_PtCloates_Naked-BOSS", NA)), campaignid))%>%
@@ -231,7 +244,7 @@ allhab <- allhab %>%
   transform(rock = rock / broad.total.points.annotated) %>%
   transform(inverts = inverts / broad.total.points.annotated) %>%
   transform(reef = reef / broad.total.points.annotated) %>%
-  mutate(z = abs(z), sample = case_when(sample%in% "FHCO1"~"FHC01", sample%in% "FHCO2"~"FHC02", sample%in% "FHCO3"~"FHC03", .default = as.character(sample)))%>%
+  #mutate(z = abs(z), sample = case_when(sample%in% "FHCO1"~"FHC01", sample%in% "FHCO2"~"FHC02", sample%in% "FHCO3"~"FHC03", .default = as.character(sample)))%>%
   mutate(unique_id = paste0(campaignid, sep="_", sample)) %>% 
   glimpse()
 
@@ -242,6 +255,25 @@ metadata <- maxn %>%
   mutate(date = as.character(date))%>%
   distinct(sample, method, campaignid, latitude, longitude, date, location, status, site, 
            depth, successful.count, successful.length, unique_id)
+
+names(maxn)
+#Format data for PRIMER
+primerSWC <- maxn %>%
+  #filter(family !="SUS")%>%
+  dplyr::select(unique_id, sample, scientific, maxn, 
+                campaignid, latitude, longitude, status, depth, method) %>%
+  left_join(allhab) %>%
+  pivot_wider(
+    names_from = scientific,
+    values_from = maxn, 
+    values_fill = 0
+  ) %>%
+  glimpse()
+
+#savedata for PRIMER
+saveRDS(primerSWC, "data/staging/SwC/ForPRIMER/CapesRegionprimer.rds")
+write.csv(primerSWC, "data/staging/SwC/ForPRIMER/CapesRegionprimer.csv")
+
 
 #Format data
 dat.response <- maxn %>%

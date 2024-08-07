@@ -695,6 +695,10 @@ library(statmod)
 glm.p_nebulosa <- glm(number ~ method, family = tweedie(var.power = 1, link.power = 1), data = P_nebulosa)
 summary(glm.p_nebulosa)
 
+test <- tibble(method = c("BRUV", "BOSS"))
+
+predict(glm.p_nebulosa, test, se.fit = T)
+
 glm.l_miniatus <- glm(number ~ method, family = tweedie(var.power = 1, link.power = 1), data = L_miniatus)
 summary(glm.l_miniatus)
 
