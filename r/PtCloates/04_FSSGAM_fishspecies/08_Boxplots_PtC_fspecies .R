@@ -31,6 +31,8 @@ library(here)
 library(leaflet)
 library(png)
 library(jpeg)
+library(grid)
+library(patchwork)
 
 ## Setup ----
 # set your working directory (manually, once for the whole R project)
@@ -207,15 +209,15 @@ p_nag <- ggplot(P_nag, aes(x = method, y = number)) +
 plot(p_nag)
 
 
-fish_boxplots_PtCloates <- p_neb + l_min + g_sp1 +  p_nag + (plot_layout(ncol=4))
-fish_boxplots_PtCloates
-
-ggsave(filename = "plots/boxplots/fish_boxplots_PtCloates2.png", 
-       plot = fish_boxplots_PtCloates, 
-       width = 22, 
-       height = 6, 
-       dpi = 600, 
-       units = "in")
+# fish_boxplots_PtCloates <- p_neb + l_min + g_sp1 +  p_nag + (plot_layout(ncol=4))
+# fish_boxplots_PtCloates
+# 
+# ggsave(filename = "plots/boxplots/fish_boxplots_PtCloates2.png", 
+#        plot = fish_boxplots_PtCloates, 
+#        width = 22, 
+#        height = 6, 
+#        dpi = 600, 
+#        units = "in")
 
 
 #AS ABOV BUT FOR ABROLHOS
@@ -547,13 +549,34 @@ fish_box_plots <- p_neb + l_min + g_sp1 + p_nag + ab_l_min + ab_c_rub + ab_c_aur
   swc_p_bis + swc_o_lin + swc_c_aur + swc_n_obl + (plot_layout(ncol=4))
 fish_box_plots
 
-ggsave(filename = "plots/boxplots/allfish_boxplots7.png", 
+
+print(fish_box_plots)
+png(filename = "plots/boxplots/FISHboxplots.png", 
+    
+    
+    width = 22, height = 12, res = 800, units = "in")                             # Change the dimensions here as necessary
+fish_box_plots
+dev.off()  
+
+
+
+
+
+ggsave(filename = "plots/boxplots/F1ish_boxplots.jpg", 
        plot = fish_box_plots, 
        width = 22, 
        height = 12, 
        dpi = 600, 
        units = "in")
 
+ggsave(filename = "plots/boxplots/Boxplots.png", 
+       plot = fish_box_plots, 
+       width = 22, 
+       height = 12, 
+       dpi = 600, 
+       units = "in")
+
+plot(l_min)
 #looking at vabundance differences
 swc_N_obliquus %>%
   group_by(method) %>%
