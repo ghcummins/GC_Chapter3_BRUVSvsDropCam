@@ -6,7 +6,6 @@
 ##
 
 rm(list = ls())
-gc()
 
 # Load libraries
 library(tidyverse)
@@ -35,6 +34,7 @@ name <- "PtCloates"
 dat1 <- readRDS("data/staging/PtCloates/PtCloates.fish.dat.maxn.rds")%>%
   #dplyr::mutate(reef =rock+inverts)%>%
   mutate(z = abs(z), name = scientific, scientific = paste(method,scientific,sep=".")) %>%
+  filter(scientific %in% c("BOSS.Lethrinidae Lethrinus miniatus", "BRUV.Lethrinidae Lethrinus miniatus", "BOSS.Pinguipedidae Parapercis nebulosa", "BRUV.Pinguipedidae Parapercis nebulosa"))%>%
   #mutate(status = ifelse(is.na(status), "No-take", status)) %>%
   glimpse()
 
@@ -52,11 +52,8 @@ preddf <- readRDS("data/spatial/rasters/raw bathymetry/PtCloates_spatial_habitat
    rast(type = "xyz", crs = "epsg:4326")
   
 # Load in bathymetry predictors
-stack <- readRDS(paste(paste0('data/spatial/rasters/', name),      # This is ignored - too big!
-                       'spatial_covariates.rds', sep = "_")) %>%
-  crop(depthreef) 
-   
-  stack <- c(stack, depthreef) %>%
+
+  stack <- depthreef %>%
   project("EPSG:9473")
 rpc <- rasterPCA(stack, nComp = 1 , spca = TRUE, nSamples = 4364)               # Now accepts SpatRaster
 # crs(rpc$map) <- "epsg:9473"
@@ -82,7 +79,8 @@ dev.off()
 
 sb1 <- cv_spatial(x = dat_sf,
                   r = rpc$map,
-                  size = range1$range,
+                  size = 6000,
+                    # range1$range,
                   k = 5,
                   selection = "random",
                   iteration = 100,
@@ -97,26 +95,26 @@ mod_df <- dat_sf %>%
   add_column(block = sb1$folds_ids)
 
 # Loop through cross validation for each taxa (habitat) and each fold
-BOSS_lm_abund <- mod_df %>%
+fabund <- mod_df %>%
   #dplyr::select(-c(ID, geometry)) %>%
   dplyr::rename(x = longitude, y = latitude) %>%
-  dplyr::filter(scientific %in% c("BOSS.Lethrinidae Lethrinus miniatus")) %>% 
+  # dplyr::filter(scientific %in% c("BOSS.Lethrinidae Lethrinus miniatus")) %>% 
   dplyr::mutate(method = as.factor(method)) %>%
   glimpse()
 
-resp.vars <- unique(BOSS_LMabund$scientific)
-blocks <- unique(BOSS_LMabund$block)
+resp.vars <- unique(fabund$scientific)
+blocks <- unique(fabund$block)
 
-lm_preddf <- stack %>%
-  project("epsg:4326") %>%
-  as.data.frame(xy = T, na.rm = T)
+# lm_preddf <- stack %>%
+#   project("epsg:4326") %>%
+#   as.data.frame(xy = T, na.rm = T)
 
 
 # Loop through each taxa
 # Train GAM off 4 folds, test against last fold
 # Absolute value of the distance from the observed to predicted data
 for (i in 1:length(resp.vars)) {
-  use.dat <- BOSS_lm_abund[BOSS_lm_abund$scientific == resp.vars[i],]
+  use.dat <- fabund[fabund$scientific == resp.vars[i],]
   use.dat   <- as.data.frame(use.dat)
   print(resp.vars[i])
   
@@ -127,52 +125,38 @@ for (i in 1:length(resp.vars)) {
     
     # Letrinus miniatus depth
     mod1 <- gam(number ~ s(z, k = 3, bs = "cr") +
-                  s(PROD, k = 3, bs = "cr") +
-                  s(reef, k = 3, bs = "cr") +
-                  s(roughness, k = 3, bs = "cr") + 
-                  s(SST, k = 3, bs = "cr") +
-                  s(year, bs = "re"), 
-                data = fabund %>% dplyr::filter(scientific %in% "species.richness"), ###THIS NEEDS UPDATING + EVERYTHING  BELOW
+                  s(reef, k = 3, bs = "cr"),
+                 data = fabund %>% dplyr::filter(scientific %in% "BOSS.Lethrinidae Lethrinus miniatus"), 
                 family = tw())
     
     # reef
-    mod2 <- gam(number ~ s(reef, k = 3, bs = "cr") +
-                  s(PROD, k = 3, bs = "cr") +
-                  s(reef, k = 3, bs = "cr") + 
-                  s(SST, k = 3, bs = "cr") +
-                  s(year, bs = "re"), 
-                data = fabund %>% dplyr::filter(scientific %in% "cti"),
+    mod2 <- gam(number ~ s(z, k = 3, bs = "cr") +
+                  s(reef, k = 3, bs = "cr"),
+                 data = fabund %>% dplyr::filter(scientific %in% "BRUV.Lethrinidae Lethrinus miniatus"),
                 family = tw())
     
     # Greater than size of maturity
-    mod3 <- gam(number ~ s(reef, k = 3, bs = "cr") +
-                  s(roughness, k = 3, bs = "cr") +
-                  s(SLA, k = 3, bs = "cr") +
-                  s(SST, k = 3, bs = "cr") +
-                  status +
-                  s(year, bs = "re"), 
-                data = fabund %>% dplyr::filter(scientific %in% "greater than Lm carinvores"),
+    mod3 <- gam(number ~ s(z, k = 3, bs = "cr") +
+                  s(reef, k = 3, bs = "cr"),
+                data = fabund %>% dplyr::filter(scientific %in% "BOSS.Pinguipedidae Parapercis nebulosa"),
                 family = tw())
     
     # Smaller than size of maturity
-    mod4 <- gam(number ~ s(reef, k = 3, bs = "cr") +
-                  s(roughness, k = 3, bs = "cr") +
-                  s(SLA, k = 3, bs = "cr") +
-                  s(SST, k = 3, bs = "cr") +
-                  s(year, bs = "re"), 
-                data = fabund %>% dplyr::filter(scientific %in% "smaller than Lm carnivores"),
+    mod4 <- gam(number ~ s(z, k = 3, bs = "cr") +
+                  s(reef, k = 3, bs = "cr"), 
+                data = fabund %>% dplyr::filter(scientific %in% "BRUV.Pinguipedidae Parapercis nebulosa"),
                 family = tw())
     
-    # Pink Snapper Smaller than Lm
-    mod5 <- gam(number ~ s(reef, k = 3, bs = "cr") +
-                  s(roughness, k = 3, bs = "cr") +
-                  s(SLA, k = 3, bs = "cr") +
-                  s(SST, k = 3, bs = "cr") +
-                  s(year, bs = "re"), 
-                data = fabund %>% dplyr::filter(scientific %in% "smaller than Lm Pink snapper"),
-                family = tw())
+    # # Pink Snapper Smaller than Lm
+    # mod5 <- gam(number ~ s(reef, k = 3, bs = "cr") +
+    #               s(roughness, k = 3, bs = "cr") +
+    #               s(SLA, k = 3, bs = "cr") +
+    #               s(SST, k = 3, bs = "cr") +
+    #               s(year, bs = "re"), 
+    #             data = fabund %>% dplyr::filter(scientific %in% "smaller than Lm Pink snapper"),
+    #             family = tw())
     
-    mod <- list(mod1, mod2, mod3, mod4, mod5)
+    mod <- list(mod1, mod2, mod3, mod4)
     
     modpred <- cbind(preddf, 
                      "predicted" = predict(mod[[i]], preddf, type = "response"))
