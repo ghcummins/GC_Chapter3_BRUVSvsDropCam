@@ -53,30 +53,30 @@ vectors <- read.csv("data/raw/PtCloatesPCOvector.csv")  %>% #import PCO.csv vect
   ga.clean.names() %>%
   mutate(name = paste(genus, species, sep = " "))
 
-#load my fish pics
-#1Carangoides chrysophrys
-c.c <-readPNG("data/images/Carangoides chrysophrys.png")
-c.c <-as.raster(c.c)
-
-#Gymnocranius sp1 (no pic, used grandoculis)
-g.s <-readPNG("data/images/Gymnocranius grandoculis.png")
-g.s <-as.raster(g.s)
-
-#Lethrinus miniatus
-l.m <-readPNG("data/images/Lethrinus miniatus.png")
-l.m <-as.raster(l.m)
-
-#Lethrinus rubrioperculatus
-l.r <-readPNG("data/images/Lethrinidae.png")
-l.r <-as.raster(l.r)
-
-#1Pristipomoides sp1 no pic - used typus
-p.s <-readPNG("data/images/Pristipomoides typus.png")
-p.s <-as.raster(p.s)
-
-#parapercis nebulosa
-p.n <-readPNG("data/images/Parapercis nebulosa.png")
-p.n <-as.raster(p.n)
+# #load my fish pics
+# #1Carangoides chrysophrys
+# c.c <-readPNG("data/images/Carangoides chrysophrys.png")
+# c.c <-as.raster(c.c)
+# 
+# #Gymnocranius sp1 (no pic, used grandoculis)
+# g.s <-readPNG("data/images/Gymnocranius grandoculis.png")
+# g.s <-as.raster(g.s)
+# 
+# #Lethrinus miniatus
+# l.m <-readPNG("data/images/Lethrinus miniatus.png")
+# l.m <-as.raster(l.m)
+# 
+# #Lethrinus rubrioperculatus
+# l.r <-readPNG("data/images/Lethrinidae.png")
+# l.r <-as.raster(l.r)
+# 
+# #1Pristipomoides sp1 no pic - used typus
+# p.s <-readPNG("data/images/Pristipomoides typus.png")
+# p.s <-as.raster(p.s)
+# 
+# #parapercis nebulosa
+# p.n <-readPNG("data/images/Parapercis nebulosa.png")
+# p.n <-as.raster(p.n)
 
 Theme1 <-
   theme( # use theme_get() to see available options
@@ -108,18 +108,18 @@ gg.dat<-ggplot(dat, aes(x=pco1, y=pco2))+
   scale_fill_manual(values=c("white","darkgray"))+
   
   geom_segment(data = filter(vectors,r>=0.6), # this is the cut-off you choose
-               aes(x=0,y=0, # this changes the start point of the vectors. You will notice sometimes that this is not always 0,0
+               aes(x=-0.25,y=-0.25, # this changes the start point of the vectors. You will notice sometimes that this is not always 0,0
                    xend=(pco1/1),yend=(pco2/1)), #this changes the length of your vecotrs relative to eachother and the entire plot
                size = 0.5,colour="black",arrow = arrow(angle=25,length=unit(0.25,"cm")))+
   
   #geom_text(data= filter(vectors, vectors=="Yes"), aes(x=pco1, y = pco2, label = name))+
-   annotate("text", x = -0.5, y = 0.32, size = 3, label = "Pristipomoides sp1", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
+   annotate("text", x = -0.49, y = 0.32, size = 3, label = "Pristipomoides sp1", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
   # annotation_raster(p.s, xmin=-0.3, xmax=-0.1, ymin=0.33, ymax=0.2) + # this chucks in the fish or species pics. you need to play around with the numbers to get it in the right spot. 
   
   annotate("text", x = -0.79, y = 0.31, size = 3, label = "Gymnocranius sp1", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
   #annotation_custom(Pristipomoides typus, xmin=-0.9, xmax=-0.6, ymin=-0.6, ymax=-0.4)  # this chucks in the fish or species pics. you need to play around with the numbers to get it in the right spot. 
   
-  annotate("text", x = -0.77, y = 0.17, size = 3, label = "Lethrinus rubrioperculatus", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
+  annotate("text", x = -0.80, y = 0.17, size = 3, label = "Lethrinus rubrioperculatus", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
   #annotation_custom(Pristipomoides typus, xmin=-0.9, xmax=-0.6, ymin=-0.6, ymax=-0.4)  # this chucks in the fish or species pics. you need to play around with the numbers to get it in the right spot. 
   
   #annotate("text", x = -0.73, y = 0.11, size = 3, label = "Carangoides chrysophrys", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
@@ -136,15 +136,15 @@ gg.dat<-ggplot(dat, aes(x=pco1, y=pco2))+
   
   theme(legend.position = "right") +
   labs(x = "PCO1 (34.8% of total variation)", y = "PCO2 (6.2% of total variation)")+
-  scale_x_continuous(limits = c(-0.9, 0.6), breaks = c(-0.75,-0.5, -0.25, 0, 0.25, 0.5))+
-  scale_y_continuous(limits = c(-0.6, 0.35))
+  scale_x_continuous(limits = c(-1.0, 0.6), breaks = c(-0.75,-0.5, -0.25, 0, 0.25, 0.5))+
+  scale_y_continuous(limits = c(-0.6, 0.4))
   #labs(fill = "Method")
   # where you put you legend so it is out of the way
   # annotate("text", x = 0, y = 1.5, size = 6,  parse=F,family="TN")
 
 gg.dat
 
-ggsave("PtCloates.PCO.jpeg", gg.dat, width = 20, height = 14, units = "cm")
+ggsave("PtCloates__newvector.PCO3.jpeg", gg.dat, width = 20, height = 14, units = "cm")
 # plots PCO data
 
 # ggplot()+
