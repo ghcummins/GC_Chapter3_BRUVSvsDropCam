@@ -85,7 +85,7 @@ swc_boss.maxn <- boss.maxn %>%
 unique(swc_boss.maxn$id)
 #samples sites of BOSS
 unique_swc_boss <- swc_boss.maxn %>%
-  select(id, sample, latitude, longitude) %>%
+  dplyr::select(id, sample, latitude, longitude) %>%
   distinct(id, .keep_all = TRUE)
 
 #save sites this is BOSS sites in SWC in my campaign box
@@ -108,7 +108,7 @@ totalfishboss <- swc_boss.maxn %>%
   dplyr::summarise(totalfish = sum(maxn))
 
 SwCBOSS_maxn_n <- samplefishboss %>%
-  left_join(totalfishboss %>% select(scientific, totalfish), by = "scientific")
+  left_join(totalfishboss %>% dplyr::select(scientific, totalfish), by = "scientific")
 
 #change columns so we have Family genus and species seperated - to be consistent w Pt CLoates list
 SwCBOSS_allnames <- separate(SwCBOSS_maxn_n, scientific, into = c("family", "genus", "species"), sep = " ")
@@ -160,7 +160,7 @@ famBRUV
 
 #Shallow Bank BRUV maxn column (total fish) and n (no. of drops)
 swcbruv_maxn_n <- samplefishbruv %>%
-  left_join(totalfishbruv %>% select(scientific, totalfish), by = "scientific")
+  left_join(totalfishbruv %>% dplyr::select(scientific, totalfish), by = "scientific")
 
 #change columns so we have Family genus and species seperated - to be consistent w Pt CLoates list
 swcbruv_allnames <- separate(swcbruv_maxn_n, scientific, into = c("family", "genus", "species"), sep = " ")
@@ -173,11 +173,11 @@ write.csv(swcbruv_allnames, file = "outputs/SwC/SWCBRUV_fishlist.csv", row.names
 
 #Species unique to BOSS and BRUV
  speciesBOSS<- SwCBOSS_allnames %>%
-  filter(name != "SUS sus")%>%
+  filter(name != "SUS sus")
   # filter(species != spp) ###what are our choices taxonomically
  
  speciesBRUV <-swcbruv_allnames %>%
-   filter(name != "SUS sus")%>%
+   filter(name != "SUS sus")
    # filter(species !=spp)
  
 sp_BOSS <- speciesBOSS%>%distinct(name)
@@ -193,11 +193,46 @@ generaBOSS
 generaBRUV <-unique(speciesBRUV$genus)
 generaBRUV
 
-g_BOSS <-data.frame(genus = generaBOSS)
-g_BRUV <-data.frame(genus = generaBRUV)
+g_BOSS <-data.frame(genus = generaBOSS)%>%
+filter(genus !="Unknown")
+
+g_BRUV <-data.frame(genus = generaBRUV)%>%
+filter(genus !="Unknown")
  
 only_in_g_BOSS <- anti_join(g_BOSS, g_BRUV)
 only_in_g_bruv <- anti_join(g_BRUV, g_BOSS)
+
+data_genus <- list(
+  BRUV = g_BRUV$genus,
+  BOSS = g_BOSS$genus
+)
+
+venn_plot_genus <-ggvenn(data_genus, 
+                         c("BRUV", "BOSS"), 
+                         fill_color =c("dark grey", "white"),
+                         fill_alpha = 0.4,
+                         show_percentage = F,
+                         text_size=8)+
+  # set_name_size = 8)+
+  theme(plot.margin = unit(c(2, 2, 2, 2), "cm"))
+#ggtitle("Point Cloates\n")+
+# theme(plot.title = element_text(size = 14))
+venn_plot_genus
+
+# Create Venn diagram ##only done venn diagram for families... do for genera and species.
+
+
+ggsave("Capesregion_genera_venndiagramgreys.jpeg", venn_plot_genus, width = 15, height = 10, units = "cm")
+
+
+
+
+
+
+
+
+
+
 
 #Families unique to BOSS and BRUV
 familiesboss <- fishfamiliesboss %>%

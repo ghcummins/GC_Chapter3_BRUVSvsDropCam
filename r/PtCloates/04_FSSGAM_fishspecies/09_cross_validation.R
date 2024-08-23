@@ -159,7 +159,7 @@ for (i in 1:length(resp.vars)) {
     mod <- list(mod1, mod2, mod3, mod4)
     
     modpred <- cbind(preddf, 
-                     "predicted" = predict(mod[[i]], preddf, type = "response"))
+                     "predicted" = predict(mod[[i]], preddf, type = "response")) ###CHECK PREDDF IS OK
     modpredr <- rast(modpred %>% dplyr::select(x, y, predicted))
     fabund_sp <- vect(test.dat, geom = c("x", "y"), crs = "epsg:4326")
     fabund_df   <- cbind(test.dat, terra::extract(modpredr, fabund_sp)) %>%

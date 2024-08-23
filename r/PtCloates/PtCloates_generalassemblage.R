@@ -71,9 +71,9 @@ bruv.maxn <- read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.maxn.csv")%>
 maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
   glimpse()
 
-apogonbruv <- bruv.maxn %>%
-  filter(maxn>0) %>%
-  group_by(scientific)
+# apogonbruv <- bruv.maxn %>%
+#   filter(maxn>0) %>%
+#   group_by(scientific)
 
 # apogonboss <- boss.maxn %>%
 #   filter(maxn>0) %>%
@@ -98,7 +98,7 @@ sfboss_inds <- boss.maxn %>%
   dplyr::summarise(totalfish = sum(maxn))
 
 sfboss_inds_n <- sfboss %>%
-  left_join(sfboss_inds %>% select(scientific, totalfish), by = "scientific")
+  left_join(sfboss_inds %>% dplyr::select(scientific, totalfish), by = "scientific")
 
 # Creating new columns for fam, genus and sp
 sfboss_allnames <- separate(sfboss_inds_n, scientific, into = c("family", "genus", "species"), sep = " ")
@@ -146,7 +146,7 @@ sfbruv_inds <- bruv.maxn %>%
   dplyr::summarise(totalfish = sum(maxn))
 
 sfbruv_inds_n <- sfbruv %>%
-  left_join(sfbruv_inds %>% select(scientific, totalfish), by = "scientific")
+  left_join(sfbruv_inds %>% dplyr::select(scientific, totalfish), by = "scientific")
 
 # Creating new columns for fam, genus and sp
 sfbruv_allnames <- separate(sfbruv_inds_n, scientific, into = c("family", "genus", "species"), sep = " ")
@@ -181,18 +181,22 @@ only_in_g_bruv <- anti_join(g_BRUV, g_BOSS)
 g_BRUV <- g_BRUV %>%
   mutate(famgenus = if_else(famgenus == "Apogonidae_Apogon", "Apogonidae_Ostorhinchus", famgenus))
 
-data_genus <- list(
-  BRUV = g_BRUV$famgenus,
-  BOSS = g_BOSS$famgenus
-)
-
-# Create Venn diagram ##only done venn diagram for families... do for genera and species.
 venn_plot_genus <-ggvenn(data_genus, 
-                          c("BRUV", "BOSS"), 
-                          fill_color =c("#56B4E9", "#F0E442"),
+                           c("BRUV", "BOSS"), 
+                          fill_color =c("dark grey", "white"),
                           fill_alpha = 0.4,
-                          show_percentage = F)
+                          show_percentage = F,
+                         text_size=8)+
+                         # set_name_size = 8)+
+  theme(plot.margin = unit(c(2, 2, 2, 2), "cm"))
+                  #ggtitle("Point Cloates\n")+
+                  # theme(plot.title = element_text(size = 14))
 venn_plot_genus
+ 
+# Create Venn diagram ##only done venn diagram for families... do for genera and species.
+
+
+ggsave("PtCloates_genera_venndiagramgreys1.jpeg", venn_plot_genus, width = 15, height = 10, units = "cm")
 
 #unique families process to get
 familiesboss <- fishfamiliesboss %>%
