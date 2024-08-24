@@ -144,6 +144,40 @@ ggsave("AbrolhosAbund.jpeg", Abrol.barchart, width = 20, height = 14, units = "c
 # plots PCO data
 
 
+# Step 1: Extract the species from top_10_boss_maxn and top_10_bruv_maxn
+top_species <- unique(c(top_10_boss_maxn$scientific, top_10_bruv_maxn$scientific))
+
+# Step 2: Filter fish.sp.maxn_filtered to include only these species
+filtered_maxn <- fish.sp.maxn_filtered %>%
+  filter(scientific %in% top_species)
+
+# Step 3: Create a complete data frame with all combinations of species and methods
+BOSSBRUV_topten <- expand.grid(scientific = top_species, method = c("BOSS", "BRUV"))
+
+# Step 4: Join this with the filtered_maxn to get the corresponding maxn values
+BOSSBRUV_stackedbar <- BOSSBRUV_topten %>%
+  left_join(filtered_maxn, by = c("scientific", "method")) %>%
+   mutate(maxn = coalesce(maxn, 0))  # Replace missing maxn values with 0
+
+
+# Create the combined bar plot
+BOSSBRUV.abrol.barchart <- ggplot(BOSSBRUV_stackedbar, aes(x = reorder(scientific, maxn), y = maxn, fill = method)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.6, color = "black") +  # Set the bar width and outline color
+  geom_hline(yintercept = 0, linetype = "dotted", color = "gray", size = 0.5) +  # Set the line size
+  coord_flip() +
+  labs(x = "Scientific name",
+       y = "Overall abundance (ΣMaxN)") +
+  scale_fill_manual(values = c("BOSS" = "white", "BRUV" = "dark grey"), name = "Method") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(face = "italic")) +
+  scale_y_continuous(limits = c(0, 650))
+
+BOSSBRUV.abrol.barchart
+
+ggsave("BOSSBRUVAbrolhos_BarChart_complete.jpeg", BOSSBRUV.abrol.barchart, width = 20, height = 14, units = "cm")
+# plots PCO data
+
+
 # Add custom italics labels for y-axis
 #p + geom_text(aes(x = reorder(scientific, -maxn), y = maxn, label = scientific), vjust = -0.5, fontface = "italic")
 

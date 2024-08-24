@@ -42,8 +42,11 @@ boss.maxn   <- read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.maxn.csv")%
   dplyr::mutate(method = "BOSS")%>%
 # unique(boss.maxn$sample)
   glimpse()
+
 bruv.maxn <- read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.maxn.csv")%>%
   #dplyr::mutate(method = "BRUV")%>%
+  dplyr::mutate(scientific = ifelse(scientific == "Apogonidae Apogon semilineatus",
+                             "Apogonidae Ostorhinchus semilineatus", scientific))%>%
   dplyr::mutate(method = "BRUV",
                 sample=as.character(sample))%>%
   glimpse()
@@ -65,7 +68,7 @@ samplefishBOSS <- boss.maxn %>%
 samplemaxnBOSS <- boss.maxn %>%
   filter(maxn>0)
 
-write.csv(samplemaxnBOSS, file = "data/samplemaxnBOSS.csv", row.names = FALSE)
+# write.csv(samplemaxnBOSS, file = "data/samplemaxnBOSS.csv", row.names = FALSE)
 
 #BRUVS fish numbers seen on how many samples
 samplefishBRUV <- bruv.maxn %>%
@@ -75,13 +78,15 @@ samplefishBRUV <- bruv.maxn %>%
 
 #to get each MAXN sample on BRUVS
 samplemaxnBRUV <- bruv.maxn %>%
-  filter(maxn>0)
+  filter(maxn>0) 
 
-write.csv(samplemaxnBRUV, file = "data/samplemaxnBRUV.csv", row.names = FALSE)
+
+# write.csv(samplemaxnBRUV, file = "data/samplemaxnBRUV.csv", row.names = FALSE)
 
 # look at all species ----
 fish.sp.maxn <- maxn %>%
   mutate(scientific = paste(genus, species, sep = " ")) %>%
+
   group_by(method,scientific) %>%
   dplyr::summarise(maxn = sum(maxn))
  # arrange(scientific)
@@ -89,7 +94,9 @@ fish.sp.maxn <- maxn %>%
 #filter os sus sus and unknowns and boss #11
 fish.sp.maxn_filtered <- fish.sp.maxn%>%
   filter(scientific != "SUS sus") %>%
-  filter(scientific != "Cyprinocirrhites polyactis") %>%
+  mutate(scientific = ifelse(scientific == "Apogon semilineatus",
+                             "Ostorhinchus semilineatus", scientific))%>%
+  # filter(scientific != "Cyprinocirrhites polyactis") %>%
   filter(!grepl("Unknown", scientific))    
 
 
@@ -139,9 +146,6 @@ all_combinations <- all_combinations %>%
   left_join(combined_top_10, by = c("scientific", "method")) %>%
   mutate(maxn = coalesce(maxn, 0))  # Replace missing maxn values with 0
   
-
-
-
 # # Create the combined bar plot
 # ggplot(combined_top_10, aes(x = reorder(scientific, maxn), y = maxn, fill = method)) +
 #   geom_bar(stat = "identity", position = "dodge") +
@@ -151,9 +155,6 @@ all_combinations <- all_combinations %>%
 #        y = "MaxN") +
 #   #scale_fill_manual(values = c("BOSS" = "blue", "BRUV" = "red")) +
 #   theme_minimal()
-
-
-
 
 # Create the combined bar plot
 PtCloates.barchart <- ggplot(all_combinations, aes(x = reorder(scientific, maxn), y = maxn, fill = method)) +
@@ -172,6 +173,43 @@ PtCloates.barchart <- ggplot(all_combinations, aes(x = reorder(scientific, maxn)
 
 
 ggsave("PtCloatesAbundance.jpeg", PtCloates.barchart, width = 20, height = 14, units = "cm")
+
+# Step 1: Extract the species from top_10_boss_maxn and top_10_bruv_maxn
+top_species <- unique(c(top_10_boss_maxn$scientific, top_10_bruv_maxn$scientific))
+
+# Step 2: Filter fish.sp.maxn_filtered to include only these species
+filtered_maxn <- fish.sp.maxn_filtered %>%
+  filter(scientific %in% top_species)
+
+# Step 3: Create a complete data frame with all combinations of species and methods
+BOSSBRUV_topten <- expand.grid(scientific = top_species, method = c("BOSS", "BRUV"))
+
+# Step 4: Join this with the filtered_maxn to get the corresponding maxn values
+BOSSBRUV_stackedbar <- BOSSBRUV_topten %>%
+  left_join(filtered_maxn, by = c("scientific", "method")) %>%
+  mutate(maxn = coalesce(maxn, 0))  # Replace missing maxn values with 0
+
+
+# Create the combined bar plot
+BOSSBRUV.ptcloates.barchart <- ggplot(BOSSBRUV_stackedbar, aes(x = reorder(scientific, maxn), y = maxn, fill = method)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.6, color = "black") +  # Set the bar width and outline color
+  geom_hline(yintercept = 0, linetype = "dotted", color = "gray", size = 0.5) +  # Set the line size
+  coord_flip() +
+  labs(x = "Scientific name",
+       y = "Overall abundance (ΣMaxN)") +
+  scale_fill_manual(values = c("BOSS" = "white", "BRUV" = "dark grey"), name = "Method") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(face = "italic")) +
+  scale_y_continuous(limits = c(0, 650))
+
+BOSSBRUV.ptcloates.barchart
+
+ggsave("BOSSBRUVPtCloates_BarChart_complete.jpeg", BOSSBRUV.abrol.barchart, width = 20, height = 14, units = "cm")
+
+
+
+
+
 # plots PCO data
 
 
