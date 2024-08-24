@@ -71,51 +71,51 @@ swc_bruv.maxn <- bruv.maxn %>%
 
 
 #BOSS fish seen on how many samples
-samplefishBOSS <- swc_boss.maxn %>%
+sw_samplefishBOSS <- swc_boss.maxn %>%
   filter(maxn>0) %>%
   group_by(scientific) %>% 
   dplyr::summarise(n =n())
 
 
 #to get each MAXN sample on BOSS
-samplemaxnBOSS <- swc_boss.maxn %>%
+sw_samplemaxnBOSS <- swc_boss.maxn %>%
   filter(maxn>0)
 
 #BRUVS fish seen on how many samples
-samplefishBRUV <- swc_bruv.maxn %>%
+sw_samplefishBRUV <- swc_bruv.maxn %>%
   filter(maxn>0) %>%
   group_by(scientific) %>%
   dplyr::summarise(n = n())
 
 #to get each MAXN sample on BRUVS
-samplemaxnBRUV <- swc_bruv.maxn %>%
+sw_samplemaxnBRUV <- swc_bruv.maxn %>%
   filter(maxn>0)
 
 # look at all species ----
-fish.sp.maxn <- maxn %>%
+sw_fish.sp.maxn <- maxn %>%
   mutate(scientific = paste(genus, species, sep = " ")) %>%
   group_by(method,scientific) %>%
   dplyr::summarise(maxn = sum(maxn))
 # arrange(scientific)
 
 #filter os sus sus and unknowns and boss #11
-fish.sp.maxn_filtered <- fish.sp.maxn%>%
+sw_fish.sp.maxn_filtered <- sw_fish.sp.maxn%>%
  # filter(scientific != "SUS sus") %>%
   #filter(scientific != "Cyprinocirrhites polyactis") %>%
   filter(!grepl("Unknown", scientific))    
 
 # Filter the top 10 BOSS maxn values
-top_10_boss_maxn <- fish.sp.maxn_filtered %>%
+sw_top_10_boss_maxn <- sw_fish.sp.maxn_filtered %>%
   filter(method == "BOSS") %>%
   top_n(10, maxn)
 
 # Filter the top 10 BRUVS maxn values
-top_10_bruv_maxn <- fish.sp.maxn_filtered %>%
+sw_top_10_bruv_maxn <- sw_fish.sp.maxn_filtered %>%
   filter(method == "BRUV") %>%
   top_n(10, maxn)
 
 # Create a bar graph for the top 10 BOSS maxn values
-ggplot(top_10_boss_maxn, aes(x = reorder(scientific, maxn), y = maxn, fill = scientific)) +
+ggplot(sw_top_10_boss_maxn, aes(x = reorder(scientific, maxn), y = maxn, fill = scientific)) +
   geom_bar(stat = "identity") +
   coord_flip() +
   labs(title = "Top 10 BOSS maxn by Scientific Species",
@@ -125,7 +125,7 @@ ggplot(top_10_boss_maxn, aes(x = reorder(scientific, maxn), y = maxn, fill = sci
   theme(legend.position = "none")
 
 # Create a bar graph for the top 10 BRUVS maxn values
-ggplot(top_10_bruv_maxn, aes(x = reorder(scientific, maxn), y = maxn, fill = scientific)) +
+ggplot(sw_top_10_bruv_maxn, aes(x = reorder(scientific, maxn), y = maxn, fill = scientific)) +
   geom_bar(stat = "identity") +
   coord_flip() +
   labs(title = "Top 10 BRUVS maxn by Scientific Species",
@@ -135,17 +135,17 @@ ggplot(top_10_bruv_maxn, aes(x = reorder(scientific, maxn), y = maxn, fill = sci
   theme(legend.position = "none")
 
 # Combine the top 10 BOSS and top 10 BRUVS DataFrames
-combined_top_10 <- rbind(top_10_boss_maxn, top_10_bruv_maxn)
+sw_combined_top_10 <- rbind(sw_top_10_boss_maxn, sw_top_10_bruv_maxn)
 
 
 # Create a complete data frame with all combinations of "scientific" and "method"
-all_combinations <- expand.grid(scientific = unique(combined_top_10$scientific), method = c("BOSS", "BRUV"))
-all_combinations <- all_combinations %>%
-  left_join(combined_top_10, by = c("scientific", "method")) %>%
+sw_all_combinations <- expand.grid(scientific = unique(sw_combined_top_10$scientific), method = c("BOSS", "BRUV"))
+swc_all_combinations <- sw_all_combinations %>%
+  left_join(sw_combined_top_10, by = c("scientific", "method")) %>%
   mutate(maxn = coalesce(maxn, 0))  # Replace missing maxn values with 0
 
 # Create the combined bar plot
-Capesregion.barchart <- ggplot(all_combinations, aes(x = reorder(scientific, maxn), y = maxn, fill = method)) +
+Capesregion.barchart <- ggplot(swc_all_combinations, aes(x = reorder(scientific, maxn), y = maxn, fill = method)) +
   geom_bar(stat = "identity", position = "dodge", width = 0.6, color = "black") +  # Set the bar width and outline color
   geom_hline(yintercept = 0, linetype = "dotted", color = "gray", size = 0.5) +  # Set the line size
   coord_flip() +
@@ -160,6 +160,39 @@ Capesregion.barchart <- ggplot(all_combinations, aes(x = reorder(scientific, max
 Capesregion.barchart
 
 # ggsave("SouthwestAbundance.jpeg", Capesregion.barchart, width = 20, height = 14, units = "cm")
+
+# Step 1: Extract the species from top_10_boss_maxn and top_10_bruv_maxn
+capes_top_species <- unique(c(sw_top_10_boss_maxn$scientific, sw_top_10_bruv_maxn$scientific))
+
+# Step 2: Filter fish.sp.maxn_filtered to include only these species
+capes_filtered_maxn <- sw_fish.sp.maxn_filtered %>%
+  filter(scientific %in% capes_top_species)
+
+# Step 3: Create a complete data frame with all combinations of species and methods
+capes_BOSSBRUV_topten <- expand.grid(scientific = capes_top_species, method = c("BOSS", "BRUV"))
+
+# Step 4: Join this with the filtered_maxn to get the corresponding maxn values
+capes_BOSSBRUV_stackedbar <- capes_BOSSBRUV_topten %>%
+  left_join(capes_filtered_maxn, by = c("scientific", "method")) %>%
+  mutate(maxn = coalesce(maxn, 0))  # Replace missing maxn values with 0
+
+
+# Create the combined bar plot
+BOSSBRUV.capes.barchart <- ggplot(capes_BOSSBRUV_stackedbar, aes(x = reorder(scientific, maxn), y = maxn, fill = method)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.6, color = "black") +  # Set the bar width and outline color
+  geom_hline(yintercept = 0, linetype = "dotted", color = "gray", size = 0.5) +  # Set the line size
+  coord_flip() +
+  labs(title = "Capes region", x = "Scientific name",
+       y = "Overall abundance (ΣMaxN)") +
+  scale_fill_manual(values = c("BOSS" = "white", "BRUV" = "dark grey"), name = "Method") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(face = "italic")) 
+  # scale_y_continuous(limits = c(0, 650))
+
+BOSSBRUV.capes.barchart
+
+ggsave("BOSSBRUVCapes_BarChart_complete.jpeg", BOSSBRUV.capes.barchart, width = 20, height = 14, units = "cm")
+
 
 ###HERE COMBINE ALL 3 BIOGEOGRAPHIC REGION ABUNDANCE PLOTS
 ##ABROLHOS STACKED BARPLOT INPUT
@@ -263,6 +296,39 @@ Abrol.barchart <- ggplot(ab.all_combinations, aes(x = reorder(scientific, maxn),
   scale_y_continuous(limits = c(0, 650))
 
 Abrol.barchart
+
+##ABROLHOS
+# Step 1: Extract the species from top_10_boss_maxn and top_10_bruv_maxn
+ab.top_species <- unique(c(ab.top_10_boss_maxn$scientific, ab.top_10_bruv_maxn$scientific))
+
+# Step 2: Filter fish.sp.maxn_filtered to include only these species
+ab.filtered_maxn <- ab.fish.sp.maxn_filtered %>%
+  filter(scientific %in% ab.top_species)
+
+# Step 3: Create a complete data frame with all combinations of species and methods
+ab.BOSSBRUV_topten <- expand.grid(scientific = ab.top_species, method = c("BOSS", "BRUV"))
+
+# Step 4: Join this with the filtered_maxn to get the corresponding maxn values
+ab.BOSSBRUV_stackedbar <- ab.BOSSBRUV_topten %>%
+  left_join(ab.filtered_maxn, by = c("scientific", "method")) %>%
+  mutate(maxn = coalesce(maxn, 0))  # Replace missing maxn values with 0
+
+# Create the combined bar plot
+BOSSBRUV.abrol.barchart <- ggplot(ab.BOSSBRUV_stackedbar, aes(x = reorder(scientific, maxn), y = maxn, fill = method)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.6, color = "black") +  # Set the bar width and outline color
+  geom_hline(yintercept = 0, linetype = "dotted", color = "gray", size = 0.5) +  # Set the line size
+  coord_flip() +
+  labs(title = "Shallow Bank", x = "Scientific name",
+       y = "Overall abundance (ΣMaxN)") +
+  scale_fill_manual(values = c("BOSS" = "white", "BRUV" = "dark grey"), name = "Method") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(face = "italic")) +
+  scale_y_continuous(limits = c(0, 650))
+
+BOSSBRUV.abrol.barchart
+
+# ggsave("BOSSBRUVAbrolhos_BarChart_complete.jpeg", BOSSBRUV.abrol.barchart, width = 20, height = 14, units = "cm")
+# plots PCO data
 
 ###POINT CLOATES BARCHART
 name <- "PtCloates"   # set study name
@@ -376,15 +442,45 @@ PtCloates.barchart <- ggplot(PC.all_combinations, aes(x = reorder(scientific, ma
 
 PtCloates.barchart
 
+##FIXING TOP 10 TO  include top ten plus the other method!
+# Step 1: Extract the species from top_10_boss_maxn and top_10_bruv_maxn
+pc.top_species <- unique(c(pc.top_10_boss_maxn$scientific, pc.top_10_bruv_maxn$scientific))
 
+# Step 2: Filter fish.sp.maxn_filtered to include only these species
+pc.filtered_maxn <- pc.fish.sp.maxn_filtered %>%
+  filter(scientific %in% pc.top_species)
+
+# Step 3: Create a complete data frame with all combinations of species and methods
+pc.BOSSBRUV_topten <- expand.grid(scientific = pc.top_species, method = c("BOSS", "BRUV"))
+
+# Step 4: Join this with the filtered_maxn to get the corresponding maxn values
+pc.BOSSBRUV_stackedbar <- pc.BOSSBRUV_topten %>%
+  left_join(pc.filtered_maxn, by = c("scientific", "method")) %>%
+  mutate(maxn = coalesce(maxn, 0))  # Replace missing maxn values with 0
+
+# Create the combined bar plot
+BOSSBRUV.ptcloates.barchart <- ggplot(pc.BOSSBRUV_stackedbar, aes(x = reorder(scientific, maxn), y = maxn, fill = method)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.6, color = "black") +  # Set the bar width and outline color
+  geom_hline(yintercept = 0, linetype = "dotted", color = "gray", size = 0.5) +  # Set the line size
+  coord_flip() +
+  labs(title = "Point Cloates", x = "Scientific name",
+       y = "Overall abundance (ΣMaxN)") +
+  scale_fill_manual(values = c("BOSS" = "white", "BRUV" = "dark grey"), name = "Method") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(face = "italic")) +
+  scale_y_continuous(limits = c(0, 650))
+
+BOSSBRUV.ptcloates.barchart
+
+# ggsave("BOSSBRUVPtCloates_BarChart_complete.jpeg", BOSSBRUV.abrol.barchart, width = 20, height = 14, units = "cm")
 
 
 
 
 ##COMBINING PLOTS
-Biogeographic_Barchart_plots <- PtCloates.barchart + Abrol.barchart  + Capesregion.barchart +(plot_layout(ncol=1))
-Biogeographic_Barchart_plots
+BOSSBRUVbiogeographic_Barcharts <- BOSSBRUV.ptcloates.barchart + BOSSBRUV.abrol.barchart  + BOSSBRUV.capes.barchart +(plot_layout(ncol=1))
+BOSSBRUVbiogeographic_Barcharts
 
 
-ggsave("Biogeographicbarcharts1.jpeg", Biogeographic_Barchart_plots, width = 20, height = 35, units = "cm")
+ggsave("BOSSBRUVbiogeographicbarcharts.jpeg", BOSSBRUVbiogeographic_Barcharts, width = 20, height = 35, units = "cm")
 # plots PCO data
