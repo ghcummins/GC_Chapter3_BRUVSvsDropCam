@@ -174,6 +174,7 @@ PtCloates.barchart <- ggplot(all_combinations, aes(x = reorder(scientific, maxn)
 
 ggsave("PtCloatesAbundance.jpeg", PtCloates.barchart, width = 20, height = 14, units = "cm")
 
+###FIXING TOP 10 
 # Step 1: Extract the species from top_10_boss_maxn and top_10_bruv_maxn
 top_species <- unique(c(top_10_boss_maxn$scientific, top_10_bruv_maxn$scientific))
 

@@ -143,7 +143,7 @@ Abrol.barchart
 ggsave("AbrolhosAbund.jpeg", Abrol.barchart, width = 20, height = 14, units = "cm")
 # plots PCO data
 
-
+###STEPS BELOW ARE TO INCLUDE THE TOP TEN SP OF EACH AND THE OTHER METHOD TOO!!!!
 # Step 1: Extract the species from top_10_boss_maxn and top_10_bruv_maxn
 top_species <- unique(c(top_10_boss_maxn$scientific, top_10_bruv_maxn$scientific))
 

@@ -165,7 +165,6 @@ swcbruv_maxn_n <- samplefishbruv %>%
 #change columns so we have Family genus and species seperated - to be consistent w Pt CLoates list
 swcbruv_allnames <- separate(swcbruv_maxn_n, scientific, into = c("family", "genus", "species"), sep = " ")
 
-
 total_indi_fish_BRUV <- swcbruv_allnames%>%
   dplyr::summarise(totalfish = sum(totalfish))
 #save
@@ -222,17 +221,7 @@ venn_plot_genus
 # Create Venn diagram ##only done venn diagram for families... do for genera and species.
 
 
-ggsave("Capesregion_genera_venndiagramgreys.jpeg", venn_plot_genus, width = 15, height = 10, units = "cm")
-
-
-
-
-
-
-
-
-
-
+# ggsave("Capesregion_genera_venndiagramgreys.jpeg", venn_plot_genus, width = 15, height = 10, units = "cm")
 
 #Families unique to BOSS and BRUV
 familiesboss <- fishfamiliesboss %>%
