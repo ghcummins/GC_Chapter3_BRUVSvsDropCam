@@ -189,14 +189,14 @@ only_in_g_bruv <- anti_join(g_BRUV, g_BOSS)
 # g_BOSS <-
 
 data_genus <- list(
-  BRUV = g_BRUV$genus,
-  BOSS = g_BOSS$genus
+  BRUV = g_BRUV$famgenus,
+  BOSS = g_BOSS$famgenus
 )
 
 
 venn_plot_genus <-ggvenn(data_genus, 
                            c("BRUV", "BOSS"), 
-                          fill_color =c("dark grey", "white"),
+                          fill_color =c("gray38", "white"),
                           fill_alpha = 0.4,
                           show_percentage = F,
                          text_size=8)+
@@ -209,7 +209,7 @@ venn_plot_genus
 # Create Venn diagram ##only done venn diagram for families... do for genera and species.
 
 
-ggsave("PtCloates_genera_venndiagramgreys1.jpeg", venn_plot_genus, width = 15, height = 10, units = "cm")
+ggsave("PtCloates_genera_venndiagramGRAY.jpeg", venn_plot_genus, width = 15, height = 10, units = "cm")
 
 #unique families process to get
 familiesboss <- fishfamiliesboss %>%
@@ -250,6 +250,7 @@ samplemaxnBRUV <- bruv.maxn %>%
 
 BRUV.individual.fish <- sum(sfbruv_inds_n$totalfish)
 BRUV.individual.fish
+
 #Total number of individual fish seen on BRUVS
 totalfishBRUV <- bruv.maxn %>%
   filter(maxn>0) %>%
@@ -281,7 +282,7 @@ allfishbruv
 allfishboss <-sum(overallmaxnBOSS$summaxn, na.rm = TRUE)
 allfishboss
 
-#calculating species unique to BOSS vs BRUV ###NEEDS CHECKING AND FIXING
+#calculating species unique to BOSS vs BRUV #1
 # Remove row with "SUS SUS sus" from samplefishBOSS
 samplefishBOSS_filtered <- samplefishBOSS %>%
   filter(scientific != "SUS SUS sus")
@@ -292,26 +293,51 @@ samplefishBRUV_filtered <- samplefishBRUV %>%
 
 # Identify unique scientific names in each dataframe
 unique_scientific_BOSS <- unique(samplefishBOSS_filtered$scientific)
+unique_scientific_BOSS 
 unique_scientific_BRUV <- unique(samplefishBRUV_filtered$scientific)
+unique_scientific_BRUV
 
-unique_scientific_BOSS <- samplefishBOSS_filtered %>% distinct(scientific)
-unique_scientific_BRUV <- samplefishBRUV_filtered %>% distinct(scientific)
+sp_BOSS <- samplefishBOSS_filtered %>% distinct(scientific)
+sp_BRUV <- samplefishBRUV_filtered %>% distinct(scientific)
 
-only_in_bruv <- anti_join(unique_scientific_BRUV, unique_scientific_BOSS)
+# unique_scientific_BOSS <- samplefishBOSS_filtered %>% distinct(scientific)
+# unique_scientific_BRUV <- samplefishBRUV_filtered %>% distinct(scientific)
+
+only_in_BRUV <- anti_join(unique_scientific_BRUV, unique_scientific_BOSS)
+
+only_in_sp_BOSS <- anti_join(sp_BOSS, sp_BRUV)
+only_in_sp_BRUV <- anti_join(sp_BRUV, sp_BOSS)
 
 
-
-# Count the number of scientific names that are unique to each dataframe
+# CHECKS: Count the number of scientific names that are unique to each dataframe
 unique_to_BOSS <- setdiff(unique_scientific_BOSS, unique_scientific_BRUV)
 unique_to_BRUV <- setdiff(unique_scientific_BRUV, unique_scientific_BOSS)
 
 species_unique_to_BOSS <- data.frame(scientific = unique_to_BOSS)
 species_unique_to_BRUV <- data.frame(scientific = unique_to_BRUV)
 
-# Count the number of scientific names found in both dataframes
-common_names <- intersect(species_unique_to_BOSS, species_unique_to_BRUV)
-common_count <- length(common_names)
+# # Count the number of scientific names found in both dataframes
+# common_names <- intersect(species_unique_to_BOSS, species_unique_to_BRUV)
+# common_count <- length(common_names)
 
+data_genus <- list(
+  BRUV = sp_BRUV$scientific,
+  BOSS = sp_BOSS$scientific
+)
+
+venn_plot_species <-ggvenn(data_genus, 
+                         c("BRUV", "BOSS"), 
+                         fill_color =c("gray38", "white"),
+                         fill_alpha = 0.4,
+                         show_percentage = F,
+                         text_size=8)+
+  # set_name_size = 8)+
+  theme(plot.margin = unit(c(2, 2, 2, 2), "cm"))
+#ggtitle("Point Cloates\n")+
+# theme(plot.title = element_text(size = 14))
+venn_plot_species
+
+ggsave("PtCloates_SPECIES_venndiagramGRAY.jpeg", venn_plot_species, width = 15, height = 10, units = "cm")
 
 
 
@@ -780,7 +806,7 @@ write.csv(ubiquity_aspectratio, file = "outputs/PtCloates/ubiquity_aspectratio.c
   
   print(ubiquplot)
  
- ggsave("PtCloates_ubiquplot.png", plot = ubiquplot, path = "plots/" , width = 8, height = 10, dpi = 600, units = "in")  
+ ggsave("PtCloates_ubiquplot.png", plot = ubiquplot, path = "plots/" , width = 10, height = 10, dpi = 600, units = "in")  
  
  
  

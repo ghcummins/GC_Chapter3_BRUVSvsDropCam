@@ -1,7 +1,7 @@
 ###
 # Project: G Cummins FISH Paper
 # Script: Making stacked bar plots w maxn
-# Task:  FISH UBIQUITY PLOT
+# Task:  FISH UBIQUITY PLOT FOR ABROLHOS
 # author:  G Cummins 
 # date:    August 2024
 ##
@@ -55,33 +55,34 @@ library(grid)
 # use the 'files' tab to set wd in '~/parks-abrolhos' manually (your relative path) then run this line (if we need it?)
 working.dir <- getwd()
 setwd(working.dir)
-name <- "PtCloates"   # set study name
+name <- "Abrolhos"   # set study name
 
+
+##ASUMING Gymnocranius spp is grandoculis for aspect ratio calcs
 # load and join datasets
-#MaxN
-boss.maxn   <- read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.maxn.csv")%>%
+#MaxN I'm filteing by location NPZ6 because I only want Shallow Bank Data
+boss.maxn   <- read.csv("data/staging/Abrolhos/2021-05_Abrolhos_BOSS.complete.maxn.csv")%>%
   dplyr::mutate(method = "BOSS")%>%
-  dplyr::mutate(scientific = ifelse(scientific == "Lethrinidae Gymnocranius sp1",
+  dplyr::mutate(unique_id = paste(campaignid,sample, sep ="_"))%>%
+  dplyr::mutate(scientific = ifelse(scientific == "Lethrinidae Gymnocranius spp",
                                     "Lethrinidae Gymnocranius grandoculis", scientific))%>%
   dplyr::mutate(species = ifelse(scientific == "Lethrinidae Gymnocranius grandoculis", "grandoculis", species)) %>%
-  dplyr::mutate(unique_id = paste(campaignid,sample, sep ="_"))%>%
+  dplyr::mutate(name = paste(genus, species))%>%
+  dplyr::filter(location == "NPZ6")%>%
   glimpse()
 
-bruv.maxn <- read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.maxn.csv")%>%
+#MaxN BRUV
+bruv.maxn <- read.csv("data/staging/Abrolhos/2021-05_Abrolhos_stereo-BRUVs.complete.maxn.csv")%>%
   #dplyr::mutate(method = "BRUV")%>%
   dplyr::mutate(method = "BRUV",
                 sample=as.character(sample))%>%
-  dplyr::mutate(scientific = ifelse(scientific == "Apogonidae Apogon semilineatus",
-                                    "Apogonidae Ostorhinchus semilineatus", scientific))%>%
-  dplyr::mutate(genus = ifelse(genus == "Apogon", "Ostorhinchus", genus))%>%
-  dplyr::mutate(scientific = ifelse(scientific == "Sparidae Dentex spp",
-                                    "Sparidae Dentex carpenteri", scientific))%>%
-  dplyr::mutate(species = ifelse(scientific == "Sparidae Dentex carpenteri", "carpenteri", species)) %>%
-  dplyr::mutate(scientific = ifelse(scientific == "Lethrinidae Gymnocranius sp1",
+  dplyr::mutate(unique_id = paste(campaignid,sample, sep ="_"))%>%
+  dplyr::mutate(scientific = ifelse(scientific == "Lethrinidae Gymnocranius spp",
                                     "Lethrinidae Gymnocranius grandoculis", scientific))%>%
   dplyr::mutate(species = ifelse(scientific == "Lethrinidae Gymnocranius grandoculis", "grandoculis", species)) %>%
+  dplyr::mutate(name = paste(genus, species))%>%
+  dplyr::filter(location == "NPZ6")%>%
   glimpse()
-
 
 #join
 maxn <- bind_rows(boss.maxn,bruv.maxn)%>%
@@ -226,19 +227,17 @@ joiningbruvs <- fbmorphometrics %>%
   left_join(code_crosswalk, by = "fishbase_scientific")
 
 #Final aspect ratio BRUV output to save (this is our BRUV species w aspect ratio)
-PtCloates_aspectratio_bruvs <- joiningbruvs %>%
+Abrolhos_aspectratio_bruvs <- joiningbruvs %>%
   dplyr::select(-fishbase_scientific)%>%
   rename(name = caab_scientific)%>%
-  dplyr::select(name, everything()) %>%
-  add_row(name = "Pristipomoides sp1", armean = 3.34, n = 4, sd = NA, se = NA) %>%
-  add_row(name = "Seriola sp1", armean = 3.29, n = 3, sd = NA, se = NA)
+  dplyr::select(name, everything()) #No seriola sp1 and no pristipomoides sp1
 
- # write.csv(PtCloates_aspectratio_bruvs, file = "outputs/PtCloates/PtCloatesaspectratioBRUVS_20240827.csv", row.names = FALSE)
+# write.csv(Abrolhos_aspectratio_bruvs, file = "outputs/Abrolhos/AbrolhosaspectratioBRUVS.csv", row.names = FALSE)
 
 ##summary statistics for Pt Cloates aspect ratio BRUV (this is our BRUV species w aspect ratio)
 #Note this is all species (not all individual fish)
-mean_ptc_ar_bruv <- mean(PtCloates_aspectratio_bruvs$armean, na.rm = TRUE)
-median_ptc_ar_bruv <- median(PtCloates_aspectratio_bruvs$armean, na.rm = TRUE)
+mean_ab_ar_bruv <- mean(Abrolhos_aspectratio_bruvs$armean, na.rm = TRUE)
+median_ab_ar_bruv <- median(Abrolhos_aspectratio_bruvs$armean, na.rm = TRUE)
 
 #REPEAT ALL ABOVE BUT FOR BOSS:
 #determine caudal aspect ratio for each species on boss
@@ -284,18 +283,17 @@ joiningboss <- fbmorphometricsboss %>%
   left_join(code_crosswalk_boss, by = "fishbase_scientific")
 
 #Final aspect ratio BOSS output to save
-PtCloates_aspectratio_boss <- joiningboss %>%
+Abrolhos_aspectratio_boss <- joiningboss %>%
   dplyr::select(-fishbase_scientific)%>%
   rename(name = caab_scientific)%>%
-  dplyr::select(name, everything())%>%
-  add_row(name = "Pristipomoides sp1", armean = 3.34, n = 4, sd = NA, se = NA) 
+  dplyr::select(name, everything())
 
- # write.csv(PtCloates_aspectratio_boss, file = "outputs/PtCloates/PtCloatesaspectratioBOSS.csv", row.names = FALSE)
+ # write.csv(Abrolhos_aspectratio_boss, file = "outputs/Abrolhos/AbrolhosaspectratioBOSS.csv", row.names = FALSE)
 
 ##summary statistics for Pt Cloates aspect ratio BOSS (this is our BOSS species w aspect ratio)
 #Note this is all species (not all individual fish)
-mean_ptc_ar_boss <- mean(PtCloates_aspectratio_boss$armean, na.rm = TRUE)
-median_ptc_ar_boss <- median(PtCloates_aspectratio_boss$armean, na.rm = TRUE)
+mean_ab_ar_boss <- mean(Abrolhos_aspectratio_boss$armean, na.rm = TRUE)
+median_ab_ar_boss <- median(Abrolhos_aspectratio_boss$armean, na.rm = TRUE)
 
 #Aspect ratio for individuals on bruvs (not just sp) - ALL FISH INDIVIDUALS SEEN
 #Same df as sfbruv_inds but wth name instead of scientific
@@ -311,20 +309,20 @@ bruv_individuals_expanded <- bruv_individuals %>%
   uncount(totalindividuals)
 
 #leftjoin w aspect ratio
-bruv_individuals_aspectratio <- left_join(bruv_individuals_expanded, PtCloates_aspectratio_bruvs, by = "name")
+bruv_individuals_aspectratio <- left_join(bruv_individuals_expanded, Abrolhos_aspectratio_bruvs, by = "name")
 
-#write.csv(bruv_individuals_aspectratio, file = "outputs/PtCloates/PtCindividualsaspratioBRUV.csv", row.names = FALSE)
+# write.csv(bruv_individuals_aspectratio, file = "outputs/Abrolhos/AbrolhosindividualsaspratioBRUV.csv", row.names = FALSE)
 
 #SUMMARY STATISTICS for BRUV all individuals and aspect ratio
-mean_ptc_indi_ar_bruv <- mean(bruv_individuals_aspectratio$armean, na.rm = TRUE)
-median_ptc_indi_ar_bruv <- median(bruv_individuals_aspectratio$armean, na.rm = TRUE)
-perc25_ptc_indi_ar_bruv <- quantile(bruv_individuals_aspectratio$armean, probs = 0.25, na.rm = TRUE)
-perc75_ptc_indi_ar_bruv <- quantile(bruv_individuals_aspectratio$armean, probs = 0.75, na.rm = TRUE)
+mean_ab_indi_ar_bruv <- mean(bruv_individuals_aspectratio$armean, na.rm = TRUE)
+median_ab_indi_ar_bruv <- median(bruv_individuals_aspectratio$armean, na.rm = TRUE)
+perc25_ab_indi_ar_bruv <- quantile(bruv_individuals_aspectratio$armean, probs = 0.25, na.rm = TRUE)
+perc75_ab_indi_ar_bruv <- quantile(bruv_individuals_aspectratio$armean, probs = 0.75, na.rm = TRUE)
 IQR_indi_ar_bruv <- (perc75_ptc_indi_ar_bruv - perc25_ptc_indi_ar_bruv)
 IQR1.5_indi_ar_bruv <- (IQR_indi_ar_bruv * 1.5)
 summary(bruv_individuals_aspectratio$armean)
 table(is.na(bruv_individuals_aspectratio$armean))
-se_ptc_indi_ar_bruv <- mean(bruv_individuals_aspectratio$se, na.rm = TRUE)
+mean_se_indi_ab_bruv <- mean(bruv_individuals_aspectratio$se, na.rm = TRUE)
 
 ##REPEAT FOR BOSS
 #attempt at aspect ratio for individuals on bruvs (not just sp)
@@ -343,16 +341,16 @@ boss_individuals_expanded <- boss_individuals %>%
 # View(boss_individuals_expanded)
 
 #leftjoin w aspect ratio
-boss_individuals_aspectratio <- left_join(boss_individuals_expanded, PtCloates_aspectratio_boss, by = "name")
+boss_individuals_aspectratio <- left_join(boss_individuals_expanded, Abrolhos_aspectratio_boss, by = "name")
 
-#write.csv(boss_individuals_aspectratio, file = "outputs/PtCloates/PtCindividualsaspratioBOSS.csv", row.names = FALSE)
+write.csv(boss_individuals_aspectratio, file = "outputs/Abrolhos/AbrolhosindividualsaspratioBOSS.csv", row.names = FALSE)
 
 #SUMMARY STATISTICS for BOSS all individuals and aspect ratio
 boss_ind_ar_mean<- mean(boss_individuals_aspectratio$armean, na.rm = TRUE)
 boss_ind_ar_ste_mean <- mean(boss_individuals_aspectratio$se, na.rm = TRUE)
 summary(boss_individuals_aspectratio$armean)
 table(is.na(boss_individuals_aspectratio$armean))
-se_ptc_indi_ar_boss <- mean(boss_individuals_aspectratio$se, na.rm = TRUE)
+mean_se_indi_ab_boss <- mean(boss_individuals_aspectratio$se, na.rm = TRUE)
 
 #CALC SCALED UBIQUITY FOR THE PLOT 
 #Assuming your dataframe is called 'samplefishBRUV' with columns 'species' and 'n'
@@ -361,7 +359,7 @@ se_ptc_indi_ar_boss <- mean(boss_individuals_aspectratio$se, na.rm = TRUE)
 ar.samplefishBRUV <- bruv.maxn %>%
   filter(maxn>0) %>%
   # dplyr::mutate(scientific = ifelse(scientific == "Lethrinidae Gymnocranius sp1",
-                                    # "Lethrinidae Gymnocranius grandoculis", scientific))%>%
+  # "Lethrinidae Gymnocranius grandoculis", scientific))%>%
   # dplyr::mutate(species = ifelse(scientific == "Lethrinidae Gymnocranius sp1", "grandoculis", species)) %>%
   group_by(scientific) %>%
   dplyr::summarise(n = n())
@@ -369,7 +367,7 @@ ar.samplefishBRUV <- bruv.maxn %>%
 BRUV_individuals_AR <- bruv.maxn %>%  ##THIS IS sfbruv_inds
   filter(maxn>0) %>%
   # dplyr::mutate(scientific = ifelse(scientific == "Lethrinidae Gymnocranius sp1",
-                                    # "Lethrinidae Gymnocranius grandoculis", scientific))%>%
+  # "Lethrinidae Gymnocranius grandoculis", scientific))%>%
   # dplyr::mutate(species = ifelse(scientific == "Lethrinidae Gymnocranius sp1", "grandoculis", species)) %>%
   group_by(scientific) %>%
   dplyr::summarise(totalindividuals = sum(maxn))
@@ -397,10 +395,10 @@ ubiquityfishBRUV$name <- paste(ubiquityfishBRUV$genus, ubiquityfishBRUV$species,
 suBRUV <- dplyr::select(ubiquityfishBRUV, name, scaled_ubiquity, n, totalindividuals)
 
 #just name and aspect ratio from PtCloates_aspectratio_bruvs
-PtCloatesarBRUV <- dplyr::select(PtCloates_aspectratio_bruvs, name, armean)
+AbrolhosarBRUV <- dplyr::select(Abrolhos_aspectratio_bruvs, name, armean)
 
 #scaled ubiquity and aspect ratio dataframe for BRUVS  
-su_ar_df_BRUV<- left_join(suBRUV, PtCloatesarBRUV, by = "name")%>%
+su_ar_df_BRUV<- left_join(suBRUV, AbrolhosarBRUV, by = "name")%>%
   rename(n_BRUV = n)%>%
   rename(indi_BRUV = totalindividuals) %>%
   filter(!is.na(armean))
@@ -470,10 +468,10 @@ ubiquityfishBOSS$name <- paste(ubiquityfishBOSS$genus, ubiquityfishBOSS$species,
 suBOSS <- dplyr::select(ubiquityfishBOSS, name, scaled_ubiquity, n, totalindividuals)
 
 #new df just name and aspect ratio from PtCloates_aspectratio_bruvs
-PtCloatesarBOSS <- dplyr::select(PtCloates_aspectratio_boss, name, armean)
+AbrolhosarBOSS <- dplyr::select(Abrolhos_aspectratio_boss, name, armean)
 
 #scaled ubiquity and aspect ratio dataframe for BOSS
-su_ar_df_BOSS<- left_join(suBOSS, PtCloatesarBOSS, by = "name") %>%
+su_ar_df_BOSS<- left_join(suBOSS, AbrolhosarBOSS, by = "name") %>%
   rename(n_BOSS = n)%>%
   rename(indi_BOSS = totalindividuals)%>%
   filter(!is.na(armean))
@@ -492,7 +490,6 @@ SUM <- su_ar_df_BOSS %>%
 BOSS_AR_INDIFISH <- INDIS_su_ar_BOSS %>%
   summarise(mean_ar_individuals_boss = mean(armean, na.rm = TRUE))
 
-
 # Create the bar plot
 ggplot(su_ar_df_BOSS, aes(x = armean, y = indi_BOSS)) +
   geom_bar(stat = "identity", fill = "lightblue", color = "black") +
@@ -504,18 +501,18 @@ ggplot(su_ar_df_BOSS, aes(x = armean, y = indi_BOSS)) +
 ######
 ###attempt to filter out bad data ie Unknown and Sus sus. Later will require further fixing ***check sp w Claude
 su_ar_BRUV <- su_ar_df_BRUV     ###rejigged
-  # filter(name != "Sus sus")%>%
-  # filter(name != "Unknown spp")%>%
-  # filter(name != "Unknown sp10")
+# filter(name != "Sus sus")%>%
+# filter(name != "Unknown spp")%>%
+# filter(name != "Unknown sp10")
 
 su_ar_BOSS <- su_ar_df_BOSS
-  # filter(name != "Sus sus")%>%
-  # filter(name != "Unknown spp")
+# filter(name != "Sus sus")%>%
+# filter(name != "Unknown spp")
 
 #combine boss and bruv scaled ubiquity and aspect ratios to one DF
 all_su_ar <- merge(su_ar_BRUV, su_ar_BOSS, by = "name", all = TRUE)
 
- aspectratiomean <- coalesce(all_su_ar$armean.x, all_su_ar$armean.y)
+aspectratiomean <- coalesce(all_su_ar$armean.x, all_su_ar$armean.y)
 all_su_ar <- mutate(all_su_ar, armean = aspectratiomean)
 all_su_ar <- dplyr::select(all_su_ar, -armean.x, -armean.y)
 all_su_ar <- all_su_ar %>%
@@ -535,7 +532,8 @@ ubiquity_aspectratio <- all_su_ar %>%
          n_BOSS = ifelse(is.na(n_BOSS), 0, n_BOSS)) #replace NA with 0 in n_BOSS
 
 
-write.csv(ubiquity_aspectratio, file = "outputs/PtCloates/ubiquity_aspectratio1.csv", row.names = FALSE)
+write.csv(ubiquity_aspectratio, file = "outputs/Abrolhos/ubiquity_aspectratio.csv", row.names = FALSE)
+
 # summary(ubiquity_aspectratio$nBRUV_armean)
 # summary(bruv_individuals_aspectratio$armean)
 
@@ -544,8 +542,8 @@ write.csv(ubiquity_aspectratio, file = "outputs/PtCloates/ubiquity_aspectratio1.
 # 
 # BOSS <- textGrob(label = expression("BOSS"), x = 0, y = 0, 
 #                  just = "left", gp = gpar(col = "#000000", fontsize = 11))
-BOSS_AR_INDIFISH <- 2.500  # Replace with actual value
-BRUV_AR_INDIFISH <- 2.875
+BOSS_AR_INDIFISH <- 1.606  # Replace with actual value
+BRUV_AR_INDIFISH <- 1.753
 
 ubiquplot <- ggplot(ubiquity_aspectratio)+
   geom_linerangeh(mapping = aes(y=armean, xmin=scaledubiquityboss, xmax=scaledubiquitybruv), size = 1.0)+
@@ -563,37 +561,16 @@ ubiquplot <- ggplot(ubiquity_aspectratio)+
     axis.text.y = element_text(size = 12),   # Increase y-axis text size
     axis.text.x = element_text(size = 12) 
   )+
-  
-  # Add arrows on the x-axis using geom_segment
-  # geom_segment(aes(x = -0.05, y = -0.5, xend = -1, yend = -0.5),
-  #              arrow = arrow(length = unit(0.2, "inches"), type = "closed"), size = 0.6) +
-  # geom_segment(aes(x = 0.05, y = -0.1, xend = 1, yend = -0.1),
-  #              arrow = arrow(length = unit(0.2, "inches"), type = "closed"), size = 0.6) +
-  # 
-  # # Add labels for BRUV and BOSS
-  # annotate("text", x = -0.9, y = 0.1, label = "BOSS", hjust = 0, vjust = 1) +
-  # annotate("text", x = 0.9, y = 0.1, label = "BRUV", hjust = 1, vjust = 1)
-  
-
-  # Add labels for BRUV and BOSS
-  # annotation_custom(BRUV, xmin = 0.5, xmax = 1, ymin = 0.5, ymax = 0.5) +
-  # annotation_custom(BOSS, xmin = -0.9, xmax = -0.5, ymin = -0.1, ymax = -0.1) +
-
-theme(plot.margin = margin(t = 0.5, r = 2.5, b = 0.5, l = 0.5, unit = "cm")) +
+  theme(plot.margin = margin(t = 0.5, r = 2.5, b = 0.5, l = 0.5, unit = "cm")) +
   geom_segment(aes(x = -1.0, xend = 0.0, y = BOSS_AR_INDIFISH, yend = BOSS_AR_INDIFISH),
                linetype = "dashed", color = "blue", size = 1) +
   geom_segment(aes(x = 0.0, xend = 1.0, y = BRUV_AR_INDIFISH, yend = BRUV_AR_INDIFISH),
                linetype = "dashed", color = "blue", size = 1) 
-  
+
 
 print(ubiquplot)
 
-ggsave("PtCloates_ubiquplot_complete1.png", plot = ubiquplot, path = "plots/" , width = 10, height = 10, dpi = 600, units = "in")  
-
-
-
-
-BOSSBRUV_ubiquity_aspectratio <- ubiquity_aspectratio 
+ggsave("Southwest_ubiquplot_complete_final1.png", plot = ubiquplot, path = "plots/" , width = 10, height = 10, dpi = 600, units = "in")  
 
 
 ####GLM

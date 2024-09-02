@@ -168,23 +168,62 @@ swcbruv_allnames <- separate(swcbruv_maxn_n, scientific, into = c("family", "gen
 total_indi_fish_BRUV <- swcbruv_allnames%>%
   dplyr::summarise(totalfish = sum(totalfish))
 #save
-write.csv(swcbruv_allnames, file = "outputs/SwC/SWCBRUV_fishlist.csv", row.names = FALSE)
+# write.csv(swcbruv_allnames, file = "outputs/SwC/SWCBRUV_fishlist.csv", row.names = FALSE)
 
 #Species unique to BOSS and BRUV
- speciesBOSS<- SwCBOSS_allnames %>%
+ speciesBOSS<- samplefishboss %>%
   filter(name != "SUS sus")
   # filter(species != spp) ###what are our choices taxonomically
  
- speciesBRUV <-swcbruv_allnames %>%
+ speciesBRUV <-samplefishbruv %>%
    filter(name != "SUS sus")
    # filter(species !=spp)
  
-sp_BOSS <- speciesBOSS%>%distinct(name)
-sp_BRUV <- speciesBRUV%>%distinct(name)
+sp_BOSS <- speciesBOSS%>%distinct(scientific)
+sp_BRUV <- speciesBRUV%>%distinct(scientific)
  
  only_species_BOSS <- anti_join(sp_BOSS, sp_BRUV)
  only_species_BRUV <- anti_join(sp_BRUV, sp_BOSS)
 
+ # CHECKS: Count the number of scientific names that are unique to each dataframe
+ # Identify unique scientific names in each dataframe
+ unique_scientific_BOSS <- unique(speciesBOSS$scientific)
+ unique_scientific_BOSS 
+ unique_scientific_BRUV <- unique(speciesBRUV$scientific)
+ unique_scientific_BRUV
+ 
+ unique_to_BOSS <- setdiff(unique_scientific_BOSS, unique_scientific_BRUV)
+ unique_to_BRUV <- setdiff(unique_scientific_BRUV, unique_scientific_BOSS)
+ 
+ species_unique_to_BOSS <- data.frame(scientific = unique_to_BOSS)
+ species_unique_to_BRUV <- data.frame(scientific = unique_to_BRUV)
+ 
+ # # Count the number of scientific names found in both dataframes
+ # common_names <- intersect(species_unique_to_BOSS, species_unique_to_BRUV)
+ # common_count <- length(common_names)
+ 
+ data_genus <- list(
+   BRUV = sp_BRUV$scientific,
+   BOSS = sp_BOSS$scientific
+ )
+ 
+ venn_plot_species <-ggvenn(data_genus, 
+                            c("BRUV", "BOSS"), 
+                            fill_color =c("gray38", "white"),
+                            fill_alpha = 0.4,
+                            show_percentage = F,
+                            text_size=8)+
+   # set_name_size = 8)+
+   theme(plot.margin = unit(c(2, 2, 2, 2), "cm"))
+ #ggtitle("Point Cloates\n")+
+ # theme(plot.title = element_text(size = 14))
+ venn_plot_species
+ 
+ ggsave("Southwest_SPECIES_venndiagramGRAY.jpeg", venn_plot_species, width = 15, height = 10, units = "cm")
+ 
+ 
+ 
+ 
 #Genera unique to BOSS and BRUV
 generaBOSS <- unique(speciesBOSS$genus)
 generaBOSS
@@ -208,7 +247,7 @@ data_genus <- list(
 
 venn_plot_genus <-ggvenn(data_genus, 
                          c("BRUV", "BOSS"), 
-                         fill_color =c("dark grey", "white"),
+                         fill_color =c("gray38", "white"),
                          fill_alpha = 0.4,
                          show_percentage = F,
                          text_size=8)+
@@ -220,8 +259,7 @@ venn_plot_genus
 
 # Create Venn diagram ##only done venn diagram for families... do for genera and species.
 
-
-# ggsave("Capesregion_genera_venndiagramgreys.jpeg", venn_plot_genus, width = 15, height = 10, units = "cm")
+ ggsave("Capesregion_genera_venndiagramGRAY.jpeg", venn_plot_genus, width = 15, height = 10, units = "cm")
 
 #Families unique to BOSS and BRUV
 familiesboss <- fishfamiliesboss %>%

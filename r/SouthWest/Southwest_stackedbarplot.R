@@ -149,7 +149,7 @@ Capesregion.barchart <- ggplot(swc_all_combinations, aes(x = reorder(scientific,
   geom_bar(stat = "identity", position = "dodge", width = 0.6, color = "black") +  # Set the bar width and outline color
   geom_hline(yintercept = 0, linetype = "dotted", color = "gray", size = 0.5) +  # Set the line size
   coord_flip() +
-  labs(title = "Capes region", x = "Scientific name",
+  labs(title = "South-west", x = "Scientific name",
        y = "Overall abundance (ΣMaxN)") +
   scale_fill_manual(values = c("BOSS" = "white", "BRUV" = "dark grey"), name = "Method") +
   #scale_y_discrete(labels = expression(italic(scientific))) +  # Italicize the y-axis labels
@@ -182,16 +182,22 @@ BOSSBRUV.capes.barchart <- ggplot(capes_BOSSBRUV_stackedbar, aes(x = reorder(sci
   geom_bar(stat = "identity", position = "dodge", width = 0.6, color = "black") +  # Set the bar width and outline color
   geom_hline(yintercept = 0, linetype = "dotted", color = "gray", size = 0.5) +  # Set the line size
   coord_flip() +
-  labs(title = "Capes region", x = "Scientific name",
+  labs(title = "South-west", x = "Scientific name",
        y = "Overall abundance (ΣMaxN)") +
   scale_fill_manual(values = c("BOSS" = "white", "BRUV" = "dark grey"), name = "Method") +
   theme_minimal() +
-  theme(axis.text.y = element_text(face = "italic")) 
-  # scale_y_continuous(limits = c(0, 650))
+  theme(axis.text.y = element_text(face = "italic"),
+        axis.line = element_line(color = "black", size = 0.5),  # Add black solid lines along x and y axes
+        axis.ticks.x = element_line(color = "black", size = 0.5),  # Add tick marks along the x-axis
+        axis.ticks.length.x = unit(0.3, "cm"),  # Set tick length
+        panel.grid = element_blank(),  # Remove grid lines
+        panel.background = element_blank(),  # Ensure no background
+        plot.background = element_blank()) +
+  scale_y_continuous(limits = c(0, 2000), expand = c(0,0))
 
 BOSSBRUV.capes.barchart
 
-ggsave("BOSSBRUVCapes_BarChart_complete.jpeg", BOSSBRUV.capes.barchart, width = 20, height = 14, units = "cm")
+# ggsave("BOSSBRUVCapes_BarChart_complete.jpeg", BOSSBRUV.capes.barchart, width = 20, height = 14, units = "cm")
 
 
 ###HERE COMBINE ALL 3 BIOGEOGRAPHIC REGION ABUNDANCE PLOTS
@@ -287,7 +293,7 @@ Abrol.barchart <- ggplot(ab.all_combinations, aes(x = reorder(scientific, maxn),
   geom_bar(stat = "identity", position = "dodge", width = 0.6, color = "black") +  # Set the bar width and outline color
   geom_hline(yintercept = 0, linetype = "dotted", color = "gray", size = 0.5) +  # Set the line size
   coord_flip() +
-  labs(title = "Shallow Bank", x = "Scientific name",
+  labs(title = "Abrolhos", x = "Scientific name",
        y = "Overall abundance (ΣMaxN)") +
   scale_fill_manual(values = c("BOSS" = "white", "BRUV" = "dark grey"), name = "Method") +
   #scale_y_discrete(labels = expression(italic(scientific))) +  # Italicize the y-axis labels
@@ -318,14 +324,20 @@ BOSSBRUV.abrol.barchart <- ggplot(ab.BOSSBRUV_stackedbar, aes(x = reorder(scient
   geom_bar(stat = "identity", position = "dodge", width = 0.6, color = "black") +  # Set the bar width and outline color
   geom_hline(yintercept = 0, linetype = "dotted", color = "gray", size = 0.5) +  # Set the line size
   coord_flip() +
-  labs(title = "Shallow Bank", x = "Scientific name",
+  labs(title = "Abrolhos", x = "Scientific name",
        y = "Overall abundance (ΣMaxN)") +
   scale_fill_manual(values = c("BOSS" = "white", "BRUV" = "dark grey"), name = "Method") +
   theme_minimal() +
-  theme(axis.text.y = element_text(face = "italic")) +
-  scale_y_continuous(limits = c(0, 650))
-
-BOSSBRUV.abrol.barchart
+  theme(axis.text.y = element_text(face = "italic"),
+        axis.line = element_line(color = "black", size = 0.5),  # Add black solid lines along x and y axes
+        axis.ticks.x = element_line(color = "black", size = 0.5),  # Add tick marks along the x-axis
+        axis.ticks.length.x = unit(0.3, "cm"),  # Set tick length
+        panel.grid = element_blank(),  # Remove grid lines
+        panel.background = element_blank(),  # Ensure no background
+        plot.background = element_blank()) +
+  scale_y_continuous(limits = c(0, 650), expand = c(0,0))
+  
+ BOSSBRUV.abrol.barchart
 
 # ggsave("BOSSBRUVAbrolhos_BarChart_complete.jpeg", BOSSBRUV.abrol.barchart, width = 20, height = 14, units = "cm")
 # plots PCO data
@@ -337,19 +349,24 @@ name <- "PtCloates"   # set study name
 #MaxN
 pc.boss.maxn   <- read.csv("data/tidy/PtCloates/PtCloates_BOSS.complete.maxn.csv")%>%
   dplyr::mutate(method = "BOSS")%>%
+  dplyr::mutate(genus = ifelse(scientific == "Clupeidae Unknown spp", "Clupeidae", genus)) %>%
+  dplyr::mutate(scientific = ifelse(scientific == "Clupeidae Unknown spp",
+                                    "Clupeidae Clupeidae spp", scientific))%>%
   # unique(boss.maxn$sample)
   glimpse()
 pc.bruv.maxn <- read.csv("data/tidy/PtCloates/PtCloates_BRUVS.complete.maxn.csv")%>%
   #dplyr::mutate(method = "BRUV")%>%
   dplyr::mutate(method = "BRUV",
                 sample=as.character(sample))%>%
+  dplyr::mutate(scientific = ifelse(scientific == "Sparidae Dentex spp",
+                                    "Sparidae Dentex carpenteri", scientific))%>%
+  dplyr::mutate(species = ifelse(scientific == "Sparidae Dentex carpenteri", "carpenteri", species)) %>%
   glimpse()
 
 unique(pc.bruv.maxn$unique_id)
 #join
 pc.maxn <- bind_rows(pc.boss.maxn,pc.bruv.maxn)%>%
   glimpse()
-
 
 #BOSS fish numbers seen on how many samples
 pc.samplefishBOSS <- pc.boss.maxn %>%
@@ -432,13 +449,13 @@ PtCloates.barchart <- ggplot(PC.all_combinations, aes(x = reorder(scientific, ma
   geom_bar(stat = "identity", position = "dodge", width = 0.6, color = "black") +  # Set the bar width and outline color
   geom_hline(yintercept = 0, linetype = "dotted", color = "gray", size = 0.5) +  # Set the line size
   coord_flip() +
-  labs(title = "Point Cloates", x = "Scientific name",
+  labs(title = "Ningaloo", x = "Scientific name",
        y = "Overall abundance (ΣMaxN)") +
   scale_fill_manual(values = c("BOSS" = "white", "BRUV" = "dark grey"), name = "Method") +
   #scale_y_discrete(labels = expression(italic(scientific))) +  # Italicize the y-axis labels
   theme_minimal() +
   theme(axis.text.y = element_text(face = "italic")) +
-  scale_y_continuous(limits = c(0, 850))
+  scale_y_continuous(limits = c(0, 400))
 
 PtCloates.barchart
 
@@ -463,12 +480,18 @@ BOSSBRUV.ptcloates.barchart <- ggplot(pc.BOSSBRUV_stackedbar, aes(x = reorder(sc
   geom_bar(stat = "identity", position = "dodge", width = 0.6, color = "black") +  # Set the bar width and outline color
   geom_hline(yintercept = 0, linetype = "dotted", color = "gray", size = 0.5) +  # Set the line size
   coord_flip() +
-  labs(title = "Point Cloates", x = "Scientific name",
+  labs(title = "Ningaloo", x = "Scientific name",
        y = "Overall abundance (ΣMaxN)") +
   scale_fill_manual(values = c("BOSS" = "white", "BRUV" = "dark grey"), name = "Method") +
   theme_minimal() +
-  theme(axis.text.y = element_text(face = "italic")) +
-  scale_y_continuous(limits = c(0, 650))
+  theme(axis.text.y = element_text(face = "italic"),
+        axis.line = element_line(color = "black", size = 0.5),  # Add black solid lines along x and y axes
+        axis.ticks.x = element_line(color = "black", size = 0.5),  # Add tick marks along the x-axis
+        axis.ticks.length.x = unit(0.3, "cm"),  # Set tick length
+        panel.grid = element_blank(),  # Remove grid lines
+         panel.background = element_blank(),  # Ensure no background
+        plot.background = element_blank()) +
+  scale_y_continuous(limits = c(0, 400), expand = c(0,0))
 
 BOSSBRUV.ptcloates.barchart
 
@@ -482,5 +505,5 @@ BOSSBRUVbiogeographic_Barcharts <- BOSSBRUV.ptcloates.barchart + BOSSBRUV.abrol.
 BOSSBRUVbiogeographic_Barcharts
 
 
-ggsave("BOSSBRUVbiogeographicbarcharts.jpeg", BOSSBRUVbiogeographic_Barcharts, width = 20, height = 35, units = "cm")
+ggsave("BOSSBRUVbiogeographicbarcharts_FINAL_withClupeidae.jpeg", BOSSBRUVbiogeographic_Barcharts, width = 20, height = 35, units = "cm")
 # plots PCO data

@@ -144,19 +144,100 @@ SBbruv_allnames <- separate(SBbruv_maxn_n, scientific, into = c("family", "genus
 #save
 # write.csv(SBbruv_allnames, file = "outputs/Abrolhos/ShallowBankBRUV_fishlist.csv", row.names = FALSE)
 
-#Species unique to BOSS and BRUV
-speciesBOSS<- SBboss_allnames %>%
-  filter(name != "SUS sus")
-  # filter(species != "spp")
 
-speciesBRUV <-SBbruv_allnames %>%
-  filter(name != "SUS sus")
+##NEW WAY 2/09/2024 CALCULATING SPECIES
+#calculating species unique to BOSS vs BRUV #1
+# Remove row with "SUS SUS sus" from samplefishBOSS
+samplefishBOSS_filtered <- samplefishboss%>%
+  filter(scientific != "SUS SUS sus")
 
- sp_BOSS <- speciesBOSS%>%distinct(name)
- sp_BRUV <- speciesBRUV%>%distinct(name)
+# Remove row with "SUS SUS sus" from samplefishBRUV
+samplefishBRUV_filtered <- samplefishbruv %>%
+  filter(scientific != "SUS SUS sus")
 
-only_species_BOSS <- anti_join(sp_BOSS, sp_BRUV)
-only_species_BRUV <- anti_join(sp_BRUV, sp_BOSS)
+# Identify unique scientific names in each dataframe
+unique_scientific_BOSS <- unique(samplefishBOSS_filtered$scientific)
+unique_scientific_BOSS 
+unique_scientific_BRUV <- unique(samplefishBRUV_filtered$scientific)
+unique_scientific_BRUV
+
+sp_BOSS <- samplefishBOSS_filtered %>% distinct(scientific)
+sp_BRUV <- samplefishBRUV_filtered %>% distinct(scientific)
+
+# unique_scientific_BOSS <- samplefishBOSS_filtered %>% distinct(scientific)
+# unique_scientific_BRUV <- samplefishBRUV_filtered %>% distinct(scientific)
+
+only_in_BRUV <- anti_join(unique_scientific_BRUV, unique_scientific_BOSS)
+
+only_in_sp_BOSS <- anti_join(sp_BOSS, sp_BRUV)
+only_in_sp_BRUV <- anti_join(sp_BRUV, sp_BOSS)
+
+
+# CHECKS: Count the number of scientific names that are unique to each dataframe
+unique_to_BOSS <- setdiff(unique_scientific_BOSS, unique_scientific_BRUV)
+unique_to_BRUV <- setdiff(unique_scientific_BRUV, unique_scientific_BOSS)
+
+species_unique_to_BOSS <- data.frame(scientific = unique_to_BOSS)
+species_unique_to_BRUV <- data.frame(scientific = unique_to_BRUV)
+
+# # Count the number of scientific names found in both dataframes
+# common_names <- intersect(species_unique_to_BOSS, species_unique_to_BRUV)
+# common_count <- length(common_names)
+
+data_genus <- list(
+  BRUV = sp_BRUV$scientific,
+  BOSS = sp_BOSS$scientific
+)
+
+venn_plot_species <-ggvenn(data_genus, 
+                           c("BRUV", "BOSS"), 
+                           fill_color =c("gray38", "white"),
+                           fill_alpha = 0.4,
+                           show_percentage = F,
+                           text_size=8)+
+  # set_name_size = 8)+
+  theme(plot.margin = unit(c(2, 2, 2, 2), "cm"))
+#ggtitle("Point Cloates\n")+
+# theme(plot.title = element_text(size = 14))
+venn_plot_species
+
+ggsave("Abrolhos_SPECIES_venndiagramGRAY.jpeg", venn_plot_species, width = 15, height = 10, units = "cm")
+
+
+
+
+# #Species unique to BOSS and BRUV [OLD WAY]
+# speciesBOSS<- SBboss_allnames %>%
+#   filter(name != "SUS sus")
+#   # filter(species != "spp")
+# 
+# speciesBRUV <-SBbruv_allnames %>%
+#   filter(name != "SUS sus")
+# 
+#  sp_BOSS <- speciesBOSS%>%distinct(name)
+#  sp_BRUV <- speciesBRUV%>%distinct(name)
+# 
+# only_species_BOSS <- anti_join(sp_BOSS, sp_BRUV)
+# only_species_BRUV <- anti_join(sp_BRUV, sp_BOSS)
+# 
+# data_genus <- list(
+#   BRUV = g_BRUV$genus,
+#   BOSS = g_BOSS$genus
+# )
+# 
+# venn_plot_species <-ggvenn(data_genus, 
+#                          c("BRUV", "BOSS"), 
+#                          fill_color =c("gray38", "white"),
+#                          fill_alpha = 0.4,
+#                          show_percentage = F,
+#                          text_size=8)+
+#   # set_name_size = 8)+
+#   theme(plot.margin = unit(c(2, 2, 2, 2), "cm"))
+# #ggtitle("Point Cloates\n")+
+# # theme(plot.title = element_text(size = 14))
+# venn_plot_species
+
+
 
 #genera unique to BOSS and BRUV
 generaBOSS <- unique(speciesBOSS$genus)
@@ -180,7 +261,7 @@ data_genus <- list(
 
 venn_plot_genus <-ggvenn(data_genus, 
                          c("BRUV", "BOSS"), 
-                         fill_color =c("dark grey", "white"),
+                         fill_color =c("gray38", "white"),
                          fill_alpha = 0.4,
                          show_percentage = F,
                          text_size=8)+
@@ -193,7 +274,7 @@ venn_plot_genus
 # Create Venn diagram ##only done venn diagram for families... do for genera and species.
 
 
-ggsave("Abrolhos_genera_venndiagramgreys.jpeg", venn_plot_genus, width = 15, height = 10, units = "cm")
+ggsave("Abrolhos_genera_venndiagram_GRAY.jpeg", venn_plot_genus, width = 15, height = 10, units = "cm")
 
 
 

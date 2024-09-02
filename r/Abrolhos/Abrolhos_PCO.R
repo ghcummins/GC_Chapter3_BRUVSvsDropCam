@@ -134,7 +134,7 @@ gg.dat<-ggplot(dat, aes(x=pco1, y=pco2))+
    annotate("text", x = 0.17, y = 0.52, size = 3, label = "Chrysophrys auratus", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
    #annotation_raster(p.s, xmin=-0.3, xmax=-0.1, ymin=0.33, ymax=0.2) + # this chucks in the fish or species pics. you need to play around with the numbers to get it in the right spot. 
   # 
-   annotate("text", x = 0.51, y = 0.16, size = 3, label = "Chromis spp", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
+   annotate("text", x = 0.50, y = 0.16, size = 3, label = "Chromis spp", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
   #annotation_custom(Pristipomoides typus, xmin=-0.9, xmax=-0.6, ymin=-0.6, ymax=-0.4)+  # this chucks in the fish or species pics. you need to play around with the numbers to get it in the right spot. 
   # 
    annotate("text", x = 0.82, y = 0.12, size = 3, label = "Choerodon rubescens", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
@@ -153,7 +153,7 @@ gg.dat<-ggplot(dat, aes(x=pco1, y=pco2))+
   # annotation_raster(c.a, xmin=9.75,xmax=10.25,ymin=3300, ymax=4000)+            #1
   
   theme(legend.position = "right") +
-  labs(title = "Shallow Bank", x = "PCO1 (35.7% of total variation)", y = "PCO2 (7.3% of total variation)")
+  labs(title = "Abrolhos", x = "PCO1 (35.7% of total variation)", y = "PCO2 (7.3% of total variation)")
   
   #scale_y_continuous(limits = c(-0.6, 0.35))
   #labs(fill = "Method")
@@ -280,7 +280,7 @@ capes.gg.dat<-ggplot(capes.dat, aes(x=pco1, y=pco3))+
    annotate("text", x = -0.08, y = -0.52, size = 3, label = "Pseudocaranx spp", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
   # # annotation_raster(p.s, xmin=-0.3, xmax=-0.1, ymin=0.33, ymax=0.2) + # this chucks in the fish or species pics. you need to play around with the numbers to get it in the right spot. 
   # 
-   annotate("text", x = 0.74, y = -0.07, size = 3, label = "Ophthalmolepis lineolatus", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
+   annotate("text", x = 0.75, y = -0.07, size = 3, label = "Ophthalmolepis lineolatus", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
   # #annotation_custom(Pristipomoides typus, xmin=-0.9, xmax=-0.6, ymin=-0.6, ymax=-0.4)  # this chucks in the fish or species pics. you need to play around with the numbers to get it in the right spot. 
   # 
    annotate("text", x = 0.85, y = -0.14, size = 3, label = "Pseudolabrus biserialis", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
@@ -299,7 +299,7 @@ capes.gg.dat<-ggplot(capes.dat, aes(x=pco1, y=pco3))+
   # annotation_raster(c.a, xmin=9.75,xmax=10.25,ymin=3300, ymax=4000)+            #1
   
   theme(legend.position = "right") +
-  labs(title = "Capes region", x = "PCO1 (20.4% of total variation)", y = "PCO3 (8.2% of total variation)")+
+  labs(title = "South-west", x = "PCO1 (20.4% of total variation)", y = "PCO3 (8.2% of total variation)")+
   scale_x_continuous(limits = c(-0.7, 1.0))+
   scale_y_continuous(limits = c(-0.9, 0.5))
 #labs(fill = "Method")
@@ -379,10 +379,10 @@ pc.gg.dat<-ggplot(pc.dat, aes(x=pco1, y=pco2))+
                size = 0.5,colour="black",arrow = arrow(angle=25,length=unit(0.25,"cm")))+
   
   #geom_text(data= filter(vectors, vectors=="Yes"), aes(x=pco1, y = pco2, label = name))+
-  annotate("text", x = -0.49, y = 0.32, size = 3, label = "Pristipomoides sp1", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
+  annotate("text", x = -0.49, y = 0.33, size = 3, label = "Pristipomoides sp1", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
   # annotation_raster(p.s, xmin=-0.3, xmax=-0.1, ymin=0.33, ymax=0.2) + # this chucks in the fish or species pics. you need to play around with the numbers to get it in the right spot. 
   
-  annotate("text", x = -0.80, y = 0.31, size = 3, label = "Gymnocranius sp1", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
+  annotate("text", x = -0.79, y = 0.31, size = 3, label = "Gymnocranius sp1", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
   #annotation_custom(Pristipomoides typus, xmin=-0.9, xmax=-0.6, ymin=-0.6, ymax=-0.4)  # this chucks in the fish or species pics. you need to play around with the numbers to get it in the right spot. 
   
   annotate("text", x = -0.81, y = 0.17, size = 3, label = "Lethrinus rubrioperculatus", parse=F,family="TN",fontface="italic")+  # this manually add the names of the species
@@ -401,7 +401,7 @@ pc.gg.dat<-ggplot(pc.dat, aes(x=pco1, y=pco2))+
   # annotation_raster(c.a, xmin=9.75,xmax=10.25,ymin=3300, ymax=4000)+            #1
   
   theme(legend.position = "right") +
-  labs(title = "Point Cloates", x = "PCO1 (34.8% of total variation)", y = "PCO2 (6.2% of total variation)")+
+  labs(title = "Ningaloo", x = "PCO1 (34.8% of total variation)", y = "PCO2 (6.2% of total variation)")+
   scale_x_continuous(limits = c(-1.0, 0.6), breaks = c(-0.75,-0.5, -0.25, 0, 0.25, 0.5))+
   scale_y_continuous(limits = c(-0.6, 0.4))
 #labs(fill = "Method")
@@ -415,13 +415,13 @@ pc.gg.dat
 
 
 ###COMBINE ALL PCOs
-biogeographic_pcos <- pc.gg.dat + gg.dat + capes.gg.dat + (plot_layout(ncol=1))
-biogeographic_pcos
+biogeographic_pcos_final <- pc.gg.dat + gg.dat + capes.gg.dat + (plot_layout(ncol=1))
+biogeographic_pcos_final
 
 
-png(filename = "plots/biogeographic_pcos4.png", 
+png(filename = "plots/biogeographic_pcos_final.png", 
     
     
     width = 20, height = 40, res = 1200, units = "cm")                             # Change the dimensions here as necessary
-biogeographic_pcos
+biogeographic_pcos_final
 dev.off()  
